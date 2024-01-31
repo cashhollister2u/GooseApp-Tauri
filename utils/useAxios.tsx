@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
 import { AuthContextType } from '../context/AuthContext'
-import { baseURL } from '@/app/components/backendURLs'
+import { baseURL } from '@/components/backendURL'
 
 interface AuthTokens {
   access: string

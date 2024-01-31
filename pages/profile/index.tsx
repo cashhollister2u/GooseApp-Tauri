@@ -29,6 +29,7 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import crypto from 'crypto'
+import { invoke } from '@tauri-apps/api/tauri';
 
 const swal = require('sweetalert2')
 
@@ -98,12 +99,12 @@ const MyProfilePage: React.FC<{}> = () => {
 
   let Private_Key: any = UserProfile?.private_key
 
+ 
+
   const navigation = [
     {
       name: 'My Profile',
-      ...(window.location.pathname === '/profile'
-        ? { href: '#' }
-        : { href: '/profile' }),
+     href: '/profile',
       icon: HomeIcon,
       current: false,
     },
@@ -200,20 +201,38 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
+  async function callRustFunction(messages: Message[]) {
+    try {
+      // If your Rust function expects a list, you can send the entire array at once
+      // Uncomment the line below if that's the case
+      const result = await invoke('my_rust_function', { messages: messages });
+      console.log('Command executed successfully', result);
+    } catch (error) {
+        console.error('Error sending data to Rust:', error);
+    }
+}
+
+
+
   useEffect(() => {
-    if (UserProfile) {
+    const istauri = (window as any).__TAURI__ !== undefined;
+    
+    if (UserProfile && istauri) {
       const fetchMessages = async () => {
         try {
           const response = await gooseApp.get(
             `${fetchMessagesURL}${UserProfile?.user_id}/`
           )
           const fetchedMessages = response.data
-
+       
           await decryptAllMessages(fetchedMessages)
+          callRustFunction(fetchedMessages)
         } catch (error) {}
       }
 
       fetchMessages()
+    } else {
+      setIsLoading(false)
     }
   }, [UserProfile])
 

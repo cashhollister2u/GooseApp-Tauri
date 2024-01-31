@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode'
 import { fetchTokenURL } from '../components/backendURL'
 const swal = require('sweetalert2')
@@ -11,6 +12,7 @@ const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
   const [refresh, setrefresh] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const router = useRouter();
 
   const [authTokens, setAuthTokens] = useState(() => {
     if (typeof window != 'undefined') {
@@ -41,26 +43,9 @@ const LoginPage = () => {
     setUser(null)
   }, [refresh])
 
+  
 
 
-  if (user) {
-    const targetArray = [
-      'TICKER / Company Name',
-      'TICKER / Company Name',
-      'TICKER / Company Name',
-      'TICKER / Company Name',
-      'TICKER / Company Name',
-    ]
-
-    if (user && JSON.stringify(user.values5) === JSON.stringify(targetArray)) {
-      window.location.href = '/profile/edit'
-    } else if (
-      user &&
-      JSON.stringify(user.values5) !== JSON.stringify(targetArray)
-    ) {
-      window.location.href = '/profile'
-    }
-  }
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -85,6 +70,8 @@ const LoginPage = () => {
         setAuthTokens(data)
         setUser(jwtDecode(data.access))
         localStorage.setItem('authTokens', JSON.stringify(data))
+
+        router.push('/profile');
 
         swal.fire({
           title: 'Login Successful',
