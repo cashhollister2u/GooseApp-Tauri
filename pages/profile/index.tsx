@@ -205,7 +205,7 @@ const MyProfilePage: React.FC<{}> = () => {
     try {
       // If your Rust function expects a list, you can send the entire array at once
       // Uncomment the line below if that's the case
-      const result = await invoke('my_rust_function', { messages: messages });
+      const result = await invoke('pull_messages_encrypted', { messages: messages });
       console.log('Command executed successfully', result);
     } catch (error) {
         console.error('Error sending data to Rust:', error);
