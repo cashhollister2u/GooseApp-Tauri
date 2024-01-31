@@ -28,8 +28,6 @@ pub struct Message {
 
 #[tauri::command]
 pub fn pull_messages_encrypted(messages: Vec<Message>) -> String {
-    // Process the messages here
-    // For example, just print them and return a confirmation message
     for message in messages {
         println!("Received message: {:?}\n", message);
     }

@@ -203,8 +203,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
   async function callRustFunction(messages: Message[]) {
     try {
-      // If your Rust function expects a list, you can send the entire array at once
-      // Uncomment the line below if that's the case
       const result = await invoke('pull_messages_encrypted', { messages: messages });
       console.log('Command executed successfully', result);
     } catch (error) {
