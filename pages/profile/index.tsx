@@ -201,9 +201,9 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function callRustFunction(messages: Message[]) {
+  async function callRustFunction(messages: Message[], username: string, private_key: string) {
     try {
-      const result = await invoke('pull_messages_encrypted', { messages: messages });
+      const result = await invoke('pull_messages_encrypted', { messages: messages, username: username, privateKey: private_key });
       console.log('Command executed successfully', result);
     } catch (error) {
         console.error('Error sending data to Rust:', error);
@@ -224,7 +224,7 @@ const MyProfilePage: React.FC<{}> = () => {
           const fetchedMessages = response.data
        
           await decryptAllMessages(fetchedMessages)
-          callRustFunction(fetchedMessages)
+          //callRustFunction(fetchedMessages, UserProfile.username, UserProfile.private_key)
         } catch (error) {}
       }
 

@@ -6,6 +6,8 @@ import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
 import crypto from 'crypto'
 import Pusher from 'pusher-js'
+import { invoke } from '@tauri-apps/api/tauri';
+
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -290,35 +292,36 @@ const Messaging: React.FC<{
     setFilteredRecommendations(filteredList)
   }
 
-  const SendMessage = () => {
+  async function sendMessageToRust(message: string, public_key: string): Promise<string> {
+    try {
+      const result = await invoke('pull_message_to_encrypt', { message: message, publicKey: public_key }) as string;
+      console.log('Command executed successfully', result);
+      return result
+    } catch (error) {
+        console.error('Error sending data to Rust:', error);
+        throw new Error('Error sending data to Rust');
+    }
+}
+
+  const SendMessage = async () => {
     const senderUserId = myProfile?.user_id?.toString() || ''
-    const recieverId =
-      viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
+    const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
+      
+    if (newMessage?.message && viewmsg?.public_key) {
+        sendMessageToRust(newMessage.message, viewmsg.public_key);
+      }
+      if (newMessage?.message && viewmsg?.public_key) {
+        const encryptedMessage = await sendMessageToRust(newMessage.message, viewmsg.public_key);
+        const encryptedSenderMessage = await sendMessageToRust(newMessage.message, UserProfile.public_key);
 
-    if (viewmsg?.public_key) {
-      const formdata = new FormData()
-      formdata.append('user', senderUserId)
-      formdata.append('sender', senderUserId)
-      formdata.append('reciever', recieverId)
-      formdata.append(
-        'message',
-        crypto
-          .publicEncrypt(
-            viewmsg?.public_key,
-            Buffer.from(newMessage.message, 'utf-8')
-          )
-          .toString('base64')
-      )
-      formdata.append(
-        'sender_message',
-        crypto
-          .publicEncrypt(
-            UserProfile.public_key,
-            Buffer.from(newMessage.message, 'utf-8')
-          )
-          .toString('base64')
-      )
-
+        if (encryptedMessage) {
+        const formdata = new FormData()
+        formdata.append('user', senderUserId)
+        formdata.append('sender', senderUserId)
+        formdata.append('reciever', recieverId)
+        formdata.append('message', encryptedMessage)
+        formdata.append('sender_message', encryptedSenderMessage)
+            
       try {
         gooseApp
           .post(baseURL + 'send-messages/', formdata, {
@@ -360,6 +363,7 @@ const Messaging: React.FC<{
       } catch (error) {
         console.error(error)
       }
+    }
     }
   }
 
