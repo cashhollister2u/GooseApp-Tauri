@@ -218,7 +218,7 @@ const Messaging: React.FC<{
 
       channel.bind('message', function (data: any) {
         if (!messages.includes(data)) {
-          const decrypted = decryptingmessage(data.message)
+          const decrypted = sendMessagetoRustDecryption(data.message, Private_Key)
           const recieved_message = { ...data, decrypted_message: decrypted }
           setmessages((prevMessages): any => {
             const updatedMessages = [...prevMessages, recieved_message]
@@ -331,7 +331,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
         formdata.append('reciever', recieverId)
         formdata.append('message', encryptedMessage)
         formdata.append('sender_message', encryptedSenderMessage)
-            
+        
       try {
         gooseApp
           .post(baseURL + 'send-messages/', formdata, {
@@ -381,20 +381,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     }
   }
 
-  const decryptingmessage = (message: string) => {
-    console.log('fetchMessagesCalled')
-
-    const decrypedMessage = crypto
-      .privateDecrypt(
-        {
-          key: Private_Key,
-        },
-        Buffer.from(message, 'base64')
-      )
-      .toString('utf-8')
-
-    return decrypedMessage
-  }
+  
 
   return (
     <div className="h-screen flex flex-col ">

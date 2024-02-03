@@ -7,7 +7,7 @@ import {
   fetchMessagesURL,
 } from '../../components/backendURL'
 import { jwtDecode } from 'jwt-decode'
-import { Fragment, useEffect, useState, useRef } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import Header from '../../components/Header'
 import ListTabs from '../../components/ListTabs'
 import TopStocksList from '../../components/TopStocksList'
@@ -28,7 +28,6 @@ import {
 } from '@heroicons/react/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
-import crypto from 'crypto'
 import { invoke } from '@tauri-apps/api/tauri';
 
 const swal = require('sweetalert2')
@@ -87,25 +86,18 @@ const MyProfilePage: React.FC<{}> = () => {
   const [activeTab, setActiveTab] = useState('Pinned')
   const [isMessaging, setIsMessaging] = useState<boolean>(false)
   const [IsSeachMessage, setIsSeachMessage] = useState<boolean>(false)
-  const [followingList, setfollowing] = useState<string[]>(
-    UserProfile?.follow_list || []
-  )
+  const [followingList, setfollowing] = useState<string[]>(UserProfile?.follow_list || [])
   const [isSearchActive, setSearchActive] = useState<boolean>(false)
   const [SearchedProfile, setSearchedprofile] = useState<Profile | null>(null)
   const gooseApp = useAxios()
   const router = useRouter()
   const SearchMsgString = router.query.SearchMessage
-  const fetchMessagesCalledRef = useRef(false)
   const [messages, setmessages] = useState<Message[]>([])
-
-  let Private_Key: any = UserProfile?.private_key
-
- 
 
   const navigation = [
     {
       name: 'My Profile',
-     href: '/profile',
+      href: '/profile',
       icon: HomeIcon,
       current: false,
     },
@@ -207,12 +199,11 @@ const MyProfilePage: React.FC<{}> = () => {
       const result = await invoke('pull_messages_encrypted', { messages: messages, username: username, privateKey: private_key });
       console.log('Command executed successfully', result); 
       setmessages(result as Message[]);
+      setIsLoading(false)
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
 }
-
-
 
   useEffect(() => {
     const istauri = (window as any).__TAURI__ !== undefined;
@@ -231,67 +222,9 @@ const MyProfilePage: React.FC<{}> = () => {
       }
 
       fetchMessages()
-    } else {
-      setIsLoading(false)
-    }
+    } 
   }, [UserProfile])
 
-  const decryptingmessage = async (message: string) => {
-    console.log('messageDecrypted')
-
-    const decrypedMessage = crypto
-      .privateDecrypt(
-        {
-          key: Private_Key,
-        },
-        Buffer.from(message, 'base64')
-      )
-      .toString('utf-8')
-    return decrypedMessage
-  }
-
-  const decryptBatch = (messageBatch: any) => {
-    const batchSet = messageBatch.map(async (message: any) => {
-      let encryptedMessage
-      if (message?.reciever_profile.username === UserProfile?.username) {
-        encryptedMessage = message.message
-      } else if (message?.sender_profile.username === UserProfile?.username) {
-        encryptedMessage = message.sender_message
-      }
-
-      if (encryptedMessage) {
-        try {
-          const decryped = await decryptingmessage(encryptedMessage)
-          return { ...message, decrypted_message: decryped }
-        } catch (error) {
-          console.error('Decryption Error:', error)
-          return { ...message, decrypted_message: encryptedMessage }
-        }
-      }
-      return message
-    })
-    return Promise.all(batchSet)
-  }
-
-  const decryptAllMessages = async (messages: any) => {
-    if (fetchMessagesCalledRef.current) {
-      return
-    }
-    fetchMessagesCalledRef.current = true
-    const decryptedResults = []
-
-    try {
-      const decryptedBatch = await decryptBatch(messages)
-      decryptedResults.push(...decryptedBatch)
-    } catch (error) {
-      console.error('Error Decrypting Batch: ', error)
-    
-    }
-
-    setmessages(decryptedResults)
-
-    setIsLoading(false)
-  }
 
   const handleProfileChangeState = (item: any) => {
     if (item.name === 'My Profile') {
@@ -326,9 +259,8 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('authTokens')
-    window.location.href = '/sign-in'
-    console.log(localStorage)
+    router.push('/login');
+    
   }
 
   const setLoadingfalse = () => {
@@ -405,16 +337,20 @@ const MyProfilePage: React.FC<{}> = () => {
                             {navigation.map((item: any) => (
                               <li key={item.name}>
                                 {!item.children ? (
-                                  <a
-                                    href={item.href}
-                                    onClick={() =>
-                                      handleProfileChangeState(item)
-                                    }
+                                  <button
+                                   
+                                    onClick={() =>{
+                                      handleProfileChangeState(item);
+                                     
+                                      window.location.href = '/profile'
+                                      
+                                      
+                                    }}
                                     className={classNames(
                                       item.current
                                         ? 'bg-gray-800 text-white'
                                         : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                      'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
                                     )}
                                   >
                                     <item.icon
@@ -422,7 +358,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                       aria-hidden="true"
                                     />
                                     {item.name}
-                                  </a>
+                                  </button>
                                 ) : (
                                   <Disclosure as="div">
                                     {({ open }) => (

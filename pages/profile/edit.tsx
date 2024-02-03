@@ -155,9 +155,7 @@ export default function MyProfilePageEdit() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('authTokens')
-    window.location.href = '/sign-in'
-    console.log(localStorage)
+    router.push('/login');
   }
 
   const sendMessageFromSearch = () => {
@@ -236,21 +234,22 @@ export default function MyProfilePageEdit() {
                             {navigation.map((item: any) => (
                               <li key={item.name}>
                                 {!item.children ? (
-                                  <a
-                                    href={item.href}
-                                    className={classNames(
-                                      item.current
-                                        ? 'bg-gray-800 text-white'
-                                        : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                    )}
-                                  >
-                                    <item.icon
-                                      className="h-6 w-6 shrink-0"
-                                      aria-hidden="true"
-                                    />
-                                    {item.name}
-                                  </a>
+                                  <button
+                                   
+                                  onClick={() => router.push(item.href)}
+                                  className={classNames(
+                                    item.current
+                                      ? 'bg-gray-800 text-white'
+                                      : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                    'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
+                                  )}
+                                >
+                                  <item.icon
+                                    className="h-6 w-6 shrink-0"
+                                    aria-hidden="true"
+                                  />
+                                  {item.name}
+                                </button>
                                 ) : (
                                   <Disclosure as="div">
                                     {({ open }) => (
@@ -349,13 +348,13 @@ export default function MyProfilePageEdit() {
                     {navigation.map((item: any) => (
                       <li key={item.name}>
                         {!item.children ? (
-                          <a
-                            href={item.href}
+                          <button
+                            onClick={() => router.push(item.href)}
                             className={classNames(
                               item.current
                                 ? 'bg-gray-800 text-white'
                                 : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                              'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                              'group flex gap-x-3 rounded-md w-full p-2 text-sm leading-6 font-semibold'
                             )}
                           >
                             <item.icon
@@ -363,7 +362,7 @@ export default function MyProfilePageEdit() {
                               aria-hidden="true"
                             />
                             {item.name}
-                          </a>
+                          </button>
                         ) : (
                           <Disclosure as="div">
                             {({ open }) => (
@@ -462,14 +461,14 @@ export default function MyProfilePageEdit() {
               />
             </form>
           </div>
-          <a href="/profile">
+          <button onClick={() => router.push('/profile')}>
             <span className="sr-only">Your profile</span>
             <img
               className="h-12 w-12 rounded-full bg-gray-50"
               src={`${mediaURL}default/profile_pic_def/gooseCom.png`}
               alt=""
             />
-          </a>
+          </button>
         </div>
 
         <main className="lg:pl-72 xl:w-3/5">
@@ -495,14 +494,14 @@ export default function MyProfilePageEdit() {
                   />
                 </form>
               </div>
-              <a href="/profile">
+              <button onClick={() => router.push('/profile')}>
                 <span className="sr-only">Your profile</span>
                 <img
                   className="h-12 w-12 rounded-full bg-gray-50"
                   src={`${mediaURL}default/profile_pic_def/gooseCom.png`}
                   alt=""
                 />
-              </a>
+              </button>
             </div>
             {/* search not active */}
 

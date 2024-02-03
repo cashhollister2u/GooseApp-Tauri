@@ -60,7 +60,7 @@ const LoginPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          email: email.toLowerCase(),
           password,
         }),
       })
@@ -184,12 +184,12 @@ const LoginPage = () => {
 
           <p className="mt-10 text-center text-sm text-gray-400">
             Not a member?{' '}
-            <a
-              href="/sign-up"
+            <button
+              onClick={() => router.push('/sign-up')}
               className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
             >
               Create an Account
-            </a>
+            </button>
           </p>
         </div>
       </div>
