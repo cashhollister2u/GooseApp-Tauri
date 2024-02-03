@@ -21,6 +21,7 @@ tauri = { version = "1.5.4", features = [] }
 rsa = "0.9.6"
 rand = "0.8.4"
 base64 = "0.21.7"
+rayon = "1.8.1"
 
 
 [features]

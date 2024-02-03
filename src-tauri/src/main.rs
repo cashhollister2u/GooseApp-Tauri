@@ -5,7 +5,7 @@ pub mod commands;
 
 fn main() {
   tauri::Builder::default()
-      .invoke_handler(tauri::generate_handler![commands::pull_messages_encrypted, commands::pull_message_to_encrypt])
+      .invoke_handler(tauri::generate_handler![commands::pull_messages_encrypted, commands::pull_message_to_encrypt, commands::pull_message_to_decrypt])
       // other configurations
       .run(tauri::generate_context!())
       .expect("error while running tauri application");

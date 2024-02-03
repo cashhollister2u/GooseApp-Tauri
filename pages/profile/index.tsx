@@ -68,6 +68,7 @@ interface Message {
   name: string
   public_key: string
   sender_message: string
+  decrypted_message?: string;
 }
 
 interface Profile {
@@ -201,10 +202,11 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function callRustFunction(messages: Message[], username: string, private_key: string) {
+  async function initialdecrypttoRust(messages: Message[], username: string, private_key: string) {
     try {
       const result = await invoke('pull_messages_encrypted', { messages: messages, username: username, privateKey: private_key });
-      console.log('Command executed successfully', result);
+      console.log('Command executed successfully', result); 
+      setmessages(result as Message[]);
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
@@ -223,8 +225,8 @@ const MyProfilePage: React.FC<{}> = () => {
           )
           const fetchedMessages = response.data
        
-          await decryptAllMessages(fetchedMessages)
-          //callRustFunction(fetchedMessages, UserProfile.username, UserProfile.private_key)
+          //await decryptAllMessages(fetchedMessages)
+          initialdecrypttoRust(fetchedMessages, UserProfile.username, UserProfile.private_key)
         } catch (error) {}
       }
 
@@ -276,18 +278,14 @@ const MyProfilePage: React.FC<{}> = () => {
       return
     }
     fetchMessagesCalledRef.current = true
-
-    const batchSize = 25
     const decryptedResults = []
 
-    for (let i = 0; i < messages.length; i += batchSize) {
-      const batch = messages.slice(i, i + batchSize)
-      try {
-        const decryptedBatch = await decryptBatch(batch)
-        decryptedResults.push(...decryptedBatch)
-      } catch (error) {
-        console.error('Error Decrypting Batch: ', error)
-      }
+    try {
+      const decryptedBatch = await decryptBatch(messages)
+      decryptedResults.push(...decryptedBatch)
+    } catch (error) {
+      console.error('Error Decrypting Batch: ', error)
+    
     }
 
     setmessages(decryptedResults)

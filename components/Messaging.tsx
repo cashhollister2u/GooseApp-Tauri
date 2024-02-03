@@ -303,6 +303,16 @@ const Messaging: React.FC<{
     }
 }
 
+async function sendMessagetoRustDecryption(message: string, private_key: string) {
+  try {
+    const result = await invoke('pull_message_to_decrypt', { message: message, privateKey: private_key });
+    console.log('Command executed successfully', result);
+    return result
+  } catch (error) {
+      console.error('Error sending data to Rust:', error);
+  }
+}
+
   const SendMessage = async () => {
     const senderUserId = myProfile?.user_id?.toString() || ''
     const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
@@ -331,22 +341,26 @@ const Messaging: React.FC<{
           })
           .then((res: any) => {
             if (!messages.includes(res.data)) {
-              const decrypted = decryptingmessage(res.data.sender_message)
-              const sent_message = { ...res.data, decrypted_message: decrypted }
-              const newMsg: any = {
-                name: res.data.reciever_profile.full_name,
-                user_id: res.data.reciever,
-                handle: res.data.reciever_profile.username,
-                public_key: res.data.reciever_profile.public_key,
-                imageUrl: res.data.reciever_profile.profile_picture,
-                status: 'online',
-              }
-              setviewmsg(newMsg)
-              setmessages((prevMessages) => {
-                const updatedMessages = [...prevMessages, sent_message]
+                sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
+                const sent_message = { ...res.data, decrypted_message: decrypted }
+                console.log(sent_message)
 
-                return updatedMessages
-              })
+                const newMsg: any = {
+                  name: res.data.reciever_profile.full_name,
+                  user_id: res.data.reciever,
+                  handle: res.data.reciever_profile.username,
+                  public_key: res.data.reciever_profile.public_key,
+                  imageUrl: res.data.reciever_profile.profile_picture,
+                  status: 'online',
+                }
+                setviewmsg(newMsg)
+                setmessages((prevMessages) => {
+                  const updatedMessages = [...prevMessages, sent_message]
+                  return updatedMessages
+                })
+              }).catch(error => {
+                console.error('Error decrypting message:', error);
+              });
             }
             setTimeout(() => {
               if (messageRef.current) {
