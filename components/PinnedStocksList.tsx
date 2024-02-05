@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
+
 const swal = require('sweetalert2')
 
 interface UserProfile {
@@ -10,11 +11,13 @@ const PinnedStocksList: React.FC<{ UserProfile?: UserProfile }> = ({
   UserProfile,
 }) => {
   const [values5, setvalues5] = useState<string[]>([])
+  
 
   useEffect(() => {
     const fetchUserData = () => {
       if (UserProfile) {
         setvalues5(UserProfile.values5)
+        
       }
     }
 

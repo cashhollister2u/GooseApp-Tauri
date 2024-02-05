@@ -339,26 +339,24 @@ const MyProfilePage: React.FC<{}> = () => {
                                 {!item.children ? (
                                   <button
                                    
-                                    onClick={() =>{
-                                      handleProfileChangeState(item);
-                                     
+                                  onClick={() => {
+                                    if (item.name === 'My Profile') {
                                       window.location.href = '/profile'
-                                      
-                                      
-                                    }}
-                                    className={classNames(
-                                      item.current
-                                        ? 'bg-gray-800 text-white'
-                                        : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                                      'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
-                                    )}
-                                  >
-                                    <item.icon
-                                      className="h-6 w-6 shrink-0"
-                                      aria-hidden="true"
-                                    />
-                                    {item.name}
-                                  </button>
+                                    } else {
+                                    router.push(item.href)}}}
+                                  className={classNames(
+                                    item.current
+                                      ? 'bg-gray-800 text-white'
+                                      : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                    'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
+                                  )}
+                                >
+                                  <item.icon
+                                    className="h-6 w-6 shrink-0"
+                                    aria-hidden="true"
+                                  />
+                                  {item.name}
+                                </button>
                                 ) : (
                                   <Disclosure as="div">
                                     {({ open }) => (
@@ -467,21 +465,26 @@ const MyProfilePage: React.FC<{}> = () => {
                     {navigation.map((item: any) => (
                       <li key={item.name}>
                         {!item.children ? (
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? 'bg-gray-800 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                              'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                            )}
-                          >
+                          <button
+                                   
+                          onClick={() => {
+                            if (item.name === 'My Profile') {
+                              window.location.href = '/profile'
+                            } else {
+                            router.push(item.href)}}}
+                          className={classNames(
+                            item.current
+                              ? 'bg-gray-800 text-white'
+                              : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                            'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
+                          )}
+                        >
                             <item.icon
                               className="h-6 w-6 shrink-0"
                               aria-hidden="true"
                             />
                             {item.name}
-                          </a>
+                          </button>
                         ) : (
                           <Disclosure as="div">
                             {({ open }) => (

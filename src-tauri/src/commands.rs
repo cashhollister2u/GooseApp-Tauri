@@ -1,14 +1,9 @@
 // commands.rs
 use serde::{Deserialize, Serialize};
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
-use rsa::{
-    pkcs1v15,
-    pkcs8::{DecodePrivateKey, DecodePublicKey, EncodePrivateKey, EncodePublicKey},
-    traits::{PrivateKeyParts, PublicKeyParts},  
-};
+use rsa::{pkcs8::{DecodePrivateKey, DecodePublicKey}};
 use rand::rngs::OsRng;
-use rand::RngCore;
-use base64;
+use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
 
@@ -56,7 +51,7 @@ pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private
             &message.message
         };
         // Attempt to base64 decode the message
-        let base64_decode = base64::decode(encrypted_data).map_err(|e| e.to_string())?;
+        let base64_decode = BASE64_STANDARD.decode(encrypted_data).map_err(|e| e.to_string())?;
         let key_clone = Arc::clone(&key);
         // Decrypt the data using the RSA private key
         let decrypted_data = key_clone.decrypt(Pkcs1v15Encrypt, &base64_decode).map_err(|e| e.to_string())?;
@@ -79,12 +74,12 @@ pub fn pull_message_to_encrypt(message: String, public_key: String) -> Result<St
     let data = message.as_bytes();
     match key.encrypt(&mut rng, Pkcs1v15Encrypt, &data[..]) {
         Ok(encrypted_data) => {
-            let base64_enc = base64::encode(encrypted_data);
-            println!("Data encoded to base64: {:?}", base64_enc);
+            let base64_enc = BASE64_STANDARD.encode(encrypted_data);
+           
             Ok(base64_enc) // Return the base64-encoded encrypted data to next.js
         },
         Err(e) => {
-            println!("Encryption failed: {:?}", e);
+          
             Err(format!("Encryption failed: {:?}", e))
         },
     }   
@@ -98,7 +93,7 @@ pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<S
     };
     
     // Attempt to base64 decode the message
-    let base64_decode = match base64::decode(&message) {
+    let base64_decode = match BASE64_STANDARD.decode(&message) {
         Ok(d) => d,
         Err(e) => return Err(format!("Base64 decode error: {:?}", e)),
     };
@@ -109,14 +104,14 @@ pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<S
             // Attempt to convert the decrypted data to a String
             match String::from_utf8(decrypted_data) {
                 Ok(decrypted_message) => {
-                    println!("Data decrypted: {:?}", decrypted_message);
+                   
                     Ok(decrypted_message) // Successfully return the decrypted message
                 },
                 Err(e) => Err(format!("Failed to convert decrypted data to string: {:?}", e)),
             }
         },
         Err(e) => {
-            println!("Decryption failed: {:?}", e);
+          
             Err(format!("Decryption failed: {:?}", e))
         },
     }
