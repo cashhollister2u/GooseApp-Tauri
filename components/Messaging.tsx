@@ -4,9 +4,9 @@ import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
-import crypto from 'crypto'
 import Pusher from 'pusher-js'
 import { invoke } from '@tauri-apps/api/tauri';
+
 
 
 function classNames(...classes: any) {
@@ -72,12 +72,12 @@ const Messaging: React.FC<{
   searchedprofile: any
   UserProfile: UserProfile
   updateIsMessaging: () => void
-  setLoadingfalse: () => void
+  onMessageSelect: (reciever_profile: UserProfile) => void
   IsSearchMessage: boolean
   importMessages: Message[]
 }> = ({
   UserProfile,
-  setLoadingfalse,
+  onMessageSelect,
   updateIsMessaging,
   IsSearchMessage,
   searchedprofile,
@@ -86,18 +86,14 @@ const Messaging: React.FC<{
   const [followList, setFollowList] = useState<string[]>([])
   const [viewmsg, setviewmsg] = useState<Team>()
   const [myUsername, setMyUsername] = useState<string>('')
-  const [profile_pic_url, setprofile_pic_url] = useState<string>(
-    `${mediaURL}${viewmsg?.profile?.profile_picture || ''}`
-  )
+  const [profile_pic_url, setprofile_pic_url] = useState<string>(`${mediaURL}${viewmsg?.profile?.profile_picture || ''}`)
   const [myProfile, setmyProfile] = useState<UserProfile>()
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   const [isSearchMessageUpd, setisSearchMessageUpd] = useState<boolean>(false)
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
-  const [recommendationList, setRecommendaionsList] =
-    useState<recommendationList>([])
-  const [filteredRecommendations, setFilteredRecommendations] =
-    useState(recommendationList)
+  const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
+  const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
   const messageRef = useRef<HTMLDivElement>(null)
   const gooseApp = useAxios()
@@ -170,13 +166,30 @@ const Messaging: React.FC<{
     if (!isSearchMessageUpd) {
       setprofile_pic_url(`${mediaURL}${viewmsg?.profile?.profile_picture}`)
     }
-    if (messageRef.current) {
-      messageRef.current.scrollIntoView({
-        block: 'end',
-        inline: 'nearest',
-      })
-    }
+
+      if (messageRef.current) {
+        messageRef.current.scrollIntoView({
+          block: 'end',
+          inline: 'nearest',
+        })
+      }
+  
   }, [viewmsg?.user_id, viewmsg?.id])
+
+  useEffect(() => {
+    
+    setTimeout(() => {
+      if (messageRef.current ) {
+       
+        messageRef.current.scrollIntoView({
+          block: 'end',
+          inline: 'nearest',
+        })
+      }
+    }, 100)
+   
+  }, [messages])
+
 
   useEffect(() => {
     if (!UserProfile) {
@@ -469,7 +482,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                               className="-m-1 block flex-1 p-1"
                               onClick={() => {
                                 handleViewMsg(reciever_profile),
-                                  settabvalue(false)
+                                  settabvalue(false),
+                                  onMessageSelect(reciever_profile)
                               }}
                             >
                               <div
@@ -563,7 +577,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           <button
                             className="-m-1 block flex-1 p-1"
                             onClick={() => {
-                              setviewmsg(reciever_profile), settabvalue(false)
+                              setviewmsg(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile)
                             }}
                           >
                             <div
@@ -682,7 +696,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                     </button>
                     <div>
                       <div ref={messageRef} className="flex flex-col">
-                        <div className="flex-1  mb-32 overflow-y-auto ">
+                        <div  className="flex-1  mb-32 overflow-y-auto ">
                           {messages
                             ?.filter(
                               (message) =>

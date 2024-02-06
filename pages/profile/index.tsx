@@ -194,12 +194,12 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function initialdecrypttoRust(messages: Message[], username: string, private_key: string) {
+  async function initialdecrypttoRust(reciever_profile: any) {
+    console.log(reciever_profile)
     try {
-      const result = await invoke('pull_messages_encrypted', { messages: messages, username: username, privateKey: private_key });
+      const result = await invoke('pull_messages_encrypted', { messages: messages, username: UserProfile?.username, privateKey: UserProfile?.private_key, recieverUsername: reciever_profile.handle || reciever_profile.profile.username });
       console.log('Command executed successfully', result); 
       setmessages(result as Message[]);
-      setIsLoading(false)
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
@@ -216,8 +216,9 @@ const MyProfilePage: React.FC<{}> = () => {
           )
           const fetchedMessages = response.data
        
-          //await decryptAllMessages(fetchedMessages)
-          initialdecrypttoRust(fetchedMessages, UserProfile.username, UserProfile.private_key)
+          setmessages(fetchedMessages)
+          setIsLoading(false)
+          //initialdecrypttoRust(fetchedMessages, UserProfile.username, UserProfile.private_key)
         } catch (error) {}
       }
 
@@ -662,7 +663,7 @@ const MyProfilePage: React.FC<{}> = () => {
               <div className="fixed inset-0 top-3 lg:left-72 bg-black z-20">
                 <Messaging
                   importMessages={messages}
-                  setLoadingfalse={setLoadingfalse}
+                  onMessageSelect={initialdecrypttoRust}
                   searchedprofile={SearchedProfile}
                   IsSearchMessage={IsSeachMessage}
                   updateIsMessaging={updateIsMessaging}
@@ -755,7 +756,7 @@ const MyProfilePage: React.FC<{}> = () => {
           <div>
             <Messaging
               importMessages={messages}
-              setLoadingfalse={setLoadingfalse}
+              onMessageSelect={initialdecrypttoRust}
               searchedprofile={SearchedProfile}
               IsSearchMessage={IsSeachMessage}
               updateIsMessaging={updateIsMessaging}
