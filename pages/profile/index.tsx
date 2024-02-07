@@ -30,7 +30,6 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 
-const swal = require('sweetalert2')
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -194,10 +193,10 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function initialdecrypttoRust(reciever_profile: any) {
+  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[]) {
     console.log(reciever_profile)
     try {
-      const result = await invoke('pull_messages_encrypted', { messages: messages, username: UserProfile?.username, privateKey: UserProfile?.private_key, recieverUsername: reciever_profile.handle || reciever_profile.profile.username });
+      const result = await invoke('pull_messages_encrypted', { messages: updMessages, username: UserProfile?.username, privateKey: UserProfile?.private_key, recieverUsername: reciever_profile.handle || reciever_profile.profile.username });
       console.log('Command executed successfully', result); 
       setmessages(result as Message[]);
     } catch (error) {
@@ -218,7 +217,7 @@ const MyProfilePage: React.FC<{}> = () => {
        
           setmessages(fetchedMessages)
           setIsLoading(false)
-          //initialdecrypttoRust(fetchedMessages, UserProfile.username, UserProfile.private_key)
+          
         } catch (error) {}
       }
 
@@ -226,14 +225,6 @@ const MyProfilePage: React.FC<{}> = () => {
     } 
   }, [UserProfile])
 
-
-  const handleProfileChangeState = (item: any) => {
-    if (item.name === 'My Profile') {
-      setActiveTab('Pinned')
-      setIsMessaging(false)
-      setSidebarOpen(false)
-    }
-  }
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName)
@@ -619,8 +610,14 @@ const MyProfilePage: React.FC<{}> = () => {
               {/* Main area */}
             </div>
             {/* search bar for large window */}
+           
             <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
+              {isMessaging ? (
+            <div className="px-2 py-4 text-lg font-semibold leading-6 text-gray-300">
+              Messaging{' '}
+            </div>
+          ) : (
                 <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
@@ -635,7 +632,9 @@ const MyProfilePage: React.FC<{}> = () => {
                     name="search"
                   />
                 </form>
+          )}
               </div>
+          
               <a href="/profile">
                 <span className="sr-only">Your profile</span>
                 <img

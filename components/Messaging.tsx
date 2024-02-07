@@ -7,6 +7,7 @@ import { mediaURL, baseURL } from './backendURL'
 import Pusher from 'pusher-js'
 import { invoke } from '@tauri-apps/api/tauri';
 
+const swal = require('sweetalert2')
 
 
 function classNames(...classes: any) {
@@ -72,7 +73,7 @@ const Messaging: React.FC<{
   searchedprofile: any
   UserProfile: UserProfile
   updateIsMessaging: () => void
-  onMessageSelect: (reciever_profile: UserProfile) => void
+  onMessageSelect: (reciever_profile: UserProfile, UpdMessages: Message[]) => void
   IsSearchMessage: boolean
   importMessages: Message[]
 }> = ({
@@ -92,6 +93,7 @@ const Messaging: React.FC<{
   const [isSearchMessageUpd, setisSearchMessageUpd] = useState<boolean>(false)
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
+  const [isfirstMsgClick, setisfirstMsgClick] = useState<boolean>(false)
   const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
@@ -154,7 +156,7 @@ const Messaging: React.FC<{
         status: 'online',
       }
       setviewmsg(newMsg)
-
+      onMessageSelect(newMsg, messages)
       settabvalue(false)
     }
   }, [IsSearchMessage])
@@ -167,26 +169,26 @@ const Messaging: React.FC<{
       setprofile_pic_url(`${mediaURL}${viewmsg?.profile?.profile_picture}`)
     }
 
-      if (messageRef.current) {
-        messageRef.current.scrollIntoView({
-          block: 'end',
-          inline: 'nearest',
-        })
-      }
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({
+        block: 'end',
+        inline: 'nearest',
+      })
+    }
   
   }, [viewmsg?.user_id, viewmsg?.id])
 
   useEffect(() => {
     
-    setTimeout(() => {
+    if (!isfirstMsgClick) {
       if (messageRef.current ) {
-       
+        setisfirstMsgClick(true)
         messageRef.current.scrollIntoView({
           block: 'end',
           inline: 'nearest',
         })
       }
-    }, 100)
+    }
    
   }, [messages])
 
@@ -235,6 +237,15 @@ const Messaging: React.FC<{
           const recieved_message = { ...data, decrypted_message: decrypted }
           setmessages((prevMessages): any => {
             const updatedMessages = [...prevMessages, recieved_message]
+            swal.fire({
+              title: `Message: ${recieved_message.sender_profile.username}`,
+              icon: 'success',
+              toast: true,
+              timer: 6000,
+              position: 'top-right',
+              timerProgressBar: true,
+              showConfirmButton: false,
+            })
             setTimeout(() => {
               if (messageRef.current) {
                 messageRef.current.scrollIntoView({
@@ -394,7 +405,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     }
   }
 
-  
+  console.log(messages)
 
   return (
     <div className="h-screen flex flex-col ">
@@ -441,6 +452,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           settabvalue(true)
                           setRecommendations(false)
                           setisSearchMessageUpd(false)
+                          setisfirstMsgClick(false)
                         }}
                         className={classNames(
                           tab.current
@@ -483,7 +495,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                               onClick={() => {
                                 handleViewMsg(reciever_profile),
                                   settabvalue(false),
-                                  onMessageSelect(reciever_profile)
+                                  onMessageSelect(reciever_profile, messages)
                               }}
                             >
                               <div
@@ -560,8 +572,24 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                         >
                                           View profile
                                         </a>
+                                        
                                       )}
                                     </Menu.Item>
+                                    <Menu.Item>
+                                    {({ active }) => (
+                                      <a
+                                        href={`/profile?search=${reciever_profile.handle}#`}
+                                        className={classNames(
+                                          active
+                                            ? 'bg-gray-100 text-gray-900'
+                                            : 'text-gray-700',
+                                          'block px-4 py-2 text-sm'
+                                        )}
+                                      >
+                                        Delete messages
+                                      </a>
+                                    )}
+                                  </Menu.Item>
                                   </div>
                                 </Menu.Items>
                               </Transition>
@@ -577,7 +605,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           <button
                             className="-m-1 block flex-1 p-1"
                             onClick={() => {
-                              setviewmsg(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile)
+                              setviewmsg(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile, messages)
                             }}
                           >
                             <div
@@ -656,6 +684,21 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                       </a>
                                     )}
                                   </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <a
+                                        href={`/profile?search=${reciever_profile.handle}#`}
+                                        className={classNames(
+                                          active
+                                            ? 'bg-gray-100 text-gray-900'
+                                            : 'text-gray-700',
+                                          'block px-4 py-2 text-sm'
+                                        )}
+                                      >
+                                        Delete messages
+                                      </a>
+                                    )}
+                                  </Menu.Item>
                                 </div>
                               </Menu.Items>
                             </Transition>
@@ -711,8 +754,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   className={`group word-break: break-word  relative flex flex-col ${
                                     viewmsg?.handle !==
                                     message.sender_profile.username
-                                      ? 'items-end ml-10'
-                                      : 'items-start mr-10'
+                                      ? 'items-end xl:ml-80 lg:ml-80 ml-24'
+                                      : 'items-start xl:mr-80 lg:mr-80 '
                                   }`}
                                 >
                                   <div className="flex-1 mt-2 text-gray-500 py-2 ml-4 text-sm">
