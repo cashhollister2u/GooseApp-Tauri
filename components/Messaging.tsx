@@ -36,7 +36,8 @@ interface Profile {
   verified: boolean
 }
 
-interface Team {
+
+interface allConversations {
   name: string
   handle: string
   href: string
@@ -67,6 +68,7 @@ interface UserProfile {
   following: any
   public_key: string
   private_key: string
+  id: number
 }
 
 const Messaging: React.FC<{
@@ -76,6 +78,7 @@ const Messaging: React.FC<{
   onMessageSelect: (reciever_profile: UserProfile, UpdMessages: Message[]) => void
   IsSearchMessage: boolean
   importMessages: Message[]
+  importConversations: UserProfile[]
 }> = ({
   UserProfile,
   onMessageSelect,
@@ -83,9 +86,10 @@ const Messaging: React.FC<{
   IsSearchMessage,
   searchedprofile,
   importMessages,
+  importConversations
 }) => {
   const [followList, setFollowList] = useState<string[]>([])
-  const [viewmsg, setviewmsg] = useState<Team>()
+  const [viewmsg, setviewmsg] = useState<allConversations>()
   const [myUsername, setMyUsername] = useState<string>('')
   const [profile_pic_url, setprofile_pic_url] = useState<string>(`${mediaURL}${viewmsg?.profile?.profile_picture || ''}`)
   const [myProfile, setmyProfile] = useState<UserProfile>()
@@ -101,47 +105,20 @@ const Messaging: React.FC<{
   const gooseApp = useAxios()
 
   let [newMessage, setnewMessage] = useState({ message: '' })
-  let seenUsernames = new Set()
   let Private_Key = UserProfile?.private_key
   const tabs = [{ name: 'Inbox', href: '#', current: tabvalue }]
-
-  const team = (messages || [])
-    .filter((message) => {
-      const username = message.reciever_profile.username
-      const senderUsername = message.sender_profile.username
-
-      if (!seenUsernames.has(username) && username !== myUsername) {
-        seenUsernames.add(username)
-        return true
-      } else if (
-        !seenUsernames.has(senderUsername) &&
-        senderUsername !== myUsername
-      ) {
-        seenUsernames.add(senderUsername)
-        return true
-      }
-
-      return false
-    })
-    .map((message) => {
-      if (message.reciever_profile.username === myUsername) {
+  console.log('import convos', importConversations)
+  const allConversations = (importConversations || [])
+    
+    .map((conversation: UserProfile) => {
         return {
-          name: message.sender_profile.full_name,
-          user_id: message.sender,
-          handle: message.sender_profile.username,
-          public_key: message.sender_profile.public_key,
-          imageUrl: message.sender_profile.profile_picture,
+          name: conversation.full_name,
+          user_id: conversation.id,
+          handle: conversation.username,
+          public_key: conversation.public_key,
+          imageUrl: conversation.profile_picture,
           status: 'online',
         }
-      }
-      return {
-        name: message.reciever_profile.full_name,
-        user_id: message.reciever,
-        handle: message.reciever_profile.username,
-        public_key: message.reciever_profile.public_key,
-        imageUrl: message.reciever_profile.profile_picture,
-        status: 'online',
-      }
     })
 
   useEffect(() => {
@@ -157,6 +134,7 @@ const Messaging: React.FC<{
       }
       setviewmsg(newMsg)
       onMessageSelect(newMsg, messages)
+
       settabvalue(false)
     }
   }, [IsSearchMessage])
@@ -289,12 +267,12 @@ const Messaging: React.FC<{
     }
   }
 
-  const handleViewMsg = (reciever_profile: Team) => {
-    if (team.length === 0) {
+  const handleViewMsg = (reciever_profile: allConversations) => {
+    if (allConversations.length === 0) {
       setviewmsg(reciever_profile)
-      team.push(reciever_profile)
+      allConversations.push(reciever_profile)
     }
-    for (const user of team as any) {
+    for (const user of allConversations as any) {
       if (user.user_id === reciever_profile.id) {
         setviewmsg(user)
         break
@@ -456,26 +434,24 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                         }}
                         className={classNames(
                           tab.current
-                            ? 'border-indigo-500 hover:bg-gray-200/50 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                          'whitespace-nowrap border-b-2 px-1 py-2 rounded pb-4 text-sm font-medium w-14'
+                            ? 'border-indigo-500  text-indigo-600'
+                            : 'border-transparent hover:bg-gray-200/50 text-gray-500 hover:background-gray-300 hover:text-gray-700',
+                          'whitespace-nowrap px-1  rounded mb-1 text-sm font-medium h-12 w-14'
                         )}
                       >
                         {tab.name}
                       </button>
                     ))}
                     <button
-                      onClick={() => {
-                        settabvalue(true)
-                      }}
+                      
                       className={classNames(
                         !tabvalue
                           ? 'border-indigo-500 text-indigo-600'
                           : 'hidden',
-                        'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium'
+                        'whitespace-nowrap px-8 mt-1 border-gray-500  mb-1 text-sm font-medium h-10 w-10 border-l'
                       )}
                     >
-                      {viewmsg?.handle || viewmsg?.profile?.username}
+                      @{viewmsg?.handle || viewmsg?.profile?.username}
                     </button>
                   </nav>
                 </div>
@@ -599,7 +575,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       )
                     )
                   ) : (
-                    team?.map((reciever_profile: any) => (
+                    allConversations?.map((reciever_profile: any) => (
                       <li key={reciever_profile.handle}>
                         <div className="group relative flex items-center px-5 py-6">
                           <button
@@ -738,6 +714,16 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       </div>
                     </button>
                     <div>
+                      <div
+                      className='px-52 py-6'>
+                    <button
+                      type="button"
+                      className="rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
+                      
+                     >
+                      Load more...
+                      </button>
+                      </div>
                       <div ref={messageRef} className="flex flex-col">
                         <div  className="flex-1  mb-32 overflow-y-auto ">
                           {messages
@@ -751,11 +737,11 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                             .map((message: any) => (
                               <li key={message.id}>
                                 <div
-                                  className={`group word-break: break-word  relative flex flex-col ${
+                                  className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==
                                     message.sender_profile.username
-                                      ? 'items-end xl:ml-80 lg:ml-80 ml-24'
-                                      : 'items-start xl:mr-80 lg:mr-80 '
+                                      ? 'items-end xl:ml-56 lg:ml-80 ml-24'
+                                      : 'items-start xl:mr-56 lg:mr-80 '
                                   }`}
                                 >
                                   <div className="flex-1 mt-2 text-gray-500 py-2 ml-4 text-sm">
@@ -773,7 +759,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   </div>
 
                                   <div
-                                    className={`ml-4 px-4 py-2 rounded-xl  ${
+                                    className={`ml-4 px-4 py-2 rounded-xl max-w-md ${
                                       viewmsg?.handle !==
                                       message.sender_profile.username
                                         ? 'bg-indigo-600'

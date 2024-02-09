@@ -5,6 +5,7 @@ import {
   fetchUserURL,
   searchUserURL,
   fetchMessagesURL,
+  baseURL,
 } from '../../components/backendURL'
 import { jwtDecode } from 'jwt-decode'
 import { Fragment, useEffect, useState } from 'react'
@@ -51,6 +52,7 @@ interface UserProfile {
   following: any
   public_key: string
   private_key: string
+  id: number
 }
 
 interface Message {
@@ -92,7 +94,10 @@ const MyProfilePage: React.FC<{}> = () => {
   const router = useRouter()
   const SearchMsgString = router.query.SearchMessage
   const [messages, setmessages] = useState<Message[]>([])
+  const [conversations, setConversations] = useState<any>([])
 
+  
+  
   const navigation = [
     {
       name: 'My Profile',
@@ -204,24 +209,40 @@ const MyProfilePage: React.FC<{}> = () => {
     }
 }
 
+  const fetchMessages = async (reciever_profile: any) => {
+    if (UserProfile){
+      try{
+        const response = await gooseApp.get(
+          `${baseURL}messages/${UserProfile.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
+        )
+        const fetchedMessages = response.data
+        await  initialdecrypttoRust(reciever_profile, fetchedMessages) as any
+       
+        console.log('pushed msg', messages)
+      } catch (error) {
+        console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
+      }
+    }
+  }
+
   useEffect(() => {
     const istauri = (window as any).__TAURI__ !== undefined;
     
     if (UserProfile && istauri) {
-      const fetchMessages = async () => {
+      const fetchConversations = async () => {
         try {
           const response = await gooseApp.get(
-            `${fetchMessagesURL}${UserProfile?.user_id}/`
+            `${baseURL}conversations/${UserProfile?.user_id}/`
           )
-          const fetchedMessages = response.data
+          const fetchedConversations = response.data
        
-          setmessages(fetchedMessages)
+          setConversations(fetchedConversations)
           setIsLoading(false)
-          
+          console.log('convos',fetchedConversations)
         } catch (error) {}
       }
 
-      fetchMessages()
+      fetchConversations()
     } 
   }, [UserProfile])
 
@@ -650,7 +671,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 {/* Opaque overlay */}
                 <div className="absolute inset-0 bg-black z-20"></div>
 
-                <div className="absolute inset-0 flex justify-center items-center md:pr-16 md:pb-6 xl:pr-16 xl:pb-6">
+                <div className="absolute inset-0 flex justify-center items-center pb-56">
                   <img
                     src="/svg/WhiteLoadingIcon.svg"
                     className="w-28 z-20 animate-spin-slow"
@@ -661,8 +682,9 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 top-3 lg:left-72 bg-black z-20">
                 <Messaging
+                  importConversations={conversations}
                   importMessages={messages}
-                  onMessageSelect={initialdecrypttoRust}
+                  onMessageSelect={fetchMessages}
                   searchedprofile={SearchedProfile}
                   IsSearchMessage={IsSeachMessage}
                   updateIsMessaging={updateIsMessaging}
@@ -754,8 +776,9 @@ const MyProfilePage: React.FC<{}> = () => {
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
+              importConversations={conversations as UserProfile[]}
               importMessages={messages}
-              onMessageSelect={initialdecrypttoRust}
+              onMessageSelect={fetchMessages}
               searchedprofile={SearchedProfile}
               IsSearchMessage={IsSeachMessage}
               updateIsMessaging={updateIsMessaging}
