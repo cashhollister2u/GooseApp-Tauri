@@ -94,10 +94,13 @@ const MyProfilePage: React.FC<{}> = () => {
   const router = useRouter()
   const SearchMsgString = router.query.SearchMessage
   const [messages, setmessages] = useState<Message[]>([])
+  const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
+  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
+  const [updLoadedMessageCount, setUpdLoadedMessageCount] = useState<number> ()
+  
+  console.log('message count', loadedMessageCount)
 
-  
-  
   const navigation = [
     {
       name: 'My Profile',
@@ -198,31 +201,59 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[]) {
-    console.log(reciever_profile)
+  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number) {
     try {
-      const result = await invoke('pull_messages_encrypted', { messages: updMessages, username: UserProfile?.username, privateKey: UserProfile?.private_key, recieverUsername: reciever_profile.handle || reciever_profile.profile.username });
+      const result = await invoke('pull_messages_encrypted', 
+      { messages: updMessages, 
+        username: UserProfile?.username, 
+        privateKey: UserProfile?.private_key, 
+        recieverUsername: reciever_profile.handle || reciever_profile.profile.username,
+        messageCount: loadedMessageCount 
+      });
+
       console.log('Command executed successfully', result); 
-      setmessages(result as Message[]);
+
+      setDecryptedMessages((currentMessages: Message[]) => [...(result as Message[]).slice().reverse(), ...currentMessages]);
+
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
-}
+  }
 
   const fetchMessages = async (reciever_profile: any) => {
+    const lookUpUsername = reciever_profile.handle || reciever_profile.profile.username
+    
+    const alreadyFetched = decryptedMessages.some(message => 
+      message.reciever_profile.username === lookUpUsername
+    );    
     if (UserProfile){
-      try{
-        const response = await gooseApp.get(
-          `${baseURL}messages/${UserProfile.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
-        )
-        const fetchedMessages = response.data
-        await  initialdecrypttoRust(reciever_profile, fetchedMessages) as any
-       
-        console.log('pushed msg', messages)
-      } catch (error) {
-        console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
+      if (alreadyFetched) {
+        
+        console.log('messages have already been fetched')
+      } else {
+        console.log('messages have not fetch', loadedMessageCount)
+        setUpdLoadedMessageCount(undefined)
+          try{
+            const response = await gooseApp.get(
+              `${baseURL}messages/${UserProfile.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
+            )
+            const fetchedMessages = response.data
+
+            setmessages((currentMessages: Message[]) => [...currentMessages, ...(fetchedMessages as Message[])])
+
+            await  initialdecrypttoRust(reciever_profile, fetchedMessages, loadedMessageCount) as any
+          
+          } catch (error) {
+            console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
+          }
       }
     }
+  }
+
+  const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
+    console.log('buttin pressed', loadedMessageCount)
+    setLoadedMessageCount(loadedMessageCount)
+    await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount)
   }
 
   useEffect(() => {
@@ -238,7 +269,7 @@ const MyProfilePage: React.FC<{}> = () => {
        
           setConversations(fetchedConversations)
           setIsLoading(false)
-          console.log('convos',fetchedConversations)
+        
         } catch (error) {}
       }
 
@@ -682,8 +713,10 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 top-3 lg:left-72 bg-black z-20">
                 <Messaging
+                  onResetMessageCount={setLoadedMessageCount}
+                  onLoadedMessageCount={fetchUnloadedMessages}
                   importConversations={conversations}
-                  importMessages={messages}
+                  importMessages={decryptedMessages}
                   onMessageSelect={fetchMessages}
                   searchedprofile={SearchedProfile}
                   IsSearchMessage={IsSeachMessage}
@@ -776,8 +809,10 @@ const MyProfilePage: React.FC<{}> = () => {
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
+              onResetMessageCount={setLoadedMessageCount}
+              onLoadedMessageCount={fetchUnloadedMessages}
               importConversations={conversations as UserProfile[]}
-              importMessages={messages}
+              importMessages={decryptedMessages}
               onMessageSelect={fetchMessages}
               searchedprofile={SearchedProfile}
               IsSearchMessage={IsSeachMessage}

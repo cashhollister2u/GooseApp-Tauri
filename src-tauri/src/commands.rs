@@ -38,33 +38,41 @@ pub struct Message {
 }
 
 #[tauri::command]
-pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String, reciever_username: String) -> Result<Vec<Message>, String> {
+pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String, reciever_username: String, message_count: i32) -> Result<Vec<Message>, String> {
     let key = match RsaPrivateKey::from_pkcs8_pem(&private_key) {
         Ok(k) => Arc::new(k), 
         Err(e) => return Err(e.to_string()),
     };
-    let updated_messages: Result<Vec<_>, _> = messages.into_par_iter().map(|mut message| {
-        if (message.sender_profile.username == reciever_username || message.reciever_profile.username == reciever_username) && message.decrypted_message.is_none() {
-            let encrypted_data = if message.sender_profile.username == username {
-                &message.sender_message
-            } else {
-                &message.message
-            };
-            // Attempt to base64 decode the message
-            let base64_decode = BASE64_STANDARD.decode(encrypted_data).map_err(|e| e.to_string())?;
-            let key_clone = Arc::clone(&key);
-            // Decrypt the data using the RSA private key
-            let decrypted_data = key_clone.decrypt(Pkcs1v15Encrypt, &base64_decode).map_err(|e| e.to_string())?;
-            // Attempt to convert the decrypted data to a String
-            let decrypted_message = String::from_utf8(decrypted_data).map_err(|e| e.to_string())?;
 
-            message.decrypted_message = Some(decrypted_message);
-            
-            Ok(message)
-        } else {
-            Ok(message)
-        }
-    }).collect();
+    let start_index = ((message_count - 1) * 15) as usize;
+    let end_index = (message_count * 15) as usize;
+
+
+    let updated_messages: Result<Vec<_>, _> = messages.into_par_iter().rev()
+        .skip(start_index)
+        .take(end_index - start_index)
+        .map(|mut message| {
+            if (message.sender_profile.username == reciever_username || message.reciever_profile.username == reciever_username) && message.decrypted_message.is_none() {
+                let encrypted_data = if message.sender_profile.username == username {
+                    &message.sender_message
+                } else {
+                    &message.message
+                };
+                // Attempt to base64 decode the message
+                let base64_decode = BASE64_STANDARD.decode(encrypted_data).map_err(|e| e.to_string())?;
+                let key_clone = Arc::clone(&key);
+                // Decrypt the data using the RSA private key
+                let decrypted_data = key_clone.decrypt(Pkcs1v15Encrypt, &base64_decode).map_err(|e| e.to_string())?;
+                // Attempt to convert the decrypted data to a String
+                let decrypted_message = String::from_utf8(decrypted_data).map_err(|e| e.to_string())?;
+
+                message.decrypted_message = Some(decrypted_message);
+                
+                Ok(message)
+            } else {
+                Ok(message)
+            }
+        }).collect();
    // Return the updated messages
    updated_messages
 

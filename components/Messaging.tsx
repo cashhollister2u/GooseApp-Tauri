@@ -79,8 +79,12 @@ const Messaging: React.FC<{
   IsSearchMessage: boolean
   importMessages: Message[]
   importConversations: UserProfile[]
+  onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any) => void
+  onResetMessageCount: (reset:number) => void
 }> = ({
   UserProfile,
+  onLoadedMessageCount,
+  onResetMessageCount,
   onMessageSelect,
   updateIsMessaging,
   IsSearchMessage,
@@ -101,13 +105,14 @@ const Messaging: React.FC<{
   const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
+  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
   const messageRef = useRef<HTMLDivElement>(null)
   const gooseApp = useAxios()
 
   let [newMessage, setnewMessage] = useState({ message: '' })
   let Private_Key = UserProfile?.private_key
   const tabs = [{ name: 'Inbox', href: '#', current: tabvalue }]
-  console.log('import convos', importConversations)
+  
   const allConversations = (importConversations || [])
     
     .map((conversation: UserProfile) => {
@@ -121,6 +126,14 @@ const Messaging: React.FC<{
         }
     })
 
+    const filteredMessages = messages?.filter(
+      (message) =>
+        viewmsg?.handle === message.sender_profile.username ||
+        viewmsg?.handle === message.reciever_profile.username
+    );
+
+    const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
+
   useEffect(() => {
     if (IsSearchMessage) {
       setisSearchMessageUpd(IsSearchMessage)
@@ -132,7 +145,7 @@ const Messaging: React.FC<{
         public_key: searchedprofile.public_key,
         status: 'online',
       }
-      setviewmsg(newMsg)
+      handleViewMessage(newMsg)
       onMessageSelect(newMsg, messages)
 
       settabvalue(false)
@@ -267,17 +280,25 @@ const Messaging: React.FC<{
     }
   }
 
-  const handleViewMsg = (reciever_profile: allConversations) => {
+  const handleViewMessage = (reciever_profile: allConversations) => {
+    setviewmsg(reciever_profile)
+    handleMessageCountReset()
+  }
+
+  const handleViewMsgInitialMessageCase = (reciever_profile: allConversations) => {
     if (allConversations.length === 0) {
       setviewmsg(reciever_profile)
+      handleMessageCountReset()
       allConversations.push(reciever_profile)
     }
     for (const user of allConversations as any) {
       if (user.user_id === reciever_profile.id) {
         setviewmsg(user)
+        handleMessageCountReset()
         break
       } else {
         setviewmsg(reciever_profile)
+        handleMessageCountReset()
       }
     }
   }
@@ -285,12 +306,10 @@ const Messaging: React.FC<{
   const handleRecommendationschange = (event: any) => {
     const searchText = event.target.value.toLowerCase()
 
-    // Filter the original recommendations list
     const filteredList = recommendationList.filter((reciever_profile) =>
       reciever_profile.profile.username.toLowerCase().includes(searchText)
     )
 
-    // Update the state with the filtered list
     setFilteredRecommendations(filteredList)
   }
 
@@ -355,7 +374,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   imageUrl: res.data.reciever_profile.profile_picture,
                   status: 'online',
                 }
-                setviewmsg(newMsg)
+                handleViewMessage(newMsg)
                 setmessages((prevMessages) => {
                   const updatedMessages = [...prevMessages, sent_message]
                   return updatedMessages
@@ -383,7 +402,19 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     }
   }
 
-  console.log(messages)
+  const handleLoadMessageCount = () => {
+    const newCount = loadedMessageCount + 1
+    setLoadedMessageCount(newCount)
+    onLoadedMessageCount(numberOfFilteredMessages, viewmsg)
+  }
+
+  const handleMessageCountReset = () => {
+    const resetCount = 1
+    setLoadedMessageCount(1)
+    onResetMessageCount(resetCount)
+  }
+
+  
 
   return (
     <div className="h-screen flex flex-col ">
@@ -427,6 +458,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       <button
                         key={tab.name}
                         onClick={() => {
+                          handleMessageCountReset()
                           settabvalue(true)
                           setRecommendations(false)
                           setisSearchMessageUpd(false)
@@ -469,7 +501,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                             <button
                               className="-m-1 block flex-1 p-1"
                               onClick={() => {
-                                handleViewMsg(reciever_profile),
+                                  handleViewMsgInitialMessageCase(reciever_profile),
                                   settabvalue(false),
                                   onMessageSelect(reciever_profile, messages)
                               }}
@@ -581,7 +613,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           <button
                             className="-m-1 block flex-1 p-1"
                             onClick={() => {
-                              setviewmsg(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile, messages)
+                              handleViewMessage(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile, messages)
                             }}
                           >
                             <div
@@ -719,21 +751,14 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                     <button
                       type="button"
                       className="rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
-                      
+                      onClick={() => {handleLoadMessageCount()}}
                      >
                       Load more...
                       </button>
                       </div>
                       <div ref={messageRef} className="flex flex-col">
                         <div  className="flex-1  mb-32 overflow-y-auto ">
-                          {messages
-                            ?.filter(
-                              (message) =>
-                                viewmsg?.handle ===
-                                  message.sender_profile.username ||
-                                viewmsg?.handle ===
-                                  message.reciever_profile.username
-                            )
+                          {filteredMessages
                             .map((message: any) => (
                               <li key={message.id}>
                                 <div
