@@ -97,7 +97,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
-  const [updLoadedMessageCount, setUpdLoadedMessageCount] = useState<number> ()
+  const [messageFetched, setmessageFetched] = useState<boolean>(false)
   
   console.log('message count', loadedMessageCount)
 
@@ -202,21 +202,23 @@ const MyProfilePage: React.FC<{}> = () => {
   }, [])
 
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number) {
-    try {
-      const result = await invoke('pull_messages_encrypted', 
-      { messages: updMessages, 
-        username: UserProfile?.username, 
-        privateKey: UserProfile?.private_key, 
-        recieverUsername: reciever_profile.handle || reciever_profile.profile.username,
-        messageCount: loadedMessageCount 
-      });
+    if (!messageFetched) {
+      try {
+        const result = await invoke('pull_messages_encrypted', 
+        { messages: updMessages, 
+          username: UserProfile?.username, 
+          privateKey: UserProfile?.private_key, 
+          recieverUsername: reciever_profile.handle || reciever_profile.profile.username,
+          messageCount: loadedMessageCount 
+        });
 
-      console.log('Command executed successfully', result); 
+        console.log('Command executed successfully', result); 
 
-      setDecryptedMessages((currentMessages: Message[]) => [...(result as Message[]).slice().reverse(), ...currentMessages]);
+        setDecryptedMessages((currentMessages: Message[]) => [...(result as Message[]).slice().reverse(), ...currentMessages]);
 
-    } catch (error) {
-        console.error('Error sending data to Rust:', error);
+      } catch (error) {
+          console.error('Error sending data to Rust:', error);
+      }
     }
   }
 
@@ -226,16 +228,15 @@ const MyProfilePage: React.FC<{}> = () => {
     const alreadyFetched = decryptedMessages.some(message => 
       message.reciever_profile.username === lookUpUsername
     );    
-    if (UserProfile){
-      if (alreadyFetched) {
-        
-        console.log('messages have already been fetched')
+      setmessageFetched(alreadyFetched)
+    if (alreadyFetched){
+      console.log('messages have already been fetched')
       } else {
         console.log('messages have not fetch', loadedMessageCount)
-        setUpdLoadedMessageCount(undefined)
+        
           try{
             const response = await gooseApp.get(
-              `${baseURL}messages/${UserProfile.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
+              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
             )
             const fetchedMessages = response.data
 
@@ -247,11 +248,11 @@ const MyProfilePage: React.FC<{}> = () => {
             console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
           }
       }
-    }
   }
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
     console.log('buttin pressed', loadedMessageCount)
+    setmessageFetched(false)
     setLoadedMessageCount(loadedMessageCount)
     await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount)
   }
