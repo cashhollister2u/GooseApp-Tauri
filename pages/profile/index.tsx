@@ -97,7 +97,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
-  const [messageFetched, setmessageFetched] = useState<boolean>(false)
+  
   
   console.log('message count', loadedMessageCount)
 
@@ -201,7 +201,7 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number) {
+  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number, messageFetched: boolean) {
     if (!messageFetched) {
       try {
         const result = await invoke('pull_messages_encrypted', 
@@ -228,7 +228,7 @@ const MyProfilePage: React.FC<{}> = () => {
     const alreadyFetched = decryptedMessages.some(message => 
       message.reciever_profile.username === lookUpUsername
     );    
-      setmessageFetched(alreadyFetched)
+      
     if (alreadyFetched){
       console.log('messages have already been fetched')
       } else {
@@ -242,7 +242,7 @@ const MyProfilePage: React.FC<{}> = () => {
 
             setmessages((currentMessages: Message[]) => [...currentMessages, ...(fetchedMessages as Message[])])
 
-            await  initialdecrypttoRust(reciever_profile, fetchedMessages, loadedMessageCount) as any
+            await  initialdecrypttoRust(reciever_profile, fetchedMessages, loadedMessageCount, alreadyFetched) as any
           
           } catch (error) {
             console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
@@ -253,7 +253,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
     console.log('buttin pressed', loadedMessageCount)
     setLoadedMessageCount(loadedMessageCount)
-    await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount)
+    await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount, false)
   }
 
   useEffect(() => {

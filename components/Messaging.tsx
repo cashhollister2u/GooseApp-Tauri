@@ -133,7 +133,7 @@ const Messaging: React.FC<{
     );
 
     const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
-console.log(filteredMessages, 'look at me')
+
   useEffect(() => {
     if (IsSearchMessage) {
       setisSearchMessageUpd(IsSearchMessage)
