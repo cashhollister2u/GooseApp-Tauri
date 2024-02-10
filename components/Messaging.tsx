@@ -128,8 +128,8 @@ const Messaging: React.FC<{
 
     const filteredMessages = messages?.filter(
       (message) =>
-        viewmsg?.handle === message.sender_profile.username ||
-        viewmsg?.handle === message.reciever_profile.username
+        viewmsg?.handle === message?.sender_profile.username ||
+        viewmsg?.handle === message?.reciever_profile.username || ''
     );
 
     const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
@@ -206,9 +206,14 @@ const Messaging: React.FC<{
   }, [UserProfile])
 
   useEffect(() => {
-    setmessages(importMessages)
+    const newMessages = importMessages.filter(importMessage => 
+      !messages.some(message => message.id === importMessage.id)
+      )
+      if (newMessages.length > 0) {
+        setmessages(previousMessages => [...previousMessages, ...newMessages])
+      }
   }, [importMessages])
-
+  console.log('messages', messages)
   useEffect(() => {
     if (!UserProfile) {
       return

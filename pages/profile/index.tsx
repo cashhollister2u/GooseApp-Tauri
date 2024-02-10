@@ -98,8 +98,6 @@ const MyProfilePage: React.FC<{}> = () => {
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
   
-  
-  console.log('message count', loadedMessageCount)
 
   const navigation = [
     {
