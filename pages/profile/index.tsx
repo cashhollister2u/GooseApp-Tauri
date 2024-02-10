@@ -252,7 +252,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
     console.log('buttin pressed', loadedMessageCount)
-    setmessageFetched(false)
     setLoadedMessageCount(loadedMessageCount)
     await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount)
   }
