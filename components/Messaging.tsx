@@ -27,6 +27,7 @@ interface Message {
   name: string
   public_key: string
   sender_message: string
+  decrypted_message?: string
 }
 
 interface Profile {
@@ -81,6 +82,7 @@ const Messaging: React.FC<{
   importConversations: UserProfile[]
   onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any) => void
   onResetMessageCount: (reset:number) => void
+  importRawMessages: Message[]
 }> = ({
   UserProfile,
   onLoadedMessageCount,
@@ -90,7 +92,8 @@ const Messaging: React.FC<{
   IsSearchMessage,
   searchedprofile,
   importMessages,
-  importConversations
+  importRawMessages,
+  importConversations,
 }) => {
   const [followList, setFollowList] = useState<string[]>([])
   const [viewmsg, setviewmsg] = useState<allConversations>()
@@ -106,7 +109,9 @@ const Messaging: React.FC<{
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
+  const [isLoadMore, setIsLoadMore] = useState<boolean>(false)
   const messageRef = useRef<HTMLDivElement>(null)
+  const newMessagesRef = useRef<HTMLLIElement>(null)
   const gooseApp = useAxios()
 
   let [newMessage, setnewMessage] = useState({ message: '' })
@@ -126,13 +131,48 @@ const Messaging: React.FC<{
         }
     })
 
-    const filteredMessages = messages?.filter(
+  const filteredMessages = messages?.filter(
       (message) =>
         viewmsg?.handle === message?.sender_profile.username ||
         viewmsg?.handle === message?.reciever_profile.username || ''
     );
 
-    const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
+  const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
+  
+  let numberOfLoadedMessages
+  if (filteredMessages.length % 15 === 0) {
+    numberOfLoadedMessages = 15;
+  } else {
+    numberOfLoadedMessages = filteredMessages.length % 15;
+  }
+console.log(numberOfLoadedMessages)
+  useEffect(() => {
+    if (!isLoadMore) {
+        setTimeout(() => {
+        if (messageRef.current) {
+            messageRef.current.scrollIntoView({
+              block: 'end',
+              inline: 'nearest',
+            });}
+          }, 0); 
+    } else {
+        if (newMessagesRef.current) {
+          newMessagesRef.current.scrollIntoView({
+            block: 'end',
+            inline: 'nearest',
+          })
+        }
+    }
+  }, [viewmsg, messages])
+
+  useEffect(() => {
+      if (messageRef.current) {
+        messageRef.current.scrollIntoView({
+          block: 'end',
+          inline: 'nearest',
+        })
+      }
+  }, [viewmsg])
 
   useEffect(() => {
     if (IsSearchMessage) {
@@ -169,19 +209,6 @@ const Messaging: React.FC<{
   
   }, [viewmsg?.user_id, viewmsg?.id])
 
-  useEffect(() => {
-    
-    if (!isfirstMsgClick) {
-      if (messageRef.current ) {
-        setisfirstMsgClick(true)
-        messageRef.current.scrollIntoView({
-          block: 'end',
-          inline: 'nearest',
-        })
-      }
-    }
-   
-  }, [messages])
 
 
   useEffect(() => {
@@ -206,14 +233,34 @@ const Messaging: React.FC<{
   }, [UserProfile])
 
   useEffect(() => {
+    const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
+
     const newMessages = importMessages.filter(importMessage => 
       !messages.some(message => message.id === importMessage.id)
       )
       if (newMessages.length > 0) {
-        setmessages(previousMessages => [...previousMessages, ...newMessages])
+        setmessages(previousMessages => [...newMessages, ...previousMessages])
       }
+      
   }, [importMessages])
-  console.log('messages', messages)
+
+  useEffect(() => {
+    const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
+
+      const rawMsgCount = importRawMessages.filter(message => {
+        return message.reciever_profile.username === usernameReciever;
+      }).length;
+      
+      const decryptedMsgCount = messages.filter(message => {
+        return message.reciever_profile.username === usernameReciever;
+      }).length;
+      
+      const loadMoreValue = rawMsgCount > decryptedMsgCount;
+      console.log(loadMoreValue)
+      setIsLoadMore(loadMoreValue)
+  }, [messages, viewmsg])
+ 
+
   useEffect(() => {
     if (!UserProfile) {
       return
@@ -752,10 +799,14 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                     </button>
                     <div>
                       <div
-                      className='px-52 py-6'>
+                      className={` ${
+                        !isLoadMore ? '' : 'px-52 py-6'
+                      }`}>
                     <button
                       type="button"
-                      className="rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
+                      className={` ${
+                        !isLoadMore ? 'hidden' : 'rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20'
+                      }`}
                       onClick={() => {handleLoadMessageCount()}}
                      >
                       Load more...
@@ -764,8 +815,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       <div ref={messageRef} className="flex flex-col">
                         <div  className="flex-1  mb-32 overflow-y-auto ">
                           {filteredMessages
-                            .map((message: any) => (
-                              <li key={message.id}>
+                            .map((message: any, index: number) => (
+                              <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4)) ? newMessagesRef : null}>
                                 <div
                                   className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==

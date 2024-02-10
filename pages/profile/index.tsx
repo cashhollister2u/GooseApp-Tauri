@@ -97,7 +97,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
-  
+ 
 
   const navigation = [
     {
@@ -200,19 +200,21 @@ const MyProfilePage: React.FC<{}> = () => {
   }, [])
 
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number, messageFetched: boolean) {
+    const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
+    
     if (!messageFetched) {
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
           username: UserProfile?.username, 
           privateKey: UserProfile?.private_key, 
-          recieverUsername: reciever_profile.handle || reciever_profile.profile.username,
+          recieverUsername: usernameReciever,
           messageCount: loadedMessageCount 
-        });
-
-        console.log('Command executed successfully', result); 
+        }); 
 
         setDecryptedMessages((currentMessages: Message[]) => [...(result as Message[]).slice().reverse(), ...currentMessages]);
+      
+        console.log('Command executed successfully', result); 
 
       } catch (error) {
           console.error('Error sending data to Rust:', error);
@@ -230,7 +232,7 @@ const MyProfilePage: React.FC<{}> = () => {
     if (alreadyFetched){
       console.log('messages have already been fetched')
       } else {
-        console.log('messages have not fetch', loadedMessageCount)
+        console.log('messages have not fetch')
         
           try{
             const response = await gooseApp.get(
@@ -714,6 +716,7 @@ const MyProfilePage: React.FC<{}> = () => {
                   onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
                   importConversations={conversations}
+                  importRawMessages={messages}
                   importMessages={decryptedMessages}
                   onMessageSelect={fetchMessages}
                   searchedprofile={SearchedProfile}
@@ -810,6 +813,7 @@ const MyProfilePage: React.FC<{}> = () => {
               onResetMessageCount={setLoadedMessageCount}
               onLoadedMessageCount={fetchUnloadedMessages}
               importConversations={conversations as UserProfile[]}
+              importRawMessages={messages}
               importMessages={decryptedMessages}
               onMessageSelect={fetchMessages}
               searchedprofile={SearchedProfile}
