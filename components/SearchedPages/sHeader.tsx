@@ -185,7 +185,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
         {background_image && (
           <img
             className="max-h-128 w-full object-fill "
-            src={`${background_image}?v=${new Date().getTime()}`}
+            src={`${background_image}`}
             alt="backgroundimage"
           />
         )}
@@ -196,7 +196,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
             {profile_picture && (
               <img
                 className="h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36 mt-20"
-                src={`${profile_picture}?v=${new Date().getTime()}`}
+                src={`${profile_picture}`}
                 alt=""
               />
             )}

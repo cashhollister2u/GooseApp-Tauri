@@ -31,14 +31,14 @@ const Header: React.FC<{ UserProfile?: UserProfile }> = ({ UserProfile }) => {
 
     fetchUserData()
   }, [UserProfile])
-
+  
   return (
     <div>
       <div>
         {background_image && (
           <img
             className="max-h-128 w-full object-fill"
-            src={`${mediaURL}${background_image}?v=${new Date().getTime()}`}
+            src={`${mediaURL}${background_image}`}
             alt="background"
           />
         )}
@@ -49,7 +49,7 @@ const Header: React.FC<{ UserProfile?: UserProfile }> = ({ UserProfile }) => {
             {profile_picture && (
               <img
                 className="h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36 mt-20"
-                src={`${mediaURL}${profile_picture}?v=${new Date().getTime()}`}
+                src={`${mediaURL}${profile_picture}`}
                 alt="profile"
               />
             )}

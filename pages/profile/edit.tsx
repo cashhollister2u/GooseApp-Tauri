@@ -465,7 +465,7 @@ export default function MyProfilePageEdit() {
             <span className="sr-only">Your profile</span>
             <img
               className="h-12 w-12 rounded-full bg-gray-50"
-              src={`${mediaURL}default/profile_pic_def/gooseCom.png`}
+              src={'/profile_pic_def/gooseCom.png'}
               alt=""
             />
           </button>
@@ -498,7 +498,7 @@ export default function MyProfilePageEdit() {
                 <span className="sr-only">Your profile</span>
                 <img
                   className="h-12 w-12 rounded-full bg-gray-50"
-                  src={`${mediaURL}default/profile_pic_def/gooseCom.png`}
+                  src={'/profile_pic_def/gooseCom.png'}
                   alt=""
                 />
               </button>

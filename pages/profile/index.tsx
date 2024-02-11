@@ -142,7 +142,7 @@ const MyProfilePage: React.FC<{}> = () => {
     const signal = controller.signal
 
     const timer = setTimeout(() => {
-      console.log('get ran agian')
+  
       const fetchUserfollowing = async () => {
         try {
           const updatedUserData = await gooseApp.get(`${fetchUserURL}`)
@@ -198,10 +198,10 @@ const MyProfilePage: React.FC<{}> = () => {
       clearTimeout(timer), controller.abort()
     }
   }, [])
-  console.log(loadedMessageCount, 'loaded sg count')
+
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number, messageFetched: boolean) {
     const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
-    
+   
     if (!messageFetched) {
       try {
         const result = await invoke('pull_messages_encrypted', 
@@ -211,9 +211,14 @@ const MyProfilePage: React.FC<{}> = () => {
           recieverUsername: usernameReciever,
           messageCount: loadedMessageCount 
         }); 
-
-        setDecryptedMessages((currentMessages: Message[]) => [...(result as Message[]).slice().reverse(), ...currentMessages]);
-      
+        const newMessages = (result as Message[]).filter((newDecryptedMesssage: Message) => 
+          !decryptedMessages.some(message => message.id === newDecryptedMesssage.id)
+          )
+        
+          if (newMessages.length > 0) {
+            setDecryptedMessages((currentMessages: Message[]) => [...(newMessages as Message[]).slice().reverse(), ...currentMessages])
+          }
+        
         console.log('Command executed successfully', result); 
 
       } catch (error) {
@@ -251,7 +256,6 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
-    console.log('buttin pressed', loadedMessageCount)
     setLoadedMessageCount(loadedMessageCount)
     await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount, false)
   }
@@ -305,10 +309,6 @@ const MyProfilePage: React.FC<{}> = () => {
   const handleLogout = () => {
     router.push('/login');
     
-  }
-
-  const setLoadingfalse = () => {
-    setIsLoading(false)
   }
 
   return (

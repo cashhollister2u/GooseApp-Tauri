@@ -137,8 +137,6 @@ const Messaging: React.FC<{
     );
 
   const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
-  
-console.log('filter', numberOfFilteredMessages)
 
   let numberOfLoadedMessages
   if (filteredMessages.length % 15 === 0) {
@@ -146,7 +144,7 @@ console.log('filter', numberOfFilteredMessages)
   } else {
     numberOfLoadedMessages = filteredMessages.length % 15;
   }
-console.log(numberOfLoadedMessages)
+
   useEffect(() => {
     if (!isLoadMore) {
         setTimeout(() => {
@@ -255,7 +253,7 @@ console.log(numberOfLoadedMessages)
       }).length;
       
       const loadMoreValue = rawMsgCount > decryptedMsgCount;
-      console.log(loadMoreValue)
+
       setIsLoadMore(loadMoreValue)
   }, [messages, viewmsg])
  
@@ -364,10 +362,10 @@ console.log(numberOfLoadedMessages)
     setFilteredRecommendations(filteredList)
   }
 
-  async function sendMessageToRust(message: string, public_key: string): Promise<string> {
+  async function sendMessageToRustEncryption(message: string, public_key: string): Promise<string> {
     try {
       const result = await invoke('pull_message_to_encrypt', { message: message, publicKey: public_key }) as string;
-      console.log('Command executed successfully', result);
+      console.log('Encryption executed successfully', result);
       return result
     } catch (error) {
         console.error('Error sending data to Rust:', error);
@@ -378,7 +376,7 @@ console.log(numberOfLoadedMessages)
 async function sendMessagetoRustDecryption(message: string, private_key: string) {
   try {
     const result = await invoke('pull_message_to_decrypt', { message: message, privateKey: private_key });
-    console.log('Command executed successfully', result);
+    console.log('Decryption executed successfully', result);
     return result
   } catch (error) {
       console.error('Error sending data to Rust:', error);
@@ -390,11 +388,11 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
       
     if (newMessage?.message && viewmsg?.public_key) {
-        sendMessageToRust(newMessage.message, viewmsg.public_key);
+      sendMessageToRustEncryption(newMessage.message, viewmsg.public_key);
       }
       if (newMessage?.message && viewmsg?.public_key) {
-        const encryptedMessage = await sendMessageToRust(newMessage.message, viewmsg.public_key);
-        const encryptedSenderMessage = await sendMessageToRust(newMessage.message, UserProfile.public_key);
+        const encryptedMessage = await sendMessageToRustEncryption(newMessage.message, viewmsg.public_key);
+        const encryptedSenderMessage = await sendMessageToRustEncryption(newMessage.message, UserProfile.public_key);
 
         if (encryptedMessage) {
         const formdata = new FormData()
@@ -415,7 +413,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
-                console.log(sent_message)
+              
 
                 const newMsg: any = {
                   name: res.data.reciever_profile.full_name,
@@ -452,7 +450,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     }
     }
   }
-console.log(messages)
+
   const handleLoadMessageCount = () => {
     onLoadedMessageCount(numberOfFilteredMessages, viewmsg)
   }
