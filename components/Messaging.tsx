@@ -104,7 +104,6 @@ const Messaging: React.FC<{
   const [isSearchMessageUpd, setisSearchMessageUpd] = useState<boolean>(false)
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
-  const [isfirstMsgClick, setisfirstMsgClick] = useState<boolean>(false)
   const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
@@ -139,6 +138,8 @@ const Messaging: React.FC<{
 
   const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
   
+console.log('filter', numberOfFilteredMessages)
+
   let numberOfLoadedMessages
   if (filteredMessages.length % 15 === 0) {
     numberOfLoadedMessages = 15;
@@ -233,8 +234,6 @@ console.log(numberOfLoadedMessages)
   }, [UserProfile])
 
   useEffect(() => {
-    const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
-
     const newMessages = importMessages.filter(importMessage => 
       !messages.some(message => message.id === importMessage.id)
       )
@@ -453,10 +452,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     }
     }
   }
-
+console.log(messages)
   const handleLoadMessageCount = () => {
-    const newCount = loadedMessageCount + 1
-    setLoadedMessageCount(newCount)
     onLoadedMessageCount(numberOfFilteredMessages, viewmsg)
   }
 
@@ -514,7 +511,6 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           settabvalue(true)
                           setRecommendations(false)
                           setisSearchMessageUpd(false)
-                          setisfirstMsgClick(false)
                         }}
                         className={classNames(
                           tab.current

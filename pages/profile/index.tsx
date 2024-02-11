@@ -198,7 +198,7 @@ const MyProfilePage: React.FC<{}> = () => {
       clearTimeout(timer), controller.abort()
     }
   }, [])
-
+  console.log(loadedMessageCount, 'loaded sg count')
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number, messageFetched: boolean) {
     const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
     
