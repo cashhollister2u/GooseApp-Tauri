@@ -290,7 +290,6 @@ const Messaging: React.FC<{
             setTimeout(() => {
               if (messageRef.current) {
                 messageRef.current.scrollIntoView({
-                  behavior: 'smooth',
                   block: 'end',
                   inline: 'nearest',
                 })
@@ -437,7 +436,6 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             setTimeout(() => {
               if (messageRef.current) {
                 messageRef.current.scrollIntoView({
-                  behavior: 'smooth',
                   block: 'end',
                   inline: 'nearest',
                 })
@@ -512,6 +510,7 @@ console.log('local msg', localMessageCount)
                           setRecommendations(false)
                           setisSearchMessageUpd(false)
                           setLocalMessageCount(0)
+                          setnewMessage({ message: '' })
                         }}
                         className={classNames(
                           tab.current
@@ -676,7 +675,7 @@ console.log('local msg', localMessageCount)
                                   src={
                                     `${
                                       reciever_profile.imageUrl
-                                    }?v=${new Date().getTime()}` ||
+                                    }` ||
                                     profile_pic_url
                                   }
                                   alt=""

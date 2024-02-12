@@ -45,7 +45,7 @@ pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private
     };
 
     // Step 1: Filter messages first based on sender and receiver username
-    let filtered_messages: Vec<_> = messages.into_iter()
+    let filtered_messages: Vec<_> = messages.into_par_iter()
         .filter(|message| (message.sender_profile.username == reciever_username || message.reciever_profile.username == reciever_username) && message.decrypted_message.is_none())
         .collect();
 
