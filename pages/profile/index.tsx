@@ -97,7 +97,8 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
-  
+  const { activeMessage } = router.query; // Replace 'yourParameterName' with the actual name of your query parameter
+ 
 
   const navigation = [
     {
@@ -142,6 +143,10 @@ const MyProfilePage: React.FC<{}> = () => {
 
     
     const timer = setTimeout(() => {
+
+      if (activeMessage === 'true') {
+        setIsMessaging(true)
+      }
   
       const fetchUserfollowing = async () => {
         try {

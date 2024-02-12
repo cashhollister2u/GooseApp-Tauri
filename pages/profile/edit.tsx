@@ -4,7 +4,6 @@ import { Disclosure } from '@headlessui/react'
 import { fetchUserURL, searchUserURL } from '../../components/backendURL'
 import { jwtDecode } from 'jwt-decode'
 import { Fragment, useEffect, useState } from 'react'
-import { mediaURL } from '../../components/backendURL'
 import Header from '../../components/Header'
 import ListTabs from '../../components/ListTabs'
 import TopStocksList from '../../components/TopStocksList'
@@ -22,6 +21,7 @@ import {
   UsersIcon,
   XMarkIcon,
   ArrowLeftStartOnRectangleIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
@@ -162,6 +162,13 @@ export default function MyProfilePageEdit() {
     router.push(
       `/profile?SearchMessage=${btoa(JSON.stringify(SearchedProfile))}`
     )
+  }
+
+  const handleMessageButton = () => {
+    router.push({
+      pathname: '/profile',
+      query: { activeMessage: 'true' }
+    });
   }
 
   return (
@@ -414,6 +421,16 @@ export default function MyProfilePageEdit() {
                         )}
                       </li>
                     ))}
+                    <button
+                    className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                    onClick={handleMessageButton}
+                    >
+                    <ChatBubbleLeftRightIcon
+                      className="h-6 w-6 shrink-0"
+                      aria-hidden="true"
+                    />
+                    Messages
+                  </button>
                   </ul>
                 </li>
                 <li>

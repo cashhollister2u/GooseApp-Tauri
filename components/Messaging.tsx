@@ -794,20 +794,17 @@ console.log('local msg', localMessageCount)
                       </div>
                     </button>
                     <div>
-                      <div
-                      className={` ${
-                        !isLoadMore ? '' : 'px-52 py-6'
-                      }`}>
-                    <button
-                      type="button"
-                      className={` ${
-                        !isLoadMore ? 'hidden' : 'rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20'
-                      }`}
-                      onClick={() => {handleLoadMessageCount()}}
-                     >
-                      Load more...
+                    <div className={` ${!isLoadMore ? '' : 'flex justify-center items-center py-6'}`}>
+                      <button
+                        type="button"
+                        className={` ${
+                          !isLoadMore ? 'hidden' : 'rounded-full bg-white/10 px-3 py-2 w-36 text-sm font-semibold text-white shadow-sm hover:bg-white/20'
+                        }`}
+                        onClick={() => {handleLoadMessageCount()}}
+                      >
+                        Load more...
                       </button>
-                      </div>
+                    </div>
                       <div ref={messageRef} className="flex flex-col">
                         <div  className="flex-1  mb-32 overflow-y-auto ">
                           {filteredMessages
