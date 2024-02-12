@@ -107,7 +107,7 @@ const Messaging: React.FC<{
   const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
-  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
+  const [localMessageCount, setLocalMessageCount] = useState<number> (0)
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false)
   const messageRef = useRef<HTMLDivElement>(null)
   const newMessagesRef = useRef<HTMLLIElement>(null)
@@ -136,7 +136,8 @@ const Messaging: React.FC<{
         viewmsg?.handle === message?.reciever_profile.username || ''
     );
 
-  const numberOfFilteredMessages = Math.ceil(filteredMessages?.length / 15) + 1 || 0;
+  const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15) + 1 || 0;
+  const simplifiedLocalMessageCount = localMessageCount > 0 ? 1 : 0;
 
   let numberOfLoadedMessages
   if (filteredMessages.length % 15 === 0) {
@@ -245,15 +246,15 @@ const Messaging: React.FC<{
     const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
 
       const rawMsgCount = importRawMessages.filter(message => {
-        return message.reciever_profile.username === usernameReciever;
+        return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
       }).length;
       
       const decryptedMsgCount = messages.filter(message => {
-        return message.reciever_profile.username === usernameReciever;
+        return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
       }).length;
       
       const loadMoreValue = rawMsgCount > decryptedMsgCount;
-
+      
       setIsLoadMore(loadMoreValue)
   }, [messages, viewmsg])
  
@@ -413,7 +414,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
-              
+                  console.log('snet msg' , sent_message)
 
                 const newMsg: any = {
                   name: res.data.reciever_profile.full_name,
@@ -428,6 +429,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   const updatedMessages = [...prevMessages, sent_message]
                   return updatedMessages
                 })
+                setLocalMessageCount(localMessageCount + 1)
               }).catch(error => {
                 console.error('Error decrypting message:', error);
               });
@@ -440,7 +442,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   inline: 'nearest',
                 })
               }
-            }, 100)
+            }, 10)
 
             setnewMessage({ message: '' })
           })
@@ -454,10 +456,10 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
   const handleLoadMessageCount = () => {
     onLoadedMessageCount(numberOfFilteredMessages, viewmsg)
   }
+console.log('local msg', localMessageCount)
 
   const handleMessageCountReset = () => {
     const resetCount = 1
-    setLoadedMessageCount(1)
     onResetMessageCount(resetCount)
   }
 
@@ -509,6 +511,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                           settabvalue(true)
                           setRecommendations(false)
                           setisSearchMessageUpd(false)
+                          setLocalMessageCount(0)
                         }}
                         className={classNames(
                           tab.current
@@ -810,7 +813,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                         <div  className="flex-1  mb-32 overflow-y-auto ">
                           {filteredMessages
                             .map((message: any, index: number) => (
-                              <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4)) ? newMessagesRef : null}>
+                              <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 + (simplifiedLocalMessageCount * 15) )) ? newMessagesRef : null}>
                                 <div
                                   className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==

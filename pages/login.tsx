@@ -12,6 +12,8 @@ const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
   const [refresh, setrefresh] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [user, setUser] = useState()
+
   const router = useRouter();
 
   const [authTokens, setAuthTokens] = useState(() => {
@@ -31,73 +33,67 @@ const LoginPage = () => {
     // If no data is found in localStorage, return null
     return null
   })
-  const [user, setUser] = useState(() => {
-    if (typeof window != 'undefined') {
-      const token = localStorage.getItem('authTokens')
-      return token ? jwtDecode<UserProfile>(token) : null
-    }
-  })
 
   useEffect(() => {
-    localStorage.removeItem('authTokens')
-    setUser(null)
-  }, [refresh])
+    const tokenData = localStorage.getItem('authTokens');
+    if (tokenData) {
+      router.push('/profile'); // Redirect if token exists
+    }
+  }, [router]);
 
-  
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
 
+    const loginUser = async () => {
+      try {
+        const response = await fetch(fetchTokenURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email.toLowerCase(),
+            password,
+          }),
+        });
 
+        const data = await response.json();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    const loginUser = async (
-      email: string,
-      password: string
-    ): Promise<void> => {
-      const response = await fetch(fetchTokenURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.toLowerCase(),
-          password,
-        }),
-      })
-      const data = await response.json()
-
-      if (response.status === 200) {
-        setAuthTokens(data)
-        setUser(jwtDecode(data.access))
-        localStorage.setItem('authTokens', JSON.stringify(data))
-
-        router.push('/profile');
-
+        if (response.status === 200) {
+          localStorage.setItem('authTokens', JSON.stringify(data));
+          swal.fire({
+            title: 'Login Successful',
+            icon: 'success',
+            toast: true,
+            timer: 3000,
+            position: 'top-right',
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+          window.location.href = '/profile'
+        } else {
+          throw new Error('Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
         swal.fire({
-          title: 'Login Successful',
-          icon: 'success',
-          toast: true,
-          timer: 6000,
-          position: 'top-right',
-          timerProgressBar: true,
-          showConfirmButton: false,
-        })
-      } else {
-        console.log(response.status)
-        console.log('there was a server issue')
-        swal.fire({
-          title: 'Username or passowrd does not exists',
+          title: 'Login failed',
+          text: 'Username or password does not exist',
           icon: 'error',
           toast: true,
-          timer: 6000,
+          timer: 3000,
           position: 'top-right',
           timerProgressBar: true,
           showConfirmButton: false,
-        })
+        });
       }
+    };
+
+    if (email && password) {
+      await loginUser();
     }
-    email.length > 0 && loginUser(email, password)
-  }
+  };
+
 
   return (
     <>

@@ -97,7 +97,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
- 
+  
 
   const navigation = [
     {
@@ -139,8 +139,8 @@ const MyProfilePage: React.FC<{}> = () => {
     const params = new URLSearchParams(window.location.search)
     const search = params.get('search')
     const controller = new AbortController()
-    const signal = controller.signal
 
+    
     const timer = setTimeout(() => {
   
       const fetchUserfollowing = async () => {
@@ -158,9 +158,7 @@ const MyProfilePage: React.FC<{}> = () => {
           })
           setUserProfile(fetchedUserProfile)
         } catch (error) {
-          if (!signal.aborted) {
-            window.location.href = '/sign-in'
-          }
+          
         }
       }
 
@@ -193,7 +191,7 @@ const MyProfilePage: React.FC<{}> = () => {
           console.error('Error parsing JSON:', error)
         }
       }
-    }, 300)
+    }, 0)
     return () => {
       clearTimeout(timer), controller.abort()
     }
@@ -307,8 +305,12 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('ally-supports-cache')
+    localStorage.removeItem('pusherTransportTLS')
+    localStorage.removeItem('authTokens')
+    setUserProfile(undefined);
     router.push('/login');
-    
+
   }
 
   return (

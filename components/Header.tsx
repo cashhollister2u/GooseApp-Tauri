@@ -31,6 +31,7 @@ const Header: React.FC<{ UserProfile?: UserProfile }> = ({ UserProfile }) => {
 
     fetchUserData()
   }, [UserProfile])
+
   
   return (
     <div>
