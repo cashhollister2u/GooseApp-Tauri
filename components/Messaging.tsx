@@ -35,6 +35,7 @@ interface Profile {
   profile_picture: string
   full_name: string
   verified: boolean
+  id: number
 }
 
 
@@ -72,17 +73,22 @@ interface UserProfile {
   id: number
 }
 
+interface TotalMessagesPerUser {
+  user_id: number
+  total_Msg_count: number
+}
+
 const Messaging: React.FC<{
   searchedprofile: any
   UserProfile: UserProfile
   updateIsMessaging: () => void
-  onMessageSelect: (reciever_profile: UserProfile, UpdMessages: Message[]) => void
+  onMessageSelect: (reciever_profile: UserProfile, isLoadMore:boolean, loadedMessageCount:number) => void
   IsSearchMessage: boolean
   importMessages: Message[]
   importConversations: UserProfile[]
-  onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any) => void
+  onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any, isLoadMore:boolean) => void
   onResetMessageCount: (reset:number) => void
-  importRawMessages: Message[]
+  importTotalMessageCount: TotalMessagesPerUser[] | undefined
 }> = ({
   UserProfile,
   onLoadedMessageCount,
@@ -92,7 +98,7 @@ const Messaging: React.FC<{
   IsSearchMessage,
   searchedprofile,
   importMessages,
-  importRawMessages,
+  importTotalMessageCount,
   importConversations,
 }) => {
   const [followList, setFollowList] = useState<string[]>([])
@@ -136,7 +142,7 @@ const Messaging: React.FC<{
         viewmsg?.handle === message?.reciever_profile.username || ''
     );
 
-  const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15) + 1 || 0;
+  const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15);
   const simplifiedLocalMessageCount = localMessageCount > 0 ? 1 : 0;
 
   let numberOfLoadedMessages
@@ -186,7 +192,7 @@ const Messaging: React.FC<{
         status: 'online',
       }
       handleViewMessage(newMsg)
-      onMessageSelect(newMsg, messages)
+      onMessageSelect(newMsg, false, numberOfFilteredMessages)
 
       settabvalue(false)
     }
@@ -244,19 +250,21 @@ const Messaging: React.FC<{
 
   useEffect(() => {
     const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
+    const user_idReciever = viewmsg?.user_id || viewmsg?.profile.id
 
-      const rawMsgCount = importRawMessages.filter(message => {
-        return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
-      }).length;
+      const userMessageCount = importTotalMessageCount?.find(user => user.user_id === user_idReciever);
+
+      const rawMsgCount = userMessageCount ? userMessageCount.total_Msg_count : 0; // Default to 0 if not found
+
       
       const decryptedMsgCount = messages.filter(message => {
         return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
       }).length;
-      
       const loadMoreValue = rawMsgCount > decryptedMsgCount;
-      
       setIsLoadMore(loadMoreValue)
-  }, [messages, viewmsg])
+  }, [messages, viewmsg, importTotalMessageCount])
+  console.log(importTotalMessageCount)
+  
  
 
   useEffect(() => {
@@ -413,7 +421,6 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
-                  console.log('snet msg' , sent_message)
 
                 const newMsg: any = {
                   name: res.data.reciever_profile.full_name,
@@ -452,16 +459,16 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
   }
 
   const handleLoadMessageCount = () => {
-    onLoadedMessageCount(numberOfFilteredMessages, viewmsg)
+    onLoadedMessageCount(numberOfFilteredMessages, viewmsg, isLoadMore)
   }
-console.log('local msg', localMessageCount)
+
 
   const handleMessageCountReset = () => {
-    const resetCount = 1
+    const resetCount = 0
     onResetMessageCount(resetCount)
   }
 
-  
+  console.log('message count msg', numberOfFilteredMessages)
 
   return (
     <div className="h-screen flex flex-col ">
@@ -551,7 +558,7 @@ console.log('local msg', localMessageCount)
                               onClick={() => {
                                   handleViewMsgInitialMessageCase(reciever_profile),
                                   settabvalue(false),
-                                  onMessageSelect(reciever_profile, messages)
+                                  onMessageSelect(reciever_profile, false, numberOfFilteredMessages)
                               }}
                             >
                               <div
@@ -661,7 +668,7 @@ console.log('local msg', localMessageCount)
                           <button
                             className="-m-1 block flex-1 p-1"
                             onClick={() => {
-                              handleViewMessage(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile, messages)
+                              handleViewMessage(reciever_profile), settabvalue(false), onMessageSelect(reciever_profile, false, numberOfFilteredMessages)
                             }}
                           >
                             <div

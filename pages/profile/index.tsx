@@ -70,6 +70,11 @@ interface Message {
   decrypted_message?: string;
 }
 
+interface TotalMessagesPerUser {
+  user_id: number
+  total_Msg_count: number
+}
+
 interface Profile {
   profile: UserProfile
   username: string
@@ -92,12 +97,12 @@ const MyProfilePage: React.FC<{}> = () => {
   const gooseApp = useAxios()
   const router = useRouter()
   const SearchMsgString = router.query.SearchMessage
-  const [messages, setmessages] = useState<Message[]>([])
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
-  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (1)
+  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (0)
   const { activeMessage } = router.query; // Replace 'yourParameterName' with the actual name of your query parameter
- 
+  const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
+  const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
 
   const navigation = [
     {
@@ -201,17 +206,16 @@ const MyProfilePage: React.FC<{}> = () => {
     }
   }, [])
 
-  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], loadedMessageCount:number, messageFetched: boolean) {
+  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {
     const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
    
-    if (!messageFetched) {
+    
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
           username: UserProfile?.username, 
           privateKey: UserProfile?.private_key, 
           recieverUsername: usernameReciever,
-          messageCount: loadedMessageCount 
         }); 
         const newMessages = (result as Message[]).filter((newDecryptedMesssage: Message) => 
           !decryptedMessages.some(message => message.id === newDecryptedMesssage.id)
@@ -226,41 +230,55 @@ const MyProfilePage: React.FC<{}> = () => {
       } catch (error) {
           console.error('Error sending data to Rust:', error);
       }
-    }
+    
   }
 
-  const fetchMessages = async (reciever_profile: any) => {
+  const fetchMessages = async (reciever_profile: any, isLoadMore:boolean, loadedMessageCountVar:number) => {
     const lookUpUsername = reciever_profile.handle || reciever_profile.profile.username
-    const alreadyFetched = decryptedMessages.some(message => 
-      message.reciever_profile.username === lookUpUsername
+    const alreadyFetched = viewedMsgList.some(name => 
+      name === lookUpUsername
     );    
-      
-    if (alreadyFetched){
+    console.log('number of batch', loadedMessageCountVar)
+
+    if (alreadyFetched && !isLoadMore){
       console.log('messages have already been fetched')
       } else {
         console.log('messages have not fetch')
         
           try{
             const response = await gooseApp.get(
-              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.user_id || reciever_profile.profile.id}/`
+              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.user_id || reciever_profile.profile.id}/${loadedMessageCountVar}/`
             )
             const fetchedMessages = response.data
+            console.log('retrieved msg', fetchedMessages.messages)
+            console.log('number of batch', loadedMessageCountVar)
 
-            setmessages((currentMessages: Message[]) => [...currentMessages, ...(fetchedMessages as Message[])])
+            const newCount: TotalMessagesPerUser = {
+              user_id: reciever_profile.user_id || reciever_profile.profile.id,
+              total_Msg_count: fetchedMessages.total_messages
+            }
 
-            await  initialdecrypttoRust(reciever_profile, fetchedMessages, loadedMessageCount, alreadyFetched) as any
-          
+            setTotalMessagesCount((previousCount: TotalMessagesPerUser[] | undefined) => [...previousCount || [], newCount])
+            
+            
+            if (!alreadyFetched) {
+              setviewedMsgList([...viewedMsgList, lookUpUsername])
+            }
+
+            await  initialdecrypttoRust(reciever_profile, fetchedMessages.messages, alreadyFetched) as any
+              
           } catch (error) {
             console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
           }
       }
   }
-
-  const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any) => {
+ console.log('pushed user', viewedMsgList)
+console.log(totalMessagesCount, 'this is it')
+  const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
-    await initialdecrypttoRust(reciever_profile, messages, loadedMessageCount, false)
+    fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
   }
-
+console.log('totleMsgCount', totalMessagesCount)
   useEffect(() => {
     const istauri = (window as any).__TAURI__ !== undefined;
     
@@ -721,7 +739,7 @@ const MyProfilePage: React.FC<{}> = () => {
                   onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
                   importConversations={conversations}
-                  importRawMessages={messages}
+                  importTotalMessageCount={totalMessagesCount}
                   importMessages={decryptedMessages}
                   onMessageSelect={fetchMessages}
                   searchedprofile={SearchedProfile}
@@ -818,7 +836,7 @@ const MyProfilePage: React.FC<{}> = () => {
               onResetMessageCount={setLoadedMessageCount}
               onLoadedMessageCount={fetchUnloadedMessages}
               importConversations={conversations as UserProfile[]}
-              importRawMessages={messages}
+              importTotalMessageCount={totalMessagesCount}
               importMessages={decryptedMessages}
               onMessageSelect={fetchMessages}
               searchedprofile={SearchedProfile}

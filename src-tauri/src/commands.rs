@@ -38,28 +38,14 @@ pub struct Message {
 }
 
 #[tauri::command]
-pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String, reciever_username: String, message_count: i32) -> Result<Vec<Message>, String> {
+pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String, reciever_username: String) -> Result<Vec<Message>, String> {
     let key = match RsaPrivateKey::from_pkcs8_pem(&private_key) {
         Ok(k) => Arc::new(k), 
         Err(e) => return Err(e.to_string()),
     };
 
-    // Step 1: Filter messages first based on sender and receiver username
-    let filtered_messages: Vec<_> = messages.into_par_iter()
-        .filter(|message| (message.sender_profile.username == reciever_username || message.reciever_profile.username == reciever_username) && message.decrypted_message.is_none())
-        .collect();
-
-    // Step 2: Apply pagination before decryption
-    let start_index = ((message_count - 1) * 15) as usize;
-    let end_index = (message_count * 15) as usize;
-    let paginated_messages = filtered_messages.into_iter()
-        .rev()
-        .skip(start_index)
-        .take(end_index - start_index)
-        .collect::<Vec<_>>();
-
     // Step 3: Decrypt messages within the specified range
-    let decrypted_messages: Result<Vec<_>, _> = paginated_messages.into_par_iter()
+    let decrypted_messages: Result<Vec<_>, _> = messages.into_par_iter()
         .map(|mut message| {
             let encrypted_data = if message.sender_profile.username == username {
                 &message.sender_message
