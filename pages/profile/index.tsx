@@ -4,7 +4,6 @@ import { Disclosure } from '@headlessui/react'
 import {
   fetchUserURL,
   searchUserURL,
-  fetchMessagesURL,
   baseURL,
 } from '../../components/backendURL'
 import { jwtDecode } from 'jwt-decode'
@@ -232,7 +231,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
   const fetchMessages = async (reciever_profile: any) => {
     const lookUpUsername = reciever_profile.handle || reciever_profile.profile.username
-    
     const alreadyFetched = decryptedMessages.some(message => 
       message.reciever_profile.username === lookUpUsername
     );    
@@ -244,7 +242,7 @@ const MyProfilePage: React.FC<{}> = () => {
         
           try{
             const response = await gooseApp.get(
-              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.handle || reciever_profile.profile.username}/`
+              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.user_id || reciever_profile.profile.id}/`
             )
             const fetchedMessages = response.data
 
