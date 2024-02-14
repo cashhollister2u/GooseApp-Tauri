@@ -38,7 +38,7 @@ pub struct Message {
 }
 
 #[tauri::command]
-pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String, reciever_username: String) -> Result<Vec<Message>, String> {
+pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String) -> Result<Vec<Message>, String> {
     let key = match RsaPrivateKey::from_pkcs8_pem(&private_key) {
         Ok(k) => Arc::new(k), 
         Err(e) => return Err(e.to_string()),

@@ -110,6 +110,7 @@ const Messaging: React.FC<{
   const [isSearchMessageUpd, setisSearchMessageUpd] = useState<boolean>(false)
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
+  const [isViewMsgChange, setisViewMsgChange] = useState<boolean>(false)
   const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
@@ -152,6 +153,23 @@ const Messaging: React.FC<{
     numberOfLoadedMessages = filteredMessages.length % 15;
   }
 
+//init click
+  useEffect(() => {
+    if (!isViewMsgChange) {
+      if(filteredMessages.length > 0){
+        setisViewMsgChange(true)
+      }
+      if (messageRef.current) {
+        messageRef.current.scrollIntoView({
+          block: 'end',
+          inline: 'nearest',
+        })
+      }
+    }
+    
+  }, [filteredMessages])
+
+  //subsiquent clicks and load more...
   useEffect(() => {
     if (!isLoadMore) {
         setTimeout(() => {
@@ -160,7 +178,7 @@ const Messaging: React.FC<{
               block: 'end',
               inline: 'nearest',
             });}
-          }, 0); 
+          }, 50); 
     } else {
         if (newMessagesRef.current) {
           newMessagesRef.current.scrollIntoView({
@@ -170,15 +188,6 @@ const Messaging: React.FC<{
         }
     }
   }, [viewmsg, messages])
-
-  useEffect(() => {
-      if (messageRef.current) {
-        messageRef.current.scrollIntoView({
-          block: 'end',
-          inline: 'nearest',
-        })
-      }
-  }, [viewmsg])
 
   useEffect(() => {
     if (IsSearchMessage) {
@@ -263,9 +272,6 @@ const Messaging: React.FC<{
       const loadMoreValue = rawMsgCount > decryptedMsgCount;
       setIsLoadMore(loadMoreValue)
   }, [messages, viewmsg, importTotalMessageCount])
-  console.log(importTotalMessageCount)
-  
- 
 
   useEffect(() => {
     if (!UserProfile) {
@@ -462,13 +468,22 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
     onLoadedMessageCount(numberOfFilteredMessages, viewmsg, isLoadMore)
   }
 
-
   const handleMessageCountReset = () => {
     const resetCount = 0
     onResetMessageCount(resetCount)
   }
 
-  console.log('message count msg', numberOfFilteredMessages)
+  const handleInboxTabClick = () => {
+    setisViewMsgChange(false)
+    setviewmsg(undefined)
+    handleMessageCountReset()
+    settabvalue(true)
+    setRecommendations(false)
+    setisSearchMessageUpd(false)
+    setLocalMessageCount(0)
+    setnewMessage({ message: '' })
+  }
+  
 
   return (
     <div className="h-screen flex flex-col ">
@@ -512,12 +527,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       <button
                         key={tab.name}
                         onClick={() => {
-                          handleMessageCountReset()
-                          settabvalue(true)
-                          setRecommendations(false)
-                          setisSearchMessageUpd(false)
-                          setLocalMessageCount(0)
-                          setnewMessage({ message: '' })
+                          handleInboxTabClick()
                         }}
                         className={classNames(
                           tab.current
@@ -625,7 +635,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                     <Menu.Item>
                                       {({ active }) => (
                                         <a
-                                          href={`/profile?search=${reciever_profile.handle}#`}
+                                          href={`/profile?search=${reciever_profile.profile.username}#`}
                                           className={classNames(
                                             active
                                               ? 'bg-gray-100 text-gray-900'
@@ -641,7 +651,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                     <Menu.Item>
                                     {({ active }) => (
                                       <a
-                                        href={`/profile?search=${reciever_profile.handle}#`}
+                                        href={`/profile?search=${reciever_profile.profile.username}#`}
                                         className={classNames(
                                           active
                                             ? 'bg-gray-100 text-gray-900'

@@ -29,6 +29,7 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
+import { isMacOS } from '@tauri-apps/api/helpers/os-check'
 
 
 function classNames(...classes: any) {
@@ -138,7 +139,7 @@ const MyProfilePage: React.FC<{}> = () => {
     window.addEventListener('resize', checkSize)
 
     return () => window.removeEventListener('resize', checkSize)
-  }, [])
+  }, [isMessaging, IsSeachMessage])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -232,26 +233,22 @@ const MyProfilePage: React.FC<{}> = () => {
       }
     
   }
-
+  
   const fetchMessages = async (reciever_profile: any, isLoadMore:boolean, loadedMessageCountVar:number) => {
     const lookUpUsername = reciever_profile.handle || reciever_profile.profile.username
     const alreadyFetched = viewedMsgList.some(name => 
       name === lookUpUsername
     );    
-    console.log('number of batch', loadedMessageCountVar)
 
     if (alreadyFetched && !isLoadMore){
       console.log('messages have already been fetched')
       } else {
-        console.log('messages have not fetch')
         
           try{
             const response = await gooseApp.get(
-              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.user_id || reciever_profile.profile.id}/${loadedMessageCountVar}/`
+              `${baseURL}messages/${UserProfile?.user_id}/${reciever_profile.user_id || reciever_profile.profile.id || reciever_profile.id}/${loadedMessageCountVar}/`
             )
             const fetchedMessages = response.data
-            console.log('retrieved msg', fetchedMessages.messages)
-            console.log('number of batch', loadedMessageCountVar)
 
             const newCount: TotalMessagesPerUser = {
               user_id: reciever_profile.user_id || reciever_profile.profile.id,
@@ -259,7 +256,7 @@ const MyProfilePage: React.FC<{}> = () => {
             }
 
             setTotalMessagesCount((previousCount: TotalMessagesPerUser[] | undefined) => [...previousCount || [], newCount])
-            
+            console.log(totalMessagesCount, 'fix me please')
             
             if (!alreadyFetched) {
               setviewedMsgList([...viewedMsgList, lookUpUsername])
@@ -272,13 +269,12 @@ const MyProfilePage: React.FC<{}> = () => {
           }
       }
   }
- console.log('pushed user', viewedMsgList)
-console.log(totalMessagesCount, 'this is it')
+
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
   }
-console.log('totleMsgCount', totalMessagesCount)
+
   useEffect(() => {
     const istauri = (window as any).__TAURI__ !== undefined;
     
@@ -320,9 +316,19 @@ console.log('totleMsgCount', totalMessagesCount)
   }
 
   const sendMessageFromSearch = () => {
-    setIsMessaging(true)
     setIsSeachMessage(true)
-    console.log('sendmsg')
+    const checkSize = () => {
+      if (window.innerWidth >= 1280) {
+        setIsMessaging(true)
+      }
+    }
+
+    checkSize()
+
+    window.addEventListener('resize', checkSize)
+
+    return () => window.removeEventListener('resize', checkSize)
+    
   }
 
   const handleLogout = () => {
