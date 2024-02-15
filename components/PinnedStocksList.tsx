@@ -25,7 +25,7 @@ const PinnedStocksList: React.FC<{ UserProfile?: UserProfile }> = ({
   }, [UserProfile])
 
   return (
-    <ul role="list" className="divide-y-2 divide-black bg-gray-800">
+    <ul role="list" className="divide-y-2 divide-zinc-900 bg-zinc-800">
       {values5.map(
         (project, projectindex) =>
           project !== '' && (

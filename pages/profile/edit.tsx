@@ -189,7 +189,7 @@ export default function MyProfilePageEdit() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-gray-900/80" />
+              <div className="fixed inset-0 bg-zinc-800" />
             </Transition.Child>
 
             <div className="fixed inset-0 flex">
@@ -246,8 +246,8 @@ export default function MyProfilePageEdit() {
                                   onClick={() => router.push(item.href)}
                                   className={classNames(
                                     item.current
-                                      ? 'bg-gray-800 text-white'
-                                      : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                      ? 'bg-zinc-800 text-white'
+                                      : 'text-zinc-400 hover:text-white hover:bg-zinc-800',
                                     'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
                                   )}
                                 >
@@ -264,21 +264,21 @@ export default function MyProfilePageEdit() {
                                         <Disclosure.Button
                                           className={classNames(
                                             item.current
-                                              ? 'bg-gray-50'
-                                              : 'hover:bg-gray-800 hover:text-white',
-                                            'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-400'
+                                              ? 'bg-zinc-50'
+                                              : 'hover:bg-zinc-800 hover:text-white',
+                                            'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-zinc-400'
                                           )}
                                         >
                                           <item.icon
-                                            className="h-6 w-6 shrink-0 text-gray-400"
+                                            className="h-6 w-6 shrink-0 text-zinc-400"
                                             aria-hidden="true"
                                           />
                                           {item.name}
                                           <ChevronRightIcon
                                             className={classNames(
                                               open
-                                                ? 'rotate-90 text-gray-400'
-                                                : 'text-gray-400',
+                                                ? 'rotate-90 text-zinc-400'
+                                                : 'text-zinc-400',
                                               'ml-auto h-5 w-5 shrink-0'
                                             )}
                                             aria-hidden="true"
@@ -299,7 +299,7 @@ export default function MyProfilePageEdit() {
                                                   as="a"
                                                   href={`/profile?search=${subItem}#`}
                                                   className={classNames(
-                                                    'hover:bg-gray-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
+                                                    'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-zinc-400'
                                                   )}
                                                 >
                                                   {subItem}
@@ -321,7 +321,7 @@ export default function MyProfilePageEdit() {
                         </li>
                         <li className="mt-auto">
                           <button
-                            className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                            className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                             onClick={handleLogout}
                           >
                             <ArrowLeftStartOnRectangleIcon
@@ -359,8 +359,8 @@ export default function MyProfilePageEdit() {
                             onClick={() => router.push(item.href)}
                             className={classNames(
                               item.current
-                                ? 'bg-gray-800 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                ? 'bg-zinc-800 text-white'
+                                : 'text-zinc-400 hover:text-white hover:bg-zinc-800',
                               'group flex gap-x-3 rounded-md w-full p-2 text-sm leading-6 font-semibold'
                             )}
                           >
@@ -377,21 +377,21 @@ export default function MyProfilePageEdit() {
                                 <Disclosure.Button
                                   className={classNames(
                                     item.current
-                                      ? 'bg-gray-50'
-                                      : 'hover:hover:bg-gray-800 hover:text-white',
-                                    'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-400'
+                                      ? 'bg-zinc-50'
+                                      : 'hover:hover:bg-zinc-800 hover:text-white',
+                                    'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-zinc-400'
                                   )}
                                 >
                                   <item.icon
-                                    className="h-6 w-6 shrink-0 text-gray-400"
+                                    className="h-6 w-6 shrink-0 text-zinc-400"
                                     aria-hidden="true"
                                   />
                                   {item.name}
                                   <ChevronRightIcon
                                     className={classNames(
                                       open
-                                        ? 'rotate-90 text-gray-400'
-                                        : 'text-gray-400',
+                                        ? 'rotate-90 text-zinc-400'
+                                        : 'text-zinc-400',
                                       'ml-auto h-5 w-5 shrink-0'
                                     )}
                                     aria-hidden="true"
@@ -406,7 +406,7 @@ export default function MyProfilePageEdit() {
                                           as="a"
                                           href={`/profile?search=${subItem}#`}
                                           className={classNames(
-                                            'hover:bg-gray-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
+                                            'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-zinc-400'
                                           )}
                                         >
                                           {subItem}
@@ -422,7 +422,7 @@ export default function MyProfilePageEdit() {
                       </li>
                     ))}
                     <button
-                    className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                    className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                     onClick={handleMessageButton}
                     >
                     <ChatBubbleLeftRightIcon
@@ -438,7 +438,7 @@ export default function MyProfilePageEdit() {
                 </li>
                 <li className="mt-auto">
                   <button
-                    className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                    className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                     onClick={handleLogout}
                   >
                     <ArrowLeftStartOnRectangleIcon
@@ -453,25 +453,25 @@ export default function MyProfilePageEdit() {
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-800 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+            className="-m-2.5 p-2.5 text-zinc-700 lg:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
-          <div className="hidden flex-1 text-sm font-semibold leading-6 text-gray-900">
+          <div className="hidden flex-1 text-sm font-semibold leading-6 text-zinc-800">
             <form className="relative flex flex-1" action="#" method="GET">
               <label htmlFor="search-field" className="sr-only"></label>
               <MagnifyingGlassIcon
-                className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
                 aria-hidden="true"
               />
               <input
                 id="search-field-main"
-                className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm bg-gray-300"
+                className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-300"
                 placeholder="Search..."
                 type="search"
                 name="search"
@@ -481,7 +481,7 @@ export default function MyProfilePageEdit() {
           <button onClick={() => router.push('/profile')}>
             <span className="sr-only">Your profile</span>
             <img
-              className="h-12 w-12 rounded-full bg-gray-50"
+              className="h-12 w-12 rounded-full bg-zinc-50"
               src={'/profile_pic_def/gooseCom.png'}
               alt=""
             />
@@ -494,17 +494,17 @@ export default function MyProfilePageEdit() {
               {/* Main area */}
             </div>
             {/* search bar for large window */}
-            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm ">
-              <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
+            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
+              <div className="flex-1 text-sm font-semibold leading-6 text-zinc-800">
                 <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
-                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
                     aria-hidden="true"
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm bg-gray-300"
+                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-300"
                     placeholder="Search..."
                     type="search"
                     name="search"
@@ -514,7 +514,7 @@ export default function MyProfilePageEdit() {
               <button onClick={() => router.push('/profile')}>
                 <span className="sr-only">Your profile</span>
                 <img
-                  className="h-12 w-12 rounded-full bg-gray-50"
+                  className="h-12 w-12 rounded-full bg-zinc-50"
                   src={'/profile_pic_def/gooseCom.png'}
                   alt=""
                 />
@@ -539,7 +539,7 @@ export default function MyProfilePageEdit() {
               </div>
             </div>
             {!isSearchActive ? (
-              <div className="hidden xl:block bg-gray-900">
+              <div className="hidden xl:block bg-zinc-800">
                 <Header UserProfile={UserProfile} />
                 <div className="-mt-4">
                   <ListTabs
@@ -549,7 +549,7 @@ export default function MyProfilePageEdit() {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
@@ -560,7 +560,7 @@ export default function MyProfilePageEdit() {
                     <PinnedStocksList UserProfile={UserProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
@@ -573,7 +573,7 @@ export default function MyProfilePageEdit() {
                 </div>
               </div>
             ) : (
-              <div className="hidden flex-1 xl:block bg-gray-900">
+              <div className="hidden flex-1 xl:block bg-zinc-800">
                 {/* search active*/}
                 <S_Header
                   onclick={sendMessageFromSearch}
@@ -590,7 +590,7 @@ export default function MyProfilePageEdit() {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
@@ -601,7 +601,7 @@ export default function MyProfilePageEdit() {
                     <S_PinnedStocksList searchedprofile={SearchedProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
@@ -617,7 +617,7 @@ export default function MyProfilePageEdit() {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l border-gray-200 px-4 py-6 sm:px-6 lg:px-8 xl:block w-2/5">
+        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l border-zinc-200 px-4 py-6 sm:px-6 lg:px-8 xl:block w-2/5">
           {/* Secondary column (hidden on smaller screens) */}
           <EditForm UserProfile={UserProfile as UserProfile} />
         </aside>

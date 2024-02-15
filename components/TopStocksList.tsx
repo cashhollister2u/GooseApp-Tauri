@@ -28,7 +28,7 @@ const TopStocksList: React.FC = () => {
   }, []) // Dependency array for useEffect
 
   return (
-    <ul role="list" className="divide-y-2 divide-black bg-gray-800">
+    <ul role="list" className="divide-y-2 divide-black bg-zinc-800">
       {ranked_list.map((project, projectindex) => (
         <li
           key={projectindex}

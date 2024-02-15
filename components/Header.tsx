@@ -57,7 +57,7 @@ const Header: React.FC<{ UserProfile?: UserProfile }> = ({ UserProfile }) => {
           </div>
 
           <div className="mt-6 px-2 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-            <div className="mt-6 min-w-0 h-40 lg:h-36 flex-1 md:block border-l-2 border-gray-700">
+            <div className="mt-6 min-w-0 h-40 lg:h-36 flex-1 md:block border-l-4 border-zinc-900">
               <div className="truncate text-white-900 ml-3">
                 <div className="font-bold mt-4 text-2xl">{full_name}</div>
                 <h1 className="mt-2 font-bold text-xl">@{username}</h1>

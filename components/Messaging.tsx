@@ -490,8 +490,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
       <div className=" bg-white shadow-xl ">
         <div className="items-start justify-between">
           <div>
-            <div className="flex  h-screen w-full flex-col bg-black shadow-xl">
-              <div className="bg-gray-900 p-7 ">
+            <div className="flex h-screen w-full flex-col bg-zinc-800 shadow-xl">
+              <div className="bg-zinc-900 p-7 ">
                 <div>
                   <div className="text-lg font-semibold leading-6 text-gray-300">
                     Messaging
@@ -499,7 +499,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                 </div>
               </div>
 
-              <div className="px-4  bg-gray-900 ">
+              <div className="px-4  bg-zinc-900 ">
                 <div className="flex-1 text-sm  font-semibold leading-6 text-gray-900 ">
                   <div className="relative flex mb-4 flex-1">
                     <MagnifyingGlassIcon
@@ -508,7 +508,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                     />
                     <input
                       id="text"
-                      className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-white bg-black placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm"
+                      className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-white bg-zinc-800 placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm"
                       placeholder="Send Message"
                       onFocus={() => {
                         setRecommendations(true), settabvalue(true)
@@ -520,7 +520,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   </div>
                 </div>
               </div>
-              <div className="border-b bg-gray-900 border-black">
+              <div className="border-b bg-zinc-900 border-black">
                 <div className="px-6 ">
                   <nav className="-mb-px flex space-x-6">
                     {tabs.map((tab) => (
@@ -531,8 +531,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                         }}
                         className={classNames(
                           tab.current
-                            ? 'border-indigo-500  text-indigo-600'
-                            : 'border-transparent hover:bg-gray-200/50 text-gray-500 hover:background-gray-300 hover:text-gray-700',
+                            ? 'text-indigo-600'
+                            : 'border-transparent hover:bg-zinc-200/50 text-gray-500 hover:background-gray-300 hover:text-gray-700',
                           'whitespace-nowrap px-1  rounded mb-1 text-sm font-medium h-12 w-14'
                         )}
                       >
@@ -543,7 +543,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       
                       className={classNames(
                         !tabvalue
-                          ? 'border-indigo-500 text-indigo-600'
+                          ? 'text-indigo-600'
                           : 'hidden',
                         'whitespace-nowrap px-8 mt-1 border-gray-500  mb-1 text-sm font-medium h-10 w-10 border-l'
                       )}
@@ -555,7 +555,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
               </div>
               <ul
                 role="list"
-                className="flex-1 divide-y bg-black divide-black overflow-y-auto"
+                className="flex-1 divide-y bg-zinc-800 divide-black overflow-y-auto"
               >
                 {tabvalue ? (
                   isRecommendations ? (
@@ -572,7 +572,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                               }}
                             >
                               <div
-                                className="absolute inset-0 group-hover:bg-gray-700"
+                                className="absolute inset-0 group-hover:bg-zinc-700"
                                 aria-hidden="true"
                               />
                               <div className="relative flex min-w-0 flex-1 items-center">
@@ -589,7 +589,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                     className={classNames(
                                       'online' === 'online'
                                         ? 'bg-green-400'
-                                        : 'bg-gray-300',
+                                        : 'bg-zinc-300',
                                       'absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white'
                                     )}
                                     aria-hidden="true"
@@ -638,7 +638,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                           href={`/profile?search=${reciever_profile.profile.username}#`}
                                           className={classNames(
                                             active
-                                              ? 'bg-gray-100 text-gray-900'
+                                              ? 'bg-zinc-100 text-gray-900'
                                               : 'text-gray-700',
                                             'block px-4 py-2 text-sm'
                                           )}
@@ -654,7 +654,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                         href={`/profile?search=${reciever_profile.profile.username}#`}
                                         className={classNames(
                                           active
-                                            ? 'bg-gray-100 text-gray-900'
+                                            ? 'bg-zinc-100 text-gray-900'
                                             : 'text-gray-700',
                                           'block px-4 py-2 text-sm'
                                         )}
@@ -682,7 +682,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                             }}
                           >
                             <div
-                              className="absolute inset-0 group-hover:bg-gray-700"
+                              className="absolute inset-0 group-hover:bg-zinc-700"
                               aria-hidden="true"
                             />
                             <div className="relative flex min-w-0 flex-1 items-center">
@@ -701,7 +701,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   className={classNames(
                                     reciever_profile.status === 'online'
                                       ? 'bg-green-400'
-                                      : 'bg-gray-300',
+                                      : 'bg-zinc-300',
                                     'absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white'
                                   )}
                                   aria-hidden="true"
@@ -748,7 +748,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                         href={`/profile?search=${reciever_profile.handle}#`}
                                         className={classNames(
                                           active
-                                            ? 'bg-gray-100 text-gray-900'
+                                            ? 'bg-zinc-100 text-gray-900'
                                             : 'text-gray-700',
                                           'block px-4 py-2 text-sm'
                                         )}
@@ -763,7 +763,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                         href={`/profile?search=${reciever_profile.handle}#`}
                                         className={classNames(
                                           active
-                                            ? 'bg-gray-100 text-gray-900'
+                                            ? 'bg-zinc-100 text-gray-900'
                                             : 'text-gray-700',
                                           'block px-4 py-2 text-sm'
                                         )}
@@ -783,7 +783,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                 ) : (
                   <div className="pr-8 flex flex-col">
                     <button
-                      className="sticky top-1 flex z-20 items-start  ml-4 bg-gray-400/80 py-2 rounded w-full hover:bg-gray-300"
+                      className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/80 py-2 rounded w-full hover:bg-zinc-300"
                       onClick={() => {
                         if (viewmsg?.handle) {
                           LoadsearchedUser(viewmsg.handle)
@@ -823,7 +823,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       </button>
                     </div>
                       <div ref={messageRef} className="flex flex-col">
-                        <div  className="flex-1  mb-32 overflow-y-auto ">
+                        <div  className="flex-1  mb-40 xl:mb-32 overflow-y-auto ">
                           {filteredMessages
                             .map((message: any, index: number) => (
                               <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 + (simplifiedLocalMessageCount * 15) )) ? newMessagesRef : null}>
@@ -854,7 +854,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                       viewmsg?.handle !==
                                       message.sender_profile.username
                                         ? 'bg-indigo-600'
-                                        : 'bg-gray-500/90'
+                                        : 'bg-zinc-500/90'
                                     }`}
                                   >
                                     {message.decrypted_message}
@@ -863,7 +863,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                               </li>
                             ))}
                         </div>
-                        <div className="absolute w-full bottom-0 bg-black py-4 px-4 right-5 ">
+                        <div className="absolute w-full bottom-0 bg-zinc-800s py-4 px-4 right-5 ">
                           <div className="flex mr-8 items-start space-x-4">
                             <div className="flex-shrink-0">
                               <img
@@ -874,7 +874,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                             </div>
                             <div className="min-w-0 flex-1">
                               <div>
-                                <div className="border-b border-gray-200 focus-within:border-indigo-600">
+                                <div className="border-b border-gray-200">
                                   <label htmlFor="message" className="sr-only">
                                     Add your message
                                   </label>
@@ -882,7 +882,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                     type="text"
                                     name="message"
                                     id="text-input"
-                                    className="px-2 py-1 bg-black block w-full resize-none border-0 border-b border-transparent p-0 pb-2 text-white placeholder:text-gray-400 focus:border-indigo-600 focus:ring-0 sm:text-sm sm:leading-6"
+                                    className="px-2 py-1 bg-zinc-800 block w-full focus:outline-none resize-none border-0 border-b border-transparent p-0 pb-2 text-white placeholder:text-gray-400 sm:text-sm sm:leading-6"
                                     placeholder="Add your message..."
                                     value={newMessage.message}
                                     onChange={handleChange}
@@ -901,7 +901,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   <div className="flex-shrink-0">
                                     <button
                                       type="submit"
-                                      className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                      className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 "
                                       onClick={SendMessage}
                                     >
                                       Post

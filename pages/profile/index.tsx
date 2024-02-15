@@ -358,7 +358,7 @@ const MyProfilePage: React.FC<{}> = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-gray-900/80" />
+              <div className="fixed inset-0 bg-black/80" />
             </Transition.Child>
 
             <div className="fixed inset-0 flex">
@@ -419,8 +419,8 @@ const MyProfilePage: React.FC<{}> = () => {
                                     router.push(item.href)}}}
                                   className={classNames(
                                     item.current
-                                      ? 'bg-gray-800 text-white'
-                                      : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                      ? 'bg-zinc-800 text-white'
+                                      : 'text-gray-400 hover:text-white hover:bg-zinc-800',
                                     'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
                                   )}
                                 >
@@ -438,7 +438,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                           className={classNames(
                                             item.current
                                               ? 'bg-gray-50'
-                                              : 'hover:bg-gray-800 hover:text-white',
+                                              : 'hover:bg-zinc-800 hover:text-white',
                                             'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-400'
                                           )}
                                         >
@@ -472,7 +472,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                                   as="a"
                                                   href={`/profile?search=${subItem}#`}
                                                   className={classNames(
-                                                    'hover:bg-gray-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
+                                                    'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                                   )}
                                                 >
                                                   {subItem}
@@ -488,7 +488,7 @@ const MyProfilePage: React.FC<{}> = () => {
                               </li>
                             ))}
                             <button
-                              className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                              className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
                               onClick={handleMessageScreen}
                             >
                               <ChatBubbleLeftRightIcon
@@ -504,7 +504,7 @@ const MyProfilePage: React.FC<{}> = () => {
                         </li>
                         <li className="mt-auto">
                           <button
-                            className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                            className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
                             onClick={handleLogout}
                           >
                             <ArrowLeftStartOnRectangleIcon
@@ -524,7 +524,7 @@ const MyProfilePage: React.FC<{}> = () => {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col border-r-4 border-zinc-900">
           {/* Sidebar component, full window */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-4">
             <nav className="flex flex-1 flex-col">
@@ -547,8 +547,8 @@ const MyProfilePage: React.FC<{}> = () => {
                             router.push(item.href)}}}
                           className={classNames(
                             item.current
-                              ? 'bg-gray-800 text-white'
-                              : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                              ? 'bg-zinc-800 text-white'
+                              : 'text-gray-400 hover:text-white hover:bg-zinc-800',
                             'group flex gap-x-3 w-full rounded-md p-2 text-sm leading-6 font-semibold'
                           )}
                         >
@@ -566,7 +566,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                   className={classNames(
                                     item.current
                                       ? 'bg-gray-50'
-                                      : 'hover:hover:bg-gray-800 hover:text-white',
+                                      : 'hover:hover:bg-zinc-800 hover:text-white',
                                     'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-400'
                                   )}
                                 >
@@ -594,7 +594,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                           as="a"
                                           href={`/profile?search=${subItem}#`}
                                           className={classNames(
-                                            'hover:bg-gray-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
+                                            'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
                                         >
                                           {subItem}
@@ -610,7 +610,7 @@ const MyProfilePage: React.FC<{}> = () => {
                       </li>
                     ))}
                     <button
-                      className="group xl:hidden w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                      className="group xl:hidden w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
                       onClick={handleMessageScreen}
                     >
                       <ChatBubbleLeftRightIcon
@@ -626,7 +626,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 </li>
                 <li className="mt-auto">
                   <button
-                    className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
+                    className="group -mx-2 w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
                     onClick={handleLogout}
                   >
                     <ArrowLeftStartOnRectangleIcon
@@ -641,7 +641,7 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-black px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button
             type="button"
             className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -659,12 +659,12 @@ const MyProfilePage: React.FC<{}> = () => {
               <form className="relative flex flex-1" action="#" method="GET">
                 <label htmlFor="search-field" className="sr-only"></label>
                 <MagnifyingGlassIcon
-                  className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                  className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-600/80"
                   aria-hidden="true"
                 />
                 <input
                   id="search-field-main"
-                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm bg-gray-300"
+                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-slate-200"
                   placeholder="Search..."
                   type="search"
                   name="search"
@@ -686,13 +686,13 @@ const MyProfilePage: React.FC<{}> = () => {
         </div>
 
         <main className="lg:pl-72 xl:w-2/3">
-          <div className="xl:pr-0 ">
+          <div className="xl:pr-0">
             <div className="px-4 py-0 sm:px-6 lg:px-8 lg:py-0 ">
               {/* Main area */}
             </div>
             {/* search bar for large window */}
            
-            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm ">
+            <div className="hidden lg:flex sticky top-0 z-40 flex border-r-4 border-black items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
               {isMessaging ? (
             <div className="px-2 py-4 text-lg font-semibold leading-6 text-gray-300">
@@ -702,12 +702,12 @@ const MyProfilePage: React.FC<{}> = () => {
                 <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
-                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-600/80"
                     aria-hidden="true"
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm bg-gray-300"
+                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-slate-200"
                     placeholder="Search..."
                     type="search"
                     name="search"
@@ -727,9 +727,9 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
             {/* search not active */}
             <div className={` ${isLoading ? '' : 'hidden'}`}>
-              <div className="image-container flex justify-center items-center relative h-screen overflow-hidden">
+              <div className="image-container flex justify-center border-4 border-black items-center relative h-screen overflow-hidden">
                 {/* Opaque overlay */}
-                <div className="absolute inset-0 bg-black z-20"></div>
+                <div className="absolute inset-0 bg-zinc-800 z-20"></div>
 
                 <div className="absolute inset-0 flex justify-center items-center pb-56">
                   <img
@@ -740,7 +740,7 @@ const MyProfilePage: React.FC<{}> = () => {
               </div>
             </div>
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
-              <div className="fixed inset-0 top-3 lg:left-72 bg-black z-20">
+              <div className="fixed inset-0 top-3 lg:top-8 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
                   onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
@@ -757,7 +757,7 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
 
             {!isSearchActive ? (
-              <div className={`bg-gray-900 ${!isLoading ? '' : 'hidden'}`}>
+              <div className={`bg-zinc-800 ${!isLoading ? '' : 'hidden'}`}>
                 <Header UserProfile={UserProfile} />
                 <div className="-mt-4">
                   <ListTabs
@@ -767,31 +767,31 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
                     <h1 className=" ml-5 text-2xl font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="mt-6 border-2 border-zinc-900 " />
                     <PinnedStocksList UserProfile={UserProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
                     <h1 className="ml-5 text-2xl font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="mt-6 border-2 border-zinc-900" />
                     <TopStocksList />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex-1 bg-gray-900">
+              <div className="flex-1 bg-zinc-800">
                 {/* search active*/}
                 <S_Header
                   onclick={sendMessageFromSearch}
@@ -808,25 +808,25 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
                     <h1 className=" ml-5 text-2xl font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="mt-6 border-2 border-zinc-900" />
                     <S_PinnedStocksList searchedprofile={SearchedProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-gray-900 ${
+                    className={`flex-1 bg-zinc-800 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
                     <h1 className="ml-5 text-2xl font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="mt-6 border-2 border-zinc-900" />
                     <TopStocksList />
                   </div>
                 </div>
@@ -835,7 +835,7 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-4 border-black bg-gray-800/100 xl:block w-1/3">
+        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-4 border-zinc-900 bg-zinc-800/100 xl:block w-1/3">
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
