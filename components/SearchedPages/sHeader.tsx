@@ -203,7 +203,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
           </div>
 
           <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-            <div className="mt-6 min-w-0 flex-1 md:block border-l-4 border-zinc-900">
+            <div className="mt-6 min-w-0 h-40 lg:h-36 flex-1 md:block border-l-2 border-zinc-700">
               <h1 className="truncate text-white-900 ml-3">
                 <div className="font-bold text-2xl">{full_name}</div>
                 <div className="mt-2 font-bold text-xl">@{username}</div>
@@ -213,7 +213,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
             </div>
 
             <div
-              className={`flex mr-4 justify-end xl:-mt-24 lg:-mt-24 sm:-mt-32 ${
+              className={`flex mr-4 justify-end xl:-mt-20 lg:-mt-24 sm:-mt-32 ${
                 MYusername !== username ? '' : 'hidden'
               }`}
             >

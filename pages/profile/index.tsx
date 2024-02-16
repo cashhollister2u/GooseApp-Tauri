@@ -425,7 +425,10 @@ const MyProfilePage: React.FC<{}> = () => {
                                   )}
                                 >
                                   <item.icon
-                                    className="h-6 w-6 shrink-0"
+                                    className={`h-6 w-6 shrink-0 ${
+                                      item.name === 'My Profile'? 
+                                        'text-yellow-600':'text-green-600'                  
+                                    }`}
                                     aria-hidden="true"
                                   />
                                   {item.name}
@@ -443,7 +446,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                           )}
                                         >
                                           <item.icon
-                                            className="h-6 w-6 shrink-0 text-gray-400"
+                                            className="h-6 w-6 shrink-0 text-blue-600"
                                             aria-hidden="true"
                                           />
                                           {item.name}
@@ -492,7 +495,7 @@ const MyProfilePage: React.FC<{}> = () => {
                               onClick={handleMessageScreen}
                             >
                               <ChatBubbleLeftRightIcon
-                                className="h-6 w-6 shrink-0"
+                                className="h-6 w-6 text-red-600 shrink-0"
                                 aria-hidden="true"
                               />
                               Messages
@@ -524,7 +527,7 @@ const MyProfilePage: React.FC<{}> = () => {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col border-r-4 border-zinc-900">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col border-r-2 border-zinc-600">
           {/* Sidebar component, full window */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-4">
             <nav className="flex flex-1 flex-col">
@@ -553,7 +556,10 @@ const MyProfilePage: React.FC<{}> = () => {
                           )}
                         >
                             <item.icon
-                              className="h-6 w-6 shrink-0"
+                              className={`h-6 w-6 shrink-0 ${
+                                item.name === 'My Profile'? 
+                                  'text-yellow-600':'text-green-600'
+                              }`}
                               aria-hidden="true"
                             />
                             {item.name}
@@ -571,7 +577,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                   )}
                                 >
                                   <item.icon
-                                    className="h-6 w-6 shrink-0 text-gray-400"
+                                    className="h-6 w-6 shrink-0 text-blue-600"
                                     aria-hidden="true"
                                   />
                                   {item.name}
@@ -614,7 +620,7 @@ const MyProfilePage: React.FC<{}> = () => {
                       onClick={handleMessageScreen}
                     >
                       <ChatBubbleLeftRightIcon
-                        className="h-6 w-6 shrink-0"
+                        className="h-6 w-6 text-red-600 shrink-0"
                         aria-hidden="true"
                       />
                       Messages
@@ -664,7 +670,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 />
                 <input
                   id="search-field-main"
-                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-slate-200"
+                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-600"
                   placeholder="Search..."
                   type="search"
                   name="search"
@@ -692,7 +698,7 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
             {/* search bar for large window */}
            
-            <div className="hidden lg:flex sticky top-0 z-40 flex border-r-4 border-black items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
+            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
               {isMessaging ? (
             <div className="px-2 py-4 text-lg font-semibold leading-6 text-gray-300">
@@ -702,12 +708,12 @@ const MyProfilePage: React.FC<{}> = () => {
                 <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
-                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-600/80"
+                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
                     aria-hidden="true"
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-slate-200"
+                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-100 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
                     placeholder="Search..."
                     type="search"
                     name="search"
@@ -727,7 +733,7 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
             {/* search not active */}
             <div className={` ${isLoading ? '' : 'hidden'}`}>
-              <div className="image-container flex justify-center border-4 border-black items-center relative h-screen overflow-hidden">
+              <div className="image-container flex justify-center border-t-2 border-b-2 border-zinc-600 items-center relative h-screen overflow-hidden">
                 {/* Opaque overlay */}
                 <div className="absolute inset-0 bg-zinc-800 z-20"></div>
 
@@ -742,6 +748,7 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 top-3 lg:top-8 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
+                  isLoading={isLoading}
                   onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
                   importConversations={conversations}
@@ -757,9 +764,9 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
 
             {!isSearchActive ? (
-              <div className={`bg-zinc-800 ${!isLoading ? '' : 'hidden'}`}>
+              <div className={`bg-zinc-900 ${!isLoading ? '' : 'hidden'}`}>
                 <Header UserProfile={UserProfile} />
-                <div className="-mt-4">
+                <div className="mt-4">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
@@ -767,31 +774,31 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className=" ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-zinc-900 " />
+                    <hr className="border-1 border-zinc-950" />
                     <PinnedStocksList UserProfile={UserProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-zinc-900" />
+                    <hr className="border-1 border-zinc-950" />
                     <TopStocksList />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex-1 bg-zinc-800">
+              <div className="flex-1 bg-zinc-900">
                 {/* search active*/}
                 <S_Header
                   onclick={sendMessageFromSearch}
@@ -800,7 +807,7 @@ const MyProfilePage: React.FC<{}> = () => {
                   searchedprofile={SearchedProfile}
                   UserProfile={UserProfile as UserProfile}
                 />{' '}
-                <div className="flex-1 -mt-4">
+                <div className="mt-4">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
@@ -808,25 +815,25 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className=" ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-zinc-900" />
+                    <hr className="border-1 border-zinc-950" />
                     <S_PinnedStocksList searchedprofile={SearchedProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-zinc-900" />
+                    <hr className="border-1 border-zinc-950" />
                     <TopStocksList />
                   </div>
                 </div>
@@ -835,10 +842,11 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-4 border-zinc-900 bg-zinc-800/100 xl:block w-1/3">
+        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-2 border-zinc-600 bg-zinc-800/100 xl:block w-1/3">
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
+              isLoading={isLoading}
               onResetMessageCount={setLoadedMessageCount}
               onLoadedMessageCount={fetchUnloadedMessages}
               importConversations={conversations as UserProfile[]}

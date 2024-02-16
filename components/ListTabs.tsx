@@ -12,10 +12,10 @@ interface ListTabsProps {
   
   export default function ListTabs({ activeTab, onTabSelect }: ListTabsProps) {
     return (
-      <div className="bg-zinc-800  py-8 ">
+      <div className="bg-zinc-900 border-b-2 border-t-2 border-zinc-950  ">
         <div className="mx-auto max-w-7xl">
           <div>
-            <div className="flex border-b-2 border-t-2 border-6 border-zinc-900 py-4">
+            <div className="flex py-4">
               <ul
                 role="list"
                 className="flex min-w-full flex-none gap-x-8 px-8 text-sm font-semibold leading-6 text-gray-400"

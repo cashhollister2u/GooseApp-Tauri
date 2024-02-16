@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState, useRef } from 'react'
+import {Spinner} from "@nextui-org/react";
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
@@ -89,6 +90,7 @@ const Messaging: React.FC<{
   onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any, isLoadMore:boolean) => void
   onResetMessageCount: (reset:number) => void
   importTotalMessageCount: TotalMessagesPerUser[] | undefined
+  isLoading: boolean
 }> = ({
   UserProfile,
   onLoadedMessageCount,
@@ -100,6 +102,7 @@ const Messaging: React.FC<{
   importMessages,
   importTotalMessageCount,
   importConversations,
+  isLoading
 }) => {
   const [followList, setFollowList] = useState<string[]>([])
   const [viewmsg, setviewmsg] = useState<allConversations>()
@@ -503,12 +506,12 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                 <div className="flex-1 text-sm  font-semibold leading-6 text-gray-900 ">
                   <div className="relative flex mb-4 flex-1">
                     <MagnifyingGlassIcon
-                      className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                      className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
                       aria-hidden="true"
                     />
                     <input
                       id="text"
-                      className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-white bg-zinc-800 placeholder:text-gray-400 focus:outline-none focus:border-transparent sm:text-sm"
+                      className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-zinc-100 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm"
                       placeholder="Send Message"
                       onFocus={() => {
                         setRecommendations(true), settabvalue(true)
@@ -672,6 +675,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       )
                     )
                   ) : (
+                    !isLoading ? (
                     allConversations?.map((reciever_profile: any) => (
                       <li key={reciever_profile.handle}>
                         <div className="group relative flex items-center px-5 py-6">
@@ -779,11 +783,14 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                         </div>
                       </li>
                     ))
-                  )
+                    ):(<div>
+                      <Spinner
+                      className='flex mt-80' />
+                    </div>))
                 ) : (
                   <div className="pr-8 flex flex-col">
                     <button
-                      className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/80 py-2 rounded w-full hover:bg-zinc-300"
+                      className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/50 backdrop-blur-md py-2 rounded w-full hover:bg-zinc-300"
                       onClick={() => {
                         if (viewmsg?.handle) {
                           LoadsearchedUser(viewmsg.handle)
@@ -823,7 +830,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       </button>
                     </div>
                       <div ref={messageRef} className="flex flex-col">
-                        <div  className="flex-1  mb-40 xl:mb-32 overflow-y-auto ">
+                        <div  className="flex-1  mb-44 xl:mb-36 overflow-y-auto ">
                           {filteredMessages
                             .map((message: any, index: number) => (
                               <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 + (simplifiedLocalMessageCount * 15) )) ? newMessagesRef : null}>
@@ -863,11 +870,11 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                               </li>
                             ))}
                         </div>
-                        <div className="absolute w-full bottom-0 bg-zinc-800s py-4 px-4 right-5 ">
+                        <div className="absolute left-4 right-6 bottom-2 bg-zinc-900/70 border-2 rounded-lg border-zinc-900 backdrop-blur-md py-4">
                           <div className="flex mr-8 items-start space-x-4">
                             <div className="flex-shrink-0">
                               <img
-                                className="ml-4 inline-block h-12 w-12 rounded-full"
+                                className="ml-2 inline-block h-12 w-12 rounded-full"
                                 src={`${mediaURL}${myProfile?.profile_picture}`}
                                 alt=""
                               />
@@ -882,7 +889,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                     type="text"
                                     name="message"
                                     id="text-input"
-                                    className="px-2 py-1 bg-zinc-800 block w-full focus:outline-none resize-none border-0 border-b border-transparent p-0 pb-2 text-white placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                    className="px-2 py-1 bg-transparent block w-full focus:outline-none resize-none border-0 border-b border-transparent p-0 pb-2 text-white placeholder:text-gray-400 sm:text-sm sm:leading-6"
                                     placeholder="Add your message..."
                                     value={newMessage.message}
                                     onChange={handleChange}
@@ -897,15 +904,6 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                 <div className="flex justify-between pt-2">
                                   <div className="flex items-center space-x-5">
                                     <div className="flow-root"></div>
-                                  </div>
-                                  <div className="flex-shrink-0">
-                                    <button
-                                      type="submit"
-                                      className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 "
-                                      onClick={SendMessage}
-                                    >
-                                      Post
-                                    </button>
                                   </div>
                                 </div>
                               </div>

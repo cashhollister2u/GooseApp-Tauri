@@ -45,7 +45,9 @@ const S_PinnedStocksList: React.FC<S_PinnedStocksListProps> = ({
           project !== '' && (
             <li
               key={projectindex}
-              className="flex items-center ml-4 mr-4 justify-between gap-x-6 py-5"
+              className={`flex items-center border-b-2 border-zinc-700/70 justify-between gap-x-6 py-5 ${
+                projectindex % 2 === 0 ? 'bg-zinc-800' : 'bg-zinc-900 '
+              }`}
             >
               <div className="min-w-0 ml-3">
                 <div className="flex items-start gap-x-3">

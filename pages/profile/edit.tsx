@@ -252,7 +252,10 @@ export default function MyProfilePageEdit() {
                                   )}
                                 >
                                   <item.icon
-                                    className="h-6 w-6 shrink-0"
+                                    className={`h-6 w-6 shrink-0 ${
+                                    item.name === 'My Profile'? 
+                                      'text-yellow-600':'text-green-600'                  
+                                  }`}
                                     aria-hidden="true"
                                   />
                                   {item.name}
@@ -270,7 +273,7 @@ export default function MyProfilePageEdit() {
                                           )}
                                         >
                                           <item.icon
-                                            className="h-6 w-6 shrink-0 text-zinc-400"
+                                            className="h-6 w-6 shrink-0 text-blue-600"
                                             aria-hidden="true"
                                           />
                                           {item.name}
@@ -341,7 +344,7 @@ export default function MyProfilePageEdit() {
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 border-r-2 border-zinc-600 lg:flex-col">
           {/* Sidebar component, full window */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-4">
             <nav className="flex flex-1 flex-col">
@@ -365,7 +368,10 @@ export default function MyProfilePageEdit() {
                             )}
                           >
                             <item.icon
-                              className="h-6 w-6 shrink-0"
+                               className={`h-6 w-6 shrink-0 ${
+                                item.name === 'My Profile'? 
+                                  'text-yellow-600':'text-green-600'                  
+                              }`}
                               aria-hidden="true"
                             />
                             {item.name}
@@ -383,7 +389,7 @@ export default function MyProfilePageEdit() {
                                   )}
                                 >
                                   <item.icon
-                                    className="h-6 w-6 shrink-0 text-zinc-400"
+                                    className="h-6 w-6 shrink-0 text-blue-600"
                                     aria-hidden="true"
                                   />
                                   {item.name}
@@ -426,7 +432,7 @@ export default function MyProfilePageEdit() {
                     onClick={handleMessageButton}
                     >
                     <ChatBubbleLeftRightIcon
-                      className="h-6 w-6 shrink-0"
+                      className="h-6 w-6 text-red-600 shrink-0"
                       aria-hidden="true"
                     />
                     Messages
@@ -525,12 +531,13 @@ export default function MyProfilePageEdit() {
             <div className="xl:hidden mt-10 ml-10 mb-10 mr-10 ">
               <EditForm UserProfile={UserProfile as UserProfile} />
             </div>
-            <div className={` ${isLoading ? '' : 'hidden'}`}>
-              <div className="image-container flex justify-center items-center relative h-screen overflow-hidden">
+         {/* search not active */}
+         <div className={` ${isLoading ? '' : 'hidden'}`}>
+              <div className="image-container flex justify-center border-t-2 border-b-2 border-zinc-600 items-center relative h-screen overflow-hidden">
                 {/* Opaque overlay */}
-                <div className="absolute inset-0 bg-black z-20"></div>
+                <div className="absolute inset-0 bg-zinc-800 z-20"></div>
 
-                <div className="absolute inset-0 flex justify-center items-center md:pr-16 md:pb-6 xl:pr-16 xl:pb-6">
+                <div className="absolute inset-0 flex justify-center items-center pb-56">
                   <img
                     src="/svg/WhiteLoadingIcon.svg"
                     className="w-28 z-20 animate-spin-slow"
@@ -539,9 +546,9 @@ export default function MyProfilePageEdit() {
               </div>
             </div>
             {!isSearchActive ? (
-              <div className="hidden xl:block bg-zinc-800">
+              <div className="hidden xl:block bg-zinc-900">
                 <Header UserProfile={UserProfile} />
-                <div className="-mt-4">
+                <div className="mt-4">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
@@ -549,31 +556,31 @@ export default function MyProfilePageEdit() {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className=" ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="border-1 border-zinc-950" />
                     <PinnedStocksList UserProfile={UserProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="border-1 border-zinc-950" />
                     <TopStocksList />
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="hidden flex-1 xl:block bg-zinc-800">
+              <div className="hidden flex-1 xl:block bg-zinc-900">
                 {/* search active*/}
                 <S_Header
                   onclick={sendMessageFromSearch}
@@ -582,7 +589,7 @@ export default function MyProfilePageEdit() {
                   searchedprofile={SearchedProfile}
                   UserProfile={UserProfile as UserProfile}
                 />{' '}
-                <div className="flex-1 -mt-4">
+                <div className="mt-4">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
@@ -590,25 +597,25 @@ export default function MyProfilePageEdit() {
                 </div>
                 <div className="flex">
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className=" ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Pinned Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="border-1 border-zinc-950" />
                     <S_PinnedStocksList searchedprofile={SearchedProfile} />
                   </div>
                   <div
-                    className={`flex-1 bg-zinc-800 ${
+                    className={`flex-1 bg-zinc-900 ${
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 text-2xl font-bold text-white">
+                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
                       Trending Stocks
                     </h1>
-                    <hr className="mt-6 border-2 border-black" />
+                    <hr className="border-1 border-zinc-950" />
                     <TopStocksList />
                   </div>
                 </div>

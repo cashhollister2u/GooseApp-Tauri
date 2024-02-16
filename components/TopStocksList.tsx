@@ -28,12 +28,14 @@ const TopStocksList: React.FC = () => {
   }, []) // Dependency array for useEffect
 
   return (
-    <ul role="list" className="divide-y-2 divide-black bg-zinc-800">
+    <ul role="list">
       {ranked_list.map((project, projectindex) => (
         <li
-          key={projectindex}
-          className="flex items-center ml-4 mr-4 justify-between gap-x-6 py-5"
-        >
+        key={projectindex}
+        className={`flex items-center border-b-2 border-zinc-700/70 justify-between gap-x-6 py-5 ${
+          projectindex % 2 === 0 ? 'bg-zinc-800' : 'bg-zinc-900 '
+        }`}
+      >
           <div className="min-w-0 ml-3">
             <div className="flex items-start gap-x-3">
               <p className="ml-5 mr-10 font-bold text-white">
