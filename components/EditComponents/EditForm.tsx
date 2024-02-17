@@ -4,6 +4,7 @@ import useAxios from '../../utils/useAxios'
 import { editStockSuggestionsURL } from '../backendURL'
 import { fetchUserURL } from '../backendURL'
 
+
 import {
   CheckIcon,
   ChevronUpDownIcon,
@@ -141,29 +142,6 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
     if (updatedValues) {
       setEditedValues5(updatedValues)
       setvalues5(updatedValues)
-      try {
-        const formData = new FormData()
-
-        if (updatedValues) {
-          formData.append('values5', JSON.stringify(updatedValues))
-        }
-
-        const response = await gooseApp.patch(fetchUserURL, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data', // Important for file uploads
-          },
-        })
-      } catch (error) {
-        swal.fire({
-          title: 'Could not add company',
-          icon: 'error',
-          toast: true,
-          timer: 6000,
-          position: 'top-right',
-          timerProgressBar: true,
-          showConfirmButton: false,
-        })
-      }
     }
   }
 
@@ -173,29 +151,6 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
 
     if (updatedValues) {
       setvalues5(updatedValues)
-      try {
-        const formData = new FormData()
-
-        if (updatedValues) {
-          formData.append('values5', JSON.stringify(updatedValues))
-        }
-
-        const response = await gooseApp.patch(fetchUserURL, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data', // Important for file uploads
-          },
-        })
-      } catch (error) {
-        swal.fire({
-          title: 'Could not add company',
-          icon: 'error',
-          toast: true,
-          timer: 6000,
-          position: 'top-right',
-          timerProgressBar: true,
-          showConfirmButton: false,
-        })
-      }
     }
   }
 
