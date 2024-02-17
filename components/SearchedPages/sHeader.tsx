@@ -213,7 +213,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
             </div>
 
             <div
-              className={`flex mr-4 justify-end xl:-mt-20 lg:-mt-24 sm:-mt-32 ${
+              className={`flex mr-4 justify-end xl:-mt-20 lg:-mt-24 sm:-mt-24 ${
                 MYusername !== username ? '' : 'hidden'
               }`}
             >

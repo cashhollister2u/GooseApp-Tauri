@@ -102,10 +102,12 @@ export default function MyProfilePageEdit() {
               followingList.push(follow.profile.username)
             }
           })
+          if (!UserProfile) {
           setUserProfile(fetchedUserProfile)
+          }
         } catch (error) {
           if (!signal.aborted) {
-            window.location.href = '/sign-in'
+            window.location.href = '/login'
           }
         }
       }
@@ -135,7 +137,7 @@ export default function MyProfilePageEdit() {
       clearTimeout(timer)
       controller.abort()
     }
-  }, [])
+  }, [window.location.href])
 
   //Loading Screen
   useEffect(() => {
@@ -241,8 +243,7 @@ export default function MyProfilePageEdit() {
                             {navigation.map((item: any) => (
                               <li key={item.name}>
                                 {!item.children ? (
-                                  <button
-                                   
+                                  <button  
                                   onClick={() => router.push(item.href)}
                                   className={classNames(
                                     item.current
@@ -299,14 +300,15 @@ export default function MyProfilePageEdit() {
                                               <li key={index}>
                                                 {/* 44px */}
                                                 <Disclosure.Button
-                                                  as="a"
-                                                  href={`/profile?search=${subItem}#`}
+                                                  as="div"
+                                                  onClick={() => {router.push(`/profile?search=${subItem}#`),
+                                                console.log(window.location.href)}}
                                                   className={classNames(
-                                                    'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-zinc-400'
+                                                    'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                                   )}
                                                 >
                                                   {subItem}
-                                                </Disclosure.Button>
+                                              </Disclosure.Button>
                                               </li>
                                             )
                                           )}
@@ -317,6 +319,16 @@ export default function MyProfilePageEdit() {
                                 )}
                               </li>
                             ))}
+                            <button
+                              className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
+                              onClick={handleMessageButton}
+                            >
+                              <ChatBubbleLeftRightIcon
+                                className="h-6 w-6 text-red-600 shrink-0"
+                                aria-hidden="true"
+                              />
+                              Messages
+                            </button>
                           </ul>
                         </li>
                         <li>
@@ -409,14 +421,14 @@ export default function MyProfilePageEdit() {
                                       <li key={index}>
                                         {/* 44px */}
                                         <Disclosure.Button
-                                          as="a"
-                                          href={`/profile?search=${subItem}#`}
+                                          as="div"
+                                          onClick={() => router.push(`/profile/edit?search=${subItem}#`)}
                                           className={classNames(
-                                            'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-zinc-400'
+                                            'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
                                         >
                                           {subItem}
-                                        </Disclosure.Button>
+                                      </Disclosure.Button>
                                       </li>
                                     )
                                   )}
@@ -464,26 +476,10 @@ export default function MyProfilePageEdit() {
             type="button"
             className="-m-2.5 p-2.5 text-zinc-700 lg:hidden"
             onClick={() => setSidebarOpen(true)}
-          >
+            >
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
-          <div className="hidden flex-1 text-sm font-semibold leading-6 text-zinc-800">
-            <form className="relative flex flex-1" action="#" method="GET">
-              <label htmlFor="search-field" className="sr-only"></label>
-              <MagnifyingGlassIcon
-                className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
-                aria-hidden="true"
-              />
-              <input
-                id="search-field-main"
-                className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-300"
-                placeholder="Search..."
-                type="search"
-                name="search"
-              />
-            </form>
-          </div>
           <button onClick={() => router.push('/profile')}>
             <span className="sr-only">Your profile</span>
             <img
@@ -502,7 +498,7 @@ export default function MyProfilePageEdit() {
             {/* search bar for large window */}
             <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-zinc-800">
-                <form className="relative flex flex-1" action="#" method="GET">
+              <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
                     className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
@@ -510,7 +506,7 @@ export default function MyProfilePageEdit() {
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-300"
+                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-100 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
                     placeholder="Search..."
                     type="search"
                     name="search"

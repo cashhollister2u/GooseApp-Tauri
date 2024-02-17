@@ -101,7 +101,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (0)
-  const { activeMessage } = router.query; // Replace 'yourParameterName' with the actual name of your query parameter
+  const { activeMessage } = router.query; 
   const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
 
@@ -148,11 +148,10 @@ const MyProfilePage: React.FC<{}> = () => {
 
     
     const timer = setTimeout(() => {
-
+      
       if (activeMessage === 'true') {
         setIsMessaging(true)
       }
-  
       const fetchUserfollowing = async () => {
         try {
           const updatedUserData = await gooseApp.get(`${fetchUserURL}`)
@@ -172,7 +171,10 @@ const MyProfilePage: React.FC<{}> = () => {
         }
       }
 
-      fetchUserfollowing()
+      if(!UserProfile){
+        fetchUserfollowing()
+      }
+
       if (search) {
         setSearchActive(true)
 
@@ -205,12 +207,10 @@ const MyProfilePage: React.FC<{}> = () => {
     return () => {
       clearTimeout(timer), controller.abort()
     }
-  }, [])
+  }, [window.location.href])
 
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {
     const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
-   
-    
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
@@ -322,14 +322,12 @@ const MyProfilePage: React.FC<{}> = () => {
         setIsMessaging(true)
       }
     }
-
     checkSize()
-
     window.addEventListener('resize', checkSize)
 
     return () => window.removeEventListener('resize', checkSize)
-    
   }
+
 
   const handleLogout = () => {
     localStorage.removeItem('ally-supports-cache')
@@ -410,13 +408,13 @@ const MyProfilePage: React.FC<{}> = () => {
                             {navigation.map((item: any) => (
                               <li key={item.name}>
                                 {!item.children ? (
-                                  <button
-                                   
+                                  <button         
                                   onClick={() => {
                                     if (item.name === 'My Profile') {
-                                      window.location.href = '/profile'
-                                    } else {
-                                    router.push(item.href)}}}
+                                      updateIsMessaging(),
+                                      setSidebarOpen(false)
+                                    }
+                                    router.push(item.href)}}
                                   className={classNames(
                                     item.current
                                       ? 'bg-zinc-800 text-white'
@@ -472,14 +470,17 @@ const MyProfilePage: React.FC<{}> = () => {
                                               <li key={index}>
                                                 {/* 44px */}
                                                 <Disclosure.Button
-                                                  as="a"
-                                                  href={`/profile?search=${subItem}#`}
+                                                  as="div"
+                                                  onClick={() => {
+                                                    router.push(`/profile?search=${subItem}#`),
+                                                    setSidebarOpen(false)
+                                                  }}
                                                   className={classNames(
                                                     'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                                   )}
                                                 >
                                                   {subItem}
-                                                </Disclosure.Button>
+                                              </Disclosure.Button>
                                               </li>
                                             )
                                           )}
@@ -541,13 +542,12 @@ const MyProfilePage: React.FC<{}> = () => {
                     {navigation.map((item: any) => (
                       <li key={item.name}>
                         {!item.children ? (
-                          <button
-                                   
+                          <button         
                           onClick={() => {
                             if (item.name === 'My Profile') {
-                              window.location.href = '/profile'
-                            } else {
-                            router.push(item.href)}}}
+                              updateIsMessaging()
+                            }
+                            router.push(item.href)}}
                           className={classNames(
                             item.current
                               ? 'bg-zinc-800 text-white'
@@ -597,14 +597,14 @@ const MyProfilePage: React.FC<{}> = () => {
                                       <li key={index}>
                                         {/* 44px */}
                                         <Disclosure.Button
-                                          as="a"
-                                          href={`/profile?search=${subItem}#`}
+                                          as="div"
+                                          onClick={() => router.push(`/profile?search=${subItem}#`)}
                                           className={classNames(
                                             'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
                                         >
                                           {subItem}
-                                        </Disclosure.Button>
+                                      </Disclosure.Button>
                                       </li>
                                     )
                                   )}
@@ -647,7 +647,7 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-black px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button
             type="button"
             className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -665,12 +665,12 @@ const MyProfilePage: React.FC<{}> = () => {
               <form className="relative flex flex-1" action="#" method="GET">
                 <label htmlFor="search-field" className="sr-only"></label>
                 <MagnifyingGlassIcon
-                  className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-600/80"
+                  className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
                   aria-hidden="true"
                 />
                 <input
                   id="search-field-main"
-                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-gray-600/80 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-600"
+                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-800"
                   placeholder="Search..."
                   type="search"
                   name="search"
@@ -842,7 +842,7 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-2 border-zinc-600 bg-zinc-800/100 xl:block w-1/3">
+        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-2 border-zinc-600 bg-zinc-900 xl:block w-1/3">
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
