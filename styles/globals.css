@@ -68,5 +68,8 @@ body {
 }
 
 #AutoComplete::placeholder {
-  color: rgb(255, 255, 255); /* This will make the placeholder text black */
+  color: rgb(0, 0, 0); /* This will make the placeholder text black */
 }
+
+
+  

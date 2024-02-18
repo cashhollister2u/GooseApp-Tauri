@@ -1,5 +1,5 @@
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import useAxios from '../../utils/useAxios'
 import { fetchUserURL } from '../backendURL'
 import stocklist from '../data/stockValuesList.json'
@@ -46,10 +46,10 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
   const [bio, setbio] = useState<string>('')
 
 
-  const StockSuggestions  = listSuggestion.map((item) => ({
-    label: item, 
-    value: item, 
-  }));
+  const StockSuggestions = useMemo(() => listSuggestion.map(item => ({
+    label: item,
+    value: item,
+  })), [listSuggestion]).slice(0,5);
  
   const [background_image, setbackground_image] =
     useState<BackgroundImageState>({
@@ -84,11 +84,12 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         }
       })
 
-      setlistSuggestion(suggestions.slice(0, 10))
+      setlistSuggestion(suggestions)
       
     }
-
-    companySuggestions()
+    if (query?.length > 2) {
+      companySuggestions()
+    }
   }, [query])
 
   const handleBackgroundImageChange = (
@@ -216,7 +217,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
     <div>
       <div className="space-y-12">
         <div className="border-b border-white/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-white">
+          <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Edit Profile
           </h2>
           <p className="text-sm leading-6 text-gray-400">
@@ -225,7 +226,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
           </p>
         </div>
         <div className="border-b border-white/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-white">
+          <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Media
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-400">
@@ -242,7 +243,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             <div className="col-span-full">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm font-medium leading-6 text-white"
+                className="block text-sm font-medium leading-6 text-zinc-200"
               >
                 Profile Picture
               </label>
@@ -274,7 +275,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             <div className="col-span-full">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm font-medium leading-6 text-white"
+                className="block text-sm font-medium leading-6 text-zinc-200"
               >
                 Background Image
               </label>
@@ -305,7 +306,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         </div>
 
         <div className="border-b border-white/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-white">
+          <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Personal Information
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-400">
@@ -317,7 +318,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             <div className="sm:col-span-3">
               <label
                 htmlFor="first-name"
-                className="block text-sm font-medium leading-6 text-white"
+                className="block text-sm font-medium leading-6 text-zinc-200"
               >
                 Name
               </label>
@@ -326,7 +327,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                   type="text"
                   name="full_name"
                   id="full_name"
-                  className="block w-full px-2 rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                  className="block w-full px-2 rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                   onChange={(e) => {
                     setfull_name(e.target.value)
                   }}
@@ -335,7 +336,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                 <div className="col-span-full mt-10">
                   <label
                     htmlFor="about"
-                    className="block text-sm font-medium leading-6 text-white"
+                    className="block text-sm font-medium leading-6 text-zinc-200"
                   >
                     Bio
                   </label>
@@ -344,7 +345,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                       id="about"
                       name="about"
                       rows={3}
-                      className="block px-2 w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                      className="block px-2 w-full rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       defaultValue={''}
                       onChange={(e) => {
                         setbio(e.target.value)
@@ -361,41 +362,40 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         </div>
 
         <div className="border-b border-white/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-white">
+          <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Pinned Stocks
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-400">
-            We'll always let you know about important changes, but you pick what
-            else you want to hear about.
+          This information will be displayed publicly so be careful what you
+            share.
           </p>
           <div className="col-span-full mt-10">
             <label
               htmlFor="street-address"
-              className="block text-sm font-medium leading-6 text-white "
+              className="block text-sm font-medium leading-6 text-zinc-200 "
             >
               Ticker | Company
             </label>
             {values5.map((value, index) => (
               <div key={index} className="flex items-center space-x-2 mt-4">
-                <span className="text-m font-medium leading-6 text-white  ">
+                <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
                   {index + 1}.
                 </span>
                 <div className="w-full">
                 <Autocomplete
                 id="AutoComplete"
                 label="Company"
-                variant="bordered"
+              
                 defaultItems={StockSuggestions}
                 placeholder={EditedValues5[index]}
-                className="w-full text-white"
+                className="w-full mt-2 text-zinc-200"
                 onSelectionChange={(selectedValue:any) => handleSelectValuesChange(index, selectedValue)}
                 onInputChange={(value) => {
                   setQuery(value);
                 }}
-                onKeyDown={(event) => {
-                  
+                onKeyDown={(event: any) => {
+                  event.continuePropagation()
                   if (event.key === 'Backspace') {
-                   
                     if(EditedValues5[index] !== '') {
                       setQuery(EditedValues5[index])
                       handleSelectValuesChange(index, '')
@@ -427,7 +427,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             ))}
             <button
               type="button"
-              className="flex mt-4 ml-4 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
+              className="flex mt-4 ml-6 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
               onClick={addCompany}
             >
               Add a company
@@ -437,20 +437,20 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
               />
             </button>
           </div>
-          <div className="mt-10 space-y-10"></div>
+          
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-end gap-x-6">
+      <div className="flex items-center h-20 justify-end gap-x-6">
         <button
           type="button"
-          className="text-sm font-semibold leading-6 text-white"
+          className="text-sm font-semibold leading-6 text-zinc-200"
           onClick={returnHome}
         >
           Cancel
         </button>
         <button
-          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-zinc-200 shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
           onClick={() => {
             handleSaveChanges()
           }}
