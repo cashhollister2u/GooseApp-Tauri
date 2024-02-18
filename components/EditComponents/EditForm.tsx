@@ -1,25 +1,16 @@
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { useState, useEffect } from 'react'
 import useAxios from '../../utils/useAxios'
-import { editStockSuggestionsURL } from '../backendURL'
 import { fetchUserURL } from '../backendURL'
-
-
+import stocklist from '../data/stockValuesList.json'
+import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import {
-  CheckIcon,
-  ChevronUpDownIcon,
   PlusCircleIcon,
   MinusCircleIcon,
 } from '@heroicons/react/20/solid'
-import { Combobox } from '@headlessui/react'
 
 const swal = require('sweetalert2')
 
-function classNames(
-  ...classes: (string | null | undefined | boolean)[]
-): string {
-  return classes.filter(Boolean).join(' ')
-}
 
 type CompanyArray = string[]
 
@@ -47,13 +38,19 @@ interface ProfilePictureState {
 
 const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
   const [query, setQuery] = useState<string>('')
-  const [inputIndex, setinputIndex] = useState<number>()
   const [listSuggestion, setlistSuggestion] = useState<string[]>([])
   const [Stock, setStock] = useState<StockType>([])
   const [full_name, setfull_name] = useState<string>('')
   const [values5, setvalues5] = useState<string[]>([])
   const [EditedValues5, setEditedValues5] = useState<string[]>([])
   const [bio, setbio] = useState<string>('')
+
+
+  const StockSuggestions  = listSuggestion.map((item) => ({
+    label: item, 
+    value: item, 
+  }));
+ 
   const [background_image, setbackground_image] =
     useState<BackgroundImageState>({
       background_image: null,
@@ -70,13 +67,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
       if (UserProfile) {
         setvalues5(UserProfile.values5)
         setEditedValues5(UserProfile.values5)
-        fetch(editStockSuggestionsURL)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.list_field && Array.isArray(data.list_field)) {
-              setStock(data.list_field)
-            }
-          })
+        setStock(stocklist)
       }
     }
 
@@ -86,16 +77,15 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
   useEffect(() => {
     const companySuggestions = () => {
       const suggestions: string[] = []
-      if (query.length > 3) {
-        Stock.forEach((company) => {
-          const joinedSuggestions = company.join('')
-          if (joinedSuggestions.toLowerCase().includes(query.toLowerCase())) {
-            suggestions.push(joinedSuggestions)
-          }
-        })
+      Stock.forEach((company) => {
+        const joinedSuggestions = company.join('')
+        if (joinedSuggestions.toLowerCase().includes(query.toLowerCase())) {
+          suggestions.push(joinedSuggestions)
+        }
+      })
 
-        setlistSuggestion(suggestions)
-      }
+      setlistSuggestion(suggestions.slice(0, 10))
+      
     }
 
     companySuggestions()
@@ -136,7 +126,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
   }
 
   const SubtractCompany = async (index: number) => {
-    const updatedValues = [...values5]
+    const updatedValues = [...EditedValues5]
     updatedValues.splice(index, 1)
 
     if (updatedValues) {
@@ -148,6 +138,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
   const addCompany = async () => {
     const updatedValues = [...values5]
     updatedValues.push('')
+    setQuery('')
 
     if (updatedValues) {
       setvalues5(updatedValues)
@@ -210,12 +201,15 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
     const clearvalues5 = [...EditedValues5]
     clearvalues5[index] = ''
     setEditedValues5(clearvalues5)
+    setlistSuggestion([])
+    setQuery('')
   }
 
   const handleSelectValuesChange = (index: number, IndividualStock: string) => {
     const updatedValues = [...EditedValues5]
     updatedValues[index] = IndividualStock
     setEditedValues5(updatedValues)
+    
   }
 
   return (
@@ -383,90 +377,41 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             </label>
             {values5.map((value, index) => (
               <div key={index} className="flex items-center space-x-2 mt-4">
-                <span className="text-m font-medium leading-6 text-gray-400  ">
+                <span className="text-m font-medium leading-6 text-white  ">
                   {index + 1}.
                 </span>
                 <div className="w-full">
-                  <Combobox
-                    as="div"
-                    onFocus={() => handlevalues5Focus(index)}
-                    value={EditedValues5[index] || ''}
-                    onChange={(IndividualStock) => {
-                      handleSelectValuesChange(index, IndividualStock)
-                    }}
-                    
+                <Autocomplete
+                id="AutoComplete"
+                label="Company"
+                variant="bordered"
+                defaultItems={StockSuggestions}
+                placeholder={EditedValues5[index]}
+                className="w-full text-white"
+                onSelectionChange={(selectedValue:any) => handleSelectValuesChange(index, selectedValue)}
+                onInputChange={(value) => {
+                  setQuery(value);
+                }}
+                onKeyDown={(event) => {
+                  
+                  if (event.key === 'Backspace') {
+                   
+                    if(EditedValues5[index] !== '') {
+                      setQuery(EditedValues5[index])
+                      handleSelectValuesChange(index, '')
+                  }}
+                }}
+                onFocus={() => handlevalues5Focus(index)}
+              >
+                {(animal) => (
+                  <AutocompleteItem 
+                  key={animal.value}
+                  className='text-black'
                   >
-                    <div className="relative mt-2">
-                      <Combobox.Input
-                        type="text"
-                        className="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        onChange={(event) => setQuery(event.target.value)}
-                        onFocus={() => {
-                          setlistSuggestion([])
-                        }}
-                        displayValue={(IndividualStock: string) =>
-                          IndividualStock
-                        }
-                        autoComplete="off"
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </Combobox.Button>
-
-                      {query.length >= 2 && listSuggestion.length > 0 && (
-                        <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {listSuggestion.map(
-                            (IndividualStock, optionindex) => (
-                              <Combobox.Option
-                                key={optionindex}
-                                value={IndividualStock}
-                                className={({ active }) =>
-                                  classNames(
-                                    'relative cursor-default select-none py-2 pl-3 pr-9',
-                                    active
-                                      ? 'bg-indigo-600 text-white'
-                                      : 'text-gray-900'
-                                  )
-                                }
-                              >
-                                {({ active, selected }) => (
-                                  <>
-                                    <span
-                                      className={classNames(
-                                        'block truncate',
-                                        selected && 'font-semibold'
-                                      )}
-                                    >
-                                      {IndividualStock}
-                                    </span>
-
-                                    {selected && (
-                                      <span
-                                        className={classNames(
-                                          'absolute inset-y-0 right-0 flex items-center pr-4',
-                                          active
-                                            ? 'text-white'
-                                            : 'text-indigo-600'
-                                        )}
-                                      >
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    )}
-                                  </>
-                                )}
-                              </Combobox.Option>
-                            )
-                          )}
-                        </Combobox.Options>
-                      )}
-                    </div>
-                  </Combobox>
+                    {animal.label}
+                  </AutocompleteItem>
+                )}
+                </Autocomplete>
                 </div>
                 <button
                   type="button"

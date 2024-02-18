@@ -620,7 +620,7 @@ export default function MyProfilePageEdit() {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l border-zinc-200 px-4 py-6 sm:px-6 lg:px-8 xl:block w-2/5">
+        <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-2 border-zinc-600 px-4 py-6 sm:px-6 lg:px-8 xl:block w-2/5">
           {/* Secondary column (hidden on smaller screens) */}
           <EditForm UserProfile={UserProfile as UserProfile} />
         </aside>

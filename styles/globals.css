@@ -66,3 +66,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(var(--foreground-rgb), 0.6);
 }
+
+#AutoComplete::placeholder {
+  color: rgb(255, 255, 255); /* This will make the placeholder text black */
+}
