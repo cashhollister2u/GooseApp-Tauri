@@ -141,9 +141,8 @@ const MyProfilePage: React.FC<{}> = () => {
     return () => window.removeEventListener('resize', checkSize)
   }, [isMessaging, IsSeachMessage])
 
+  //init page data
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const search = params.get('search')
     const controller = new AbortController()
 
     
@@ -175,24 +174,6 @@ const MyProfilePage: React.FC<{}> = () => {
         fetchUserfollowing()
       }
 
-      if (search) {
-        setSearchActive(true)
-
-        const handleSearchChange = async () => {
-          try {
-            const response = await gooseApp.get(`${searchUserURL}${search}/`)
-            const fetchedUserProfile: Profile = response.data
-            setSearchedprofile(fetchedUserProfile)
-          } catch (error) {
-            console.error('Error fetching user profile:')
-            window.location.href = '/profile'
-          }
-        }
-        handleSearchChange()
-      } else {
-        setSearchActive(false)
-      }
-
       if (SearchMsgString && typeof SearchMsgString === 'string') {
         try {
           const SearchMsg = JSON.parse(atob(SearchMsgString))
@@ -207,6 +188,32 @@ const MyProfilePage: React.FC<{}> = () => {
     return () => {
       clearTimeout(timer), controller.abort()
     }
+  }, [])
+
+  //loading searched profiles
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const search = params.get('search')
+    
+    if (search) {
+      setSearchActive(true)
+
+      const handleSearchChange = async () => {
+        try {
+          const response = await gooseApp.get(`${searchUserURL}${search}/`)
+          const fetchedUserProfile: Profile = response.data
+          setSearchedprofile(fetchedUserProfile)
+        } catch (error) {
+          console.error('Error fetching user profile:')
+          window.location.href = '/profile'
+        }
+      }
+      handleSearchChange()
+    } else {
+      setSearchActive(false)
+    }
+
+
   }, [window.location.href])
 
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {

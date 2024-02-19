@@ -84,10 +84,10 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         }
       })
 
-      setlistSuggestion(suggestions)
+      setlistSuggestion(suggestions.slice(0,5))
       
     }
-    if (query?.length > 2) {
+    if (query?.length > 0) {
       companySuggestions()
     }
   }, [query])
@@ -387,7 +387,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                 label="Company"
               
                 defaultItems={StockSuggestions}
-                placeholder={EditedValues5[index]}
+                placeholder={EditedValues5[index]||''}
                 className="w-full mt-2 text-zinc-200"
                 onSelectionChange={(selectedValue:any) => handleSelectValuesChange(index, selectedValue)}
                 onInputChange={(value) => {

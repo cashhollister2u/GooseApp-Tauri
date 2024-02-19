@@ -14,6 +14,7 @@ const TopStocksList: React.FC = () => {
         if (data.ranked_list) {
           // If the condition is met, update the state.
           setranked_list(data.ranked_list)
+         
         } else {
           // If the condition is not met, handle it here (e.g., log a message or set an error state).
           console.log('The response does not contain a ranked_list.')
@@ -29,28 +30,31 @@ const TopStocksList: React.FC = () => {
 
   return (
     <ul role="list">
-      {ranked_list.map((project, projectindex) => (
+      {ranked_list.map((stock, stockindex) => (
         <li
-        key={projectindex}
+        key={stockindex}
         className={`flex items-center border-b-2 border-zinc-700/70 justify-between gap-x-6 py-5 ${
-          projectindex % 2 === 0 ? 'bg-zinc-800' : 'bg-zinc-900 '
+          stockindex % 2 === 0 ? 'bg-zinc-800' : 'bg-zinc-900 '
         }`}
       >
-          <div className="min-w-0 ml-3">
+          <div className="flex w-full justify-between ml-3">
             <div className="flex items-start gap-x-3">
               <p className="ml-5 mr-10 font-bold text-white">
-                {projectindex + 1}
-                {'.'}
+                {stockindex + 1}
               </p>
-              <p className=" font-bold text-white">{project}</p>
+              <p className="font-bold text-white">{stock[0]}</p>
             </div>
+            <div className="text-right mr-4">
+          <p>{stock[1]}</p>
+        </div>
+        </div>
             <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
               <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current"></svg>
-            </div>
           </div>
         </li>
       ))}
     </ul>
+    
   )
 }
 
