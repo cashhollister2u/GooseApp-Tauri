@@ -452,11 +452,12 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             setTimeout(() => {
               if (messageRef.current) {
                 messageRef.current.scrollIntoView({
+                  behavior: 'smooth',
                   block: 'end',
                   inline: 'nearest',
                 })
               }
-            }, 10)
+            }, 20)
 
             setnewMessage({ message: '' })
           })

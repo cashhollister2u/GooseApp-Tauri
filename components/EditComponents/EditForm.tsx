@@ -326,6 +326,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                 <input
                   type="text"
                   name="full_name"
+                  placeholder={UserProfile?.full_name}
                   id="full_name"
                   className="block w-full px-2 rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                   onChange={(e) => {
@@ -344,6 +345,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                     <textarea
                       id="about"
                       name="about"
+                      placeholder={UserProfile?.bio}
                       rows={3}
                       className="block px-2 w-full rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                       defaultValue={''}
@@ -370,12 +372,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
             share.
           </p>
           <div className="col-span-full mt-10">
-            <label
-              htmlFor="street-address"
-              className="block text-sm font-medium leading-6 text-gray-400 "
-            >
-              (max: 25 Tickers)
-            </label>
+            
             {values5.map((value, index) => (
               <div key={index} className="flex items-center space-x-2 mt-4">
                 <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
@@ -425,9 +422,10 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                 </button>
               </div>
             ))}
+            <div className='flex w-full'>
             <button
               type="button"
-              className="flex mt-4 ml-6 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
+              className={`${values5.length >= 25 ? 'hidden' : "flex mt-4 ml-12 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"}`}
               onClick={addCompany}
             >
               Add a company
@@ -436,6 +434,13 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
                 aria-hidden="true"
               />
             </button>
+            <label
+              htmlFor="street-address"
+              className=" mt-4 absolute right-24 text-sm font-medium text-gray-400 "
+            >
+              (max: 25)
+            </label>
+            </div>
           </div>
           
         </div>

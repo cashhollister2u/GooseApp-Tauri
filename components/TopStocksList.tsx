@@ -40,7 +40,7 @@ const TopStocksList: React.FC = () => {
           <div className="flex w-full justify-between ml-3">
             <div className="flex items-start gap-x-3">
               <p className="ml-5 mr-10 font-bold text-white">
-                {stockindex + 1}
+                {stockindex + 1}.
               </p>
               <p className="font-bold text-white">{stock[0]}</p>
             </div>
