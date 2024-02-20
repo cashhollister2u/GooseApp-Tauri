@@ -44,8 +44,13 @@ const TopStocksList: React.FC = () => {
               </p>
               <p className="font-bold text-white">{stock[0]}</p>
             </div>
-            <div className="text-right mr-4">
-          <p>{stock[1]}</p>
+            <div className="text-right font-bold mr-4">
+          <span>{stock[1]}</span>
+          <span 
+          className={`inline-block text-xl ${stock[2] === 'positive' ? '-rotate-90 text-green-600 ml-1' : stock[2] === 'neutral' ? 'hidden' : 'rotate-90 text-red-600 ml-1'}`}>
+            &#10145;
+            </span>
+            <span className={`${stock[2] === 'neutral' ? 'font-bold text-sm ml-3 ': 'hidden'}`}>&mdash;</span>
         </div>
         </div>
             <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">

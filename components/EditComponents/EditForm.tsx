@@ -372,9 +372,9 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
           <div className="col-span-full mt-10">
             <label
               htmlFor="street-address"
-              className="block text-sm font-medium leading-6 text-zinc-200 "
+              className="block text-sm font-medium leading-6 text-gray-400 "
             >
-              Ticker | Company
+              (max: 25 Tickers)
             </label>
             {values5.map((value, index) => (
               <div key={index} className="flex items-center space-x-2 mt-4">
