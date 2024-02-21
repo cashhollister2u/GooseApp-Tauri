@@ -776,7 +776,7 @@ const MyProfilePage: React.FC<{}> = () => {
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
+                    <h1 className="ml-5 text-2xl py-6 font-bold text-white">
                       Pinned Stocks
                     </h1>
                     <hr className="border-1 border-zinc-950" />
@@ -787,7 +787,7 @@ const MyProfilePage: React.FC<{}> = () => {
                       activeTab === 'Trending' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
+                    <h1 className="ml-5 text-2xl py-6 font-bold text-white">
                       Trending Stocks
                     </h1>
                     <hr className="border-1 border-zinc-950" />
@@ -806,7 +806,7 @@ const MyProfilePage: React.FC<{}> = () => {
                   searchedprofile={SearchedProfile}
                   UserProfile={UserProfile as UserProfile}
                 />{' '}
-                <div className="mt-4">
+                <div className="mt-2">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}

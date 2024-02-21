@@ -62,7 +62,7 @@ const Header: React.FC<{
              <div>
               {profile_picture && (
                 <img
-                  className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36"
+                  className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-white"
                   src={`${mediaURL}${profile_picture}`}
                   alt="profile"
                 />
@@ -79,7 +79,7 @@ const Header: React.FC<{
         <Card className="flex justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800" radius="lg">
         <div className="max-w-[300px] w-full flex items-center gap-3">
            <div>
-              <Skeleton className="flex items-center inline-block rounded-full left-3 ring-4 ring-zinc-600 bg-zinc-400 h-36 w-36 sm:h-40 sm:w-40 lg:h-36 lg:w-36">
+              <Skeleton className="flex items-center inline-block rounded-full left-3 ring-4 ring-zinc-600 bg-zinc-400 h-36 w-36">
                </Skeleton>
               </div>  
                   <div className="w-full flex flex-col gap-3 ml-8">

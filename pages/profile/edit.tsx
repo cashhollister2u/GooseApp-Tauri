@@ -569,13 +569,14 @@ export default function MyProfilePageEdit() {
               <div className="hidden flex-1 xl:block bg-zinc-900">
                 {/* search active*/}
                 <S_Header
+                  isLoading={isLoading}
                   onclick={sendMessageFromSearch}
                   updateFollowList={updateFollowList}
                   followListUpd={followingList}
                   searchedprofile={SearchedProfile}
                   UserProfile={UserProfile as UserProfile}
                 />{' '}
-                <div className="mt-4">
+                <div className="mt-2">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}

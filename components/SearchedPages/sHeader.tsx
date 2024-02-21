@@ -207,7 +207,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
              <div>
               {profile_picture && (
                 <img
-                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36"
+                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-white "
                   src={`${profile_picture}`}
                   alt="profile"
                 />

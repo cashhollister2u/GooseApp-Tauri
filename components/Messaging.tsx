@@ -7,6 +7,8 @@ import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
 import Pusher from 'pusher-js'
 import { invoke } from '@tauri-apps/api/tauri';
+import { useRouter } from 'next/router'
+
 
 const swal = require('sweetalert2')
 
@@ -122,6 +124,7 @@ const Messaging: React.FC<{
   const messageRef = useRef<HTMLDivElement>(null)
   const newMessagesRef = useRef<HTMLLIElement>(null)
   const gooseApp = useAxios()
+  const router = useRouter()
 
   let [newMessage, setnewMessage] = useState({ message: '' })
   let Private_Key = UserProfile?.private_key
@@ -333,7 +336,7 @@ const Messaging: React.FC<{
     if (search === username) {
       updateIsMessaging()
     }
-    window.location.href = `/profile?search=${username}#`
+    router.push(`/profile?search=${username}#`)
   }
 
   //for what ever reason handle change works better with type any
@@ -638,24 +641,24 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   <div className="py-1">
                                     <Menu.Item>
                                       {({ active }) => (
-                                        <a
-                                          href={`/profile?search=${reciever_profile.profile.username}#`}
+                                        <button
+                                          onClick={() => router.push(`/profile?search=${reciever_profile.profile.username}#`)}
                                           className={classNames(
                                             active
                                               ? 'bg-zinc-100 text-gray-900'
                                               : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
+                                            'text-start px-4 py-2 w-full text-sm'
                                           )}
                                         >
                                           View profile
-                                        </a>
+                                        </button>
                                         
                                       )}
                                     </Menu.Item>
                                     <Menu.Item>
                                     {({ active }) => (
                                       <a
-                                        href={`/profile?search=${reciever_profile.profile.username}#`}
+                                        
                                         className={classNames(
                                           active
                                             ? 'bg-zinc-100 text-gray-900'
@@ -749,23 +752,23 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                 <div className="py-1">
                                   <Menu.Item>
                                     {({ active }) => (
-                                      <a
-                                        href={`/profile?search=${reciever_profile.handle}#`}
-                                        className={classNames(
-                                          active
-                                            ? 'bg-zinc-100 text-gray-900'
-                                            : 'text-gray-700',
-                                          'block px-4 py-2 text-sm'
-                                        )}
-                                      >
-                                        View profile
-                                      </a>
+                                      <button
+                                          onClick={() => router.push(`/profile?search=${reciever_profile.handle}#`)}
+                                          className={classNames(
+                                            active
+                                              ? 'bg-zinc-100 text-gray-900'
+                                              : 'text-gray-700',
+                                            'text-start px-4 py-2 w-full text-sm'
+                                          )}
+                                        >
+                                          View profile
+                                        </button>
                                     )}
                                   </Menu.Item>
                                   <Menu.Item>
                                     {({ active }) => (
                                       <a
-                                        href={`/profile?search=${reciever_profile.handle}#`}
+                                        
                                         className={classNames(
                                           active
                                             ? 'bg-zinc-100 text-gray-900'

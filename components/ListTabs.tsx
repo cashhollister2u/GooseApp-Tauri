@@ -12,7 +12,7 @@ interface ListTabsProps {
   
   export default function ListTabs({ activeTab, onTabSelect }: ListTabsProps) {
     return (
-      <div className="bg-zinc-900 border-b-2 border-t-2 border-zinc-950  ">
+      <div className="bg-zinc-900 border-2 border-t-2 border-zinc-400 rounded-lg ml-2 mr-2 ">
         <div className="mx-auto max-w-7xl">
           <div>
             <div className="flex py-4">
@@ -23,7 +23,7 @@ interface ListTabsProps {
                 {tabs.map((tab) => (
                   <li key={tab.name}>
                     <button
-                      className={activeTab === tab.name ? 'text-indigo-600' : ''}
+                      className={activeTab === tab.name ? 'text-indigo-600 ' : ' hover:text-zinc-300'}
                       onClick={() => onTabSelect(tab.name)}
                     >
                       {tab.name}
