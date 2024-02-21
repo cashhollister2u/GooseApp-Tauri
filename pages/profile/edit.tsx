@@ -528,23 +528,13 @@ export default function MyProfilePageEdit() {
               <EditForm UserProfile={UserProfile as UserProfile} />
             </div>
          {/* search not active */}
-         <div className={` ${isLoading ? '' : 'hidden'}`}>
-              <div className="image-container flex justify-center border-t-2 border-b-2 border-zinc-600 items-center relative h-screen overflow-hidden">
-                {/* Opaque overlay */}
-                <div className="absolute inset-0 bg-zinc-800 z-20"></div>
-
-                <div className="absolute inset-0 flex justify-center items-center pb-56">
-                  <img
-                    src="/svg/WhiteLoadingIcon.svg"
-                    className="w-28 z-20 animate-spin-slow"
-                  />
-                </div>
-              </div>
-            </div>
             {!isSearchActive ? (
               <div className="hidden xl:block bg-zinc-900">
-                <Header UserProfile={UserProfile} />
-                <div className="mt-4">
+                <Header 
+                UserProfile={UserProfile} 
+                isLoading={isLoading}
+                />
+                <div className="mt-2">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}

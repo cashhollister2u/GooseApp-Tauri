@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import useAxios from '../../utils/useAxios'
 import { fetchUserURL } from '../backendURL'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
+import {Card, Skeleton} from "@nextui-org/react";
+
 const swal = require('sweetalert2')
 
 interface UserProfile {
@@ -30,6 +32,7 @@ export interface S_HeaderProps extends FollowListCountType {
   searchedprofile: Profile | null
   UserProfile: UserProfile
   onclick: () => void
+  isLoading: boolean
 }
 
 const S_Header: React.FC<S_HeaderProps> = ({
@@ -37,6 +40,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
   updateFollowList,
   UserProfile,
   onclick,
+  isLoading
 }) => {
   const [isFollowing, setFollowing] = useState<boolean>(false)
   const [followList, setFollowList] = useState<string[]>([])
@@ -182,38 +186,41 @@ const S_Header: React.FC<S_HeaderProps> = ({
   return (
     <div>
       <div>
-        {background_image && (
+        {!isLoading ? (
           <img
-            className="max-h-128 w-full object-fill "
+            className="max-h-128 w-full object-fill"
             src={`${background_image}`}
-            alt="backgroundimage"
+            alt="background"
           />
+        ) : (
+          <Card className="w-full bg-zinc-800 h-96 rounded-md p-3">
+      <Skeleton className="rounded-lg bg-zinc-400">
+        <div className="h-96 "></div>
+      </Skeleton>
+     
+    </Card>
         )}
       </div>
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
-          <div className="flex">
-            {profile_picture && (
-              <img
-                className="h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36 mt-20"
-                src={`${profile_picture}`}
-                alt=""
-              />
-            )}
-          </div>
-
-          <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-            <div className="mt-6 min-w-0 h-40 lg:h-36 flex-1 md:block border-l-2 border-zinc-700">
-              <h1 className="truncate text-white-900 ml-3">
-                <div className="font-bold text-2xl">{full_name}</div>
-                <div className="mt-2 font-bold text-xl">@{username}</div>
-                <div className="mt-2 text-xl">{bio}</div>
-                <br />
-              </h1>
-            </div>
-
-            <div
-              className={`flex mr-4 justify-end xl:-mt-20 lg:-mt-24 sm:-mt-24 ${
+      {!isLoading ? (
+          <div className="flex rounded-lg w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800" >
+          <div className="w-full flex items-center">
+             <div>
+              {profile_picture && (
+                <img
+                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-white sm:h-40 sm:w-40 lg:h-36 lg:w-36"
+                  src={`${profile_picture}`}
+                  alt="profile"
+                />
+              )}
+            </div>  
+                  <div className="w-full border-l-2 border-zinc-400 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
+                  <div className="h-6 w-48 rounded-lg">{full_name}</div>
+                  <div className="h-6 w-48 rounded-lg">{username}</div>
+                  <div className="h-12 w-48 rounded-lg">{bio}</div>
+              </div>
+              </div>
+              <div
+              className={`flex mr-4 h-10 mt-3 ${
                 MYusername !== username ? '' : 'hidden'
               }`}
             >
@@ -255,10 +262,26 @@ const S_Header: React.FC<S_HeaderProps> = ({
                 </span>
               </button>
             </div>
-          </div>
+            
         </div>
-      </div>
-    </div>
+        ) : (
+        <Card className="flex justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800" radius="lg">
+        <div className="max-w-[300px] w-full flex items-center gap-3">
+           <div>
+              <Skeleton className="flex items-center inline-block rounded-full left-3 ring-4 ring-zinc-600 bg-zinc-400 h-36 w-36 sm:h-40 sm:w-40 lg:h-36 lg:w-36">
+               </Skeleton>
+              </div>  
+                  <div className="w-full flex flex-col gap-3 ml-8">
+                  <Skeleton className="h-6 w-48 rounded-lg"/>
+                  <Skeleton className="h-6 w-48 rounded-lg"/>
+                  <Skeleton className="h-12 w-48 rounded-lg"/>
+              </div>
+            </div>
+        </Card>
+        )}
+
+           
+          </div>
   )
 }
 

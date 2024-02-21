@@ -739,19 +739,7 @@ const MyProfilePage: React.FC<{}> = () => {
               </a>
             </div>
             {/* search not active */}
-            <div className={` ${isLoading ? '' : 'hidden'}`}>
-              <div className="image-container flex justify-center border-t-2 border-b-2 border-zinc-600 items-center relative h-screen overflow-hidden">
-                {/* Opaque overlay */}
-                <div className="absolute inset-0 bg-zinc-800 z-20"></div>
-
-                <div className="absolute inset-0 flex justify-center items-center pb-56">
-                  <img
-                    src="/svg/WhiteLoadingIcon.svg"
-                    className="w-28 z-20 animate-spin-slow"
-                  />
-                </div>
-              </div>
-            </div>
+            
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 top-3 lg:top-8 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
@@ -771,9 +759,12 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
 
             {!isSearchActive ? (
-              <div className={`bg-zinc-900 ${!isLoading ? '' : 'hidden'}`}>
-                <Header UserProfile={UserProfile} />
-                <div className="mt-4">
+              <div className='bg-zinc-900'>
+                <Header 
+                UserProfile={UserProfile} 
+                isLoading={isLoading}
+                />
+                <div className="mt-2">
                   <ListTabs
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
@@ -808,6 +799,7 @@ const MyProfilePage: React.FC<{}> = () => {
               <div className="flex-1 bg-zinc-900">
                 {/* search active*/}
                 <S_Header
+                  isLoading={isLoading}
                   onclick={sendMessageFromSearch}
                   updateFollowList={updateFollowList}
                   followListUpd={followingList}
