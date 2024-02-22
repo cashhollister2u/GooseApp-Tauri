@@ -499,7 +499,7 @@ export default function MyProfilePageEdit() {
               {/* Main area */}
             </div>
             {/* search bar for large window */}
-            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
+            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-2 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-zinc-800">
               <form className="relative flex flex-1" action="#" method="GET">
                   <label htmlFor="search-field" className="sr-only"></label>
@@ -509,7 +509,7 @@ export default function MyProfilePageEdit() {
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-100 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
+                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-400 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
                     placeholder="Search..."
                     type="search"
                     name="search"

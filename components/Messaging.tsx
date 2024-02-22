@@ -7,7 +7,6 @@ import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
 import { invoke } from '@tauri-apps/api/tauri';
 import { useRouter } from 'next/router'
-import { count } from 'console';
 
 
 const swal = require('sweetalert2')
@@ -31,6 +30,7 @@ interface Message {
   public_key: string
   sender_message: string
   decrypted_message?: string
+  handle?: string
 }
 
 interface Profile {
@@ -91,6 +91,7 @@ const Messaging: React.FC<{
   UserProfile: UserProfile
   updateIsMessaging: () => void
   onMessageSelect: (reciever_profile: UserProfile, isLoadMore:boolean, loadedMessageCount:number) => void
+  onSendMessage: (filteredMessages: any) => void
   IsSearchMessage: boolean
   importMessages: Message[]
   importConversations: UserProfile[]
@@ -103,6 +104,7 @@ const Messaging: React.FC<{
   onLoadedMessageCount,
   onResetMessageCount,
   onMessageSelect,
+  onSendMessage,
   updateIsMessaging,
   IsSearchMessage,
   searchedprofile,
@@ -150,10 +152,9 @@ const Messaging: React.FC<{
 
   const filteredMessages = messages?.filter(
       (message) =>
-        viewmsg?.handle === message?.sender_profile.username ||
-        viewmsg?.handle === message?.reciever_profile.username || ''
+        viewmsg?.handle === message.sender_profile?.username ||
+        viewmsg?.handle === message.reciever_profile?.username || ''
     );
-
   const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15);
 
   let numberOfLoadedMessages
@@ -165,6 +166,8 @@ const Messaging: React.FC<{
 
 //init click
   useEffect(() => {
+
+
     if (!isViewMsgChange) {
       if(filteredMessages.length > 0){
         setisViewMsgChange(true)
@@ -198,7 +201,7 @@ const Messaging: React.FC<{
         }
     }
   }, [viewmsg, messages])
-console.log(isSlowScroll)
+
   useEffect(() => {
     if (IsSearchMessage) {
       setisSearchMessageUpd(IsSearchMessage)
@@ -259,12 +262,13 @@ console.log(isSlowScroll)
     const newMessages = importMessages.filter(importMessage => 
       !messages.some(message => message.id === importMessage.id)
       )
+
       if (newMessages.length > 0) {
-        setmessages(previousMessages => [...newMessages, ...previousMessages])
+        setmessages(previousMessages => [...previousMessages, ...newMessages])
       }
       
-  }, [importMessages])
-
+  }, [importMessages, viewmsg])
+  
   useEffect(() => {
       const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
       const user_idReciever = viewmsg?.user_id || viewmsg?.profile.id
@@ -276,14 +280,13 @@ console.log(isSlowScroll)
       const rawMsgPlusSentCount = userMessageCount && sentMessageCount ? userMessageCount.total_Msg_count + sentMessageCount.total_sent_count : 0;
 
       const decryptedMsgCount = messages.filter(message => {
-        return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
+        return message.reciever_profile?.username === usernameReciever || message.sender_profile?.username === usernameReciever;
       }).length;
 
       const totalCountVar = rawMsgPlusSentCount || rawMsgCount
 
       const loadMoreValue = totalCountVar > decryptedMsgCount;
       setIsLoadMore(loadMoreValue)
-      console.log(totalCountVar, decryptedMsgCount)
 
   }, [messages])  
 
@@ -392,7 +395,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
-
+                  
                 const newMsg: any = {
                   name: res.data.reciever_profile.full_name,
                   user_id: res.data.reciever,
@@ -417,6 +420,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   }
                 })
 
+                onSendMessage(sent_message)
                 handleViewMessage(newMsg)
 
                 setmessages((prevMessages) => {
@@ -816,14 +820,14 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       </button>
                     </div>
                       <div ref={messageRef} className="flex flex-col">
-                        <div  className="flex-1  mb-44 xl:mb-36 overflow-y-auto ">
+                        <div  className="flex-1  mb-36 xl:mb-36 overflow-y-auto ">
                           {filteredMessages
                             .map((message: any, index: number) => (
                               <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 )) ? newMessagesRef : null}>
                                 <div
                                   className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==
-                                    message.sender_profile.username
+                                    message.sender_profile?.username
                                       ? 'items-end xl:ml-56 lg:ml-80 ml-24'
                                       : 'items-start xl:mr-56 lg:mr-80 '
                                   }`}
@@ -845,7 +849,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   <div
                                     className={`ml-4 px-4 py-2 rounded-xl max-w-md ${
                                       viewmsg?.handle !==
-                                      message.sender_profile.username
+                                      message.sender_profile?.username
                                         ? 'bg-indigo-600'
                                         : 'bg-zinc-500/90'
                                     }`}

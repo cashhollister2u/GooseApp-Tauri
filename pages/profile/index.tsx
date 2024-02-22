@@ -103,7 +103,9 @@ const MyProfilePage: React.FC<{}> = () => {
   const [loadedMessageCount, setLoadedMessageCount] = useState<number> (0)
   const { activeMessage } = router.query; 
   const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState('');
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
+  
   const navigation = [
     {
       name: 'My Profile',
@@ -215,6 +217,18 @@ const MyProfilePage: React.FC<{}> = () => {
 
   }, [window.location.href])
 
+  const handleMsgUpdateBetweenMSGComponents = (filteredMessage: Message) => {
+
+    // Check if the message already exists in decryptedMessages
+    const messageExists = decryptedMessages.some(message => message.id === filteredMessage.id);
+    
+    // If the message does not exist, add it to decryptedMessages
+    if (!messageExists) {
+        setDecryptedMessages(currentMessages => [...currentMessages, filteredMessage]);
+    }
+};
+
+
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {
     const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
       try {
@@ -283,7 +297,6 @@ const MyProfilePage: React.FC<{}> = () => {
           }
       }
   }
-
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
@@ -310,6 +323,11 @@ const MyProfilePage: React.FC<{}> = () => {
     } 
   }, [UserProfile])
 
+  const handleSearch = (event: any) => {
+    event.preventDefault(); 
+    router.push(`/profile?search=${searchTerm}#`)
+    setSearchTerm('')
+  };
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName)
@@ -661,7 +679,7 @@ const MyProfilePage: React.FC<{}> = () => {
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-2 shadow-sm sm:px-6 lg:hidden">
           <button
             type="button"
             className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -676,19 +694,21 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
           ) : (
             <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
-              <form className="relative flex flex-1" action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only"></label>
-                <MagnifyingGlassIcon
-                  className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field-main"
-                  className="block h-full w-full border-0 rounded-lg py-2 pl-8 pr-0 text-black placeholder:text-zinc-400 focus:outline-none focus:border-transparent sm:text-sm bg-zinc-800"
-                  placeholder="Search..."
-                  type="search"
-                  name="search"
-                />
+              <form className="relative flex flex-1" onSubmit={handleSearch}>
+                  <label htmlFor="search-field" className="sr-only"></label>
+                  <MagnifyingGlassIcon
+                    className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="search-field-main"
+                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-400 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
+                    placeholder="Search..."
+                    type="search"
+                    name="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
               </form>
             </div>
           )}
@@ -712,14 +732,14 @@ const MyProfilePage: React.FC<{}> = () => {
             </div>
             {/* search bar for large window */}
            
-            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-4 shadow-sm ">
+            <div className="hidden lg:flex sticky top-0 z-40 flex items-center gap-x-6 bg-zinc-900 px-4 py-2 shadow-sm ">
               <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
               {isMessaging ? (
             <div className="px-2 py-4 text-lg font-semibold leading-6 text-gray-300">
               Messaging{' '}
             </div>
           ) : (
-                <form className="relative flex flex-1" action="#" method="GET">
+                <form className="relative flex flex-1" onSubmit={handleSearch}>
                   <label htmlFor="search-field" className="sr-only"></label>
                   <MagnifyingGlassIcon
                     className="ml-2 pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-zinc-400"
@@ -727,10 +747,12 @@ const MyProfilePage: React.FC<{}> = () => {
                   />
                   <input
                     id="search-field-main"
-                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-100 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
+                    className="block h-full w-full border-2 border-zinc-950/60 rounded-lg py-2 pl-8 pr-0 text-zinc-400 bg-zinc-800 placeholder:text-zinc-400 focus:outline-none sm:text-sm"
                     placeholder="Search..."
                     type="search"
                     name="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </form>
           )}
@@ -748,8 +770,9 @@ const MyProfilePage: React.FC<{}> = () => {
             {/* search not active */}
             
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
-              <div className="fixed inset-0 top-3 lg:top-8 lg:left-72 bg-zinc-900 z-20">
+              <div className="fixed inset-0 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
+                  onSendMessage={handleMsgUpdateBetweenMSGComponents}
                   isLoading={isLoading}
                   onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
@@ -877,6 +900,7 @@ const MyProfilePage: React.FC<{}> = () => {
           {/* Secondary column (hidden on smaller screens) */}
           <div>
             <Messaging
+              onSendMessage={handleMsgUpdateBetweenMSGComponents}
               isLoading={isLoading}
               onResetMessageCount={setLoadedMessageCount}
               onLoadedMessageCount={fetchUnloadedMessages}
