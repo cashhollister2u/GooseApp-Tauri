@@ -5,9 +5,9 @@ import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
-import Pusher from 'pusher-js'
 import { invoke } from '@tauri-apps/api/tauri';
 import { useRouter } from 'next/router'
+import { count } from 'console';
 
 
 const swal = require('sweetalert2')
@@ -76,6 +76,11 @@ interface UserProfile {
   id: number
 }
 
+interface UserSentMessageCount {
+  user_id: number
+  total_sent_count: number
+}
+
 interface TotalMessagesPerUser {
   user_id: number
   total_Msg_count: number
@@ -106,12 +111,11 @@ const Messaging: React.FC<{
   importConversations,
   isLoading
 }) => {
+  const [isSlowScroll, setIsSlowScroll] = useState<boolean>(false)
   const [followList, setFollowList] = useState<string[]>([])
   const [viewmsg, setviewmsg] = useState<allConversations>()
-  const [myUsername, setMyUsername] = useState<string>('')
   const [profile_pic_url, setprofile_pic_url] = useState<string>(`${mediaURL}${viewmsg?.profile?.profile_picture || ''}`)
   const [myProfile, setmyProfile] = useState<UserProfile>()
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   const [isSearchMessageUpd, setisSearchMessageUpd] = useState<boolean>(false)
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
@@ -120,6 +124,7 @@ const Messaging: React.FC<{
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
   const [localMessageCount, setLocalMessageCount] = useState<number> (0)
+  const [totalSentMessageCount, setTotalSentMessageCount] = useState<UserSentMessageCount[]> ()
   const [isLoadMore, setIsLoadMore] = useState<boolean>(false)
   const messageRef = useRef<HTMLDivElement>(null)
   const newMessagesRef = useRef<HTMLLIElement>(null)
@@ -150,7 +155,6 @@ const Messaging: React.FC<{
     );
 
   const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15);
-  const simplifiedLocalMessageCount = localMessageCount > 0 ? 1 : 0;
 
   let numberOfLoadedMessages
   if (filteredMessages.length % 15 === 0) {
@@ -165,7 +169,7 @@ const Messaging: React.FC<{
       if(filteredMessages.length > 0){
         setisViewMsgChange(true)
       }
-      if (messageRef.current) {
+      if (messageRef.current && !isSlowScroll) {
         messageRef.current.scrollIntoView({
           block: 'end',
           inline: 'nearest',
@@ -177,16 +181,16 @@ const Messaging: React.FC<{
 
   //subsiquent clicks and load more...
   useEffect(() => {
-    if (!isLoadMore) {
+    if (!isLoadMore && !isSlowScroll) {
         setTimeout(() => {
         if (messageRef.current) {
             messageRef.current.scrollIntoView({
               block: 'end',
               inline: 'nearest',
             });}
-          }, 50); 
+          }, 100); 
     } else {
-        if (newMessagesRef.current) {
+        if (newMessagesRef.current && !isSlowScroll) {
           newMessagesRef.current.scrollIntoView({
             block: 'end',
             inline: 'nearest',
@@ -194,7 +198,7 @@ const Messaging: React.FC<{
         }
     }
   }, [viewmsg, messages])
-
+console.log(isSlowScroll)
   useEffect(() => {
     if (IsSearchMessage) {
       setisSearchMessageUpd(IsSearchMessage)
@@ -221,7 +225,7 @@ const Messaging: React.FC<{
       setprofile_pic_url(`${mediaURL}${viewmsg?.profile?.profile_picture}`)
     }
 
-    if (messageRef.current) {
+    if (messageRef.current && !isSlowScroll) {
       messageRef.current.scrollIntoView({
         block: 'end',
         inline: 'nearest',
@@ -244,8 +248,6 @@ const Messaging: React.FC<{
             recommendationList.push(follow)
           }
         })
-
-        setMyUsername(UserProfile.username)
         setmyProfile(UserProfile)
       }
     }
@@ -264,71 +266,26 @@ const Messaging: React.FC<{
   }, [importMessages])
 
   useEffect(() => {
-    const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
-    const user_idReciever = viewmsg?.user_id || viewmsg?.profile.id
+      const usernameReciever = viewmsg?.handle || viewmsg?.profile.username
+      const user_idReciever = viewmsg?.user_id || viewmsg?.profile.id
 
       const userMessageCount = importTotalMessageCount?.find(user => user.user_id === user_idReciever);
+      const sentMessageCount = totalSentMessageCount?.find(user => user.user_id === user_idReciever)
 
-      const rawMsgCount = userMessageCount ? userMessageCount.total_Msg_count : 0; // Default to 0 if not found
+      const rawMsgCount = userMessageCount ? userMessageCount.total_Msg_count : 0 ; // Default to 0 if not found
+      const rawMsgPlusSentCount = userMessageCount && sentMessageCount ? userMessageCount.total_Msg_count + sentMessageCount.total_sent_count : 0;
 
-      
       const decryptedMsgCount = messages.filter(message => {
         return message.reciever_profile.username === usernameReciever || message.sender_profile.username === usernameReciever;
       }).length;
-      const loadMoreValue = rawMsgCount > decryptedMsgCount;
+
+      const totalCountVar = rawMsgPlusSentCount || rawMsgCount
+
+      const loadMoreValue = totalCountVar > decryptedMsgCount;
       setIsLoadMore(loadMoreValue)
-  }, [messages, viewmsg, importTotalMessageCount])
+      console.log(totalCountVar, decryptedMsgCount)
 
-  useEffect(() => {
-    if (!UserProfile) {
-      return
-    } else if (UserProfile && UserProfile.user_id && !isSubscribed) {
-      // Enable pusher logging - don't include this in production
-      Pusher.logToConsole = false
-
-      const pusher = new Pusher('e8b979f516a8b07b0f85', {
-        cluster: 'us2',
-      })
-
-      const channel = pusher.subscribe(`channel-${UserProfile.user_id}`)
-
-      channel.bind('message', function (data: any) {
-        if (!messages.includes(data)) {
-          const decrypted = sendMessagetoRustDecryption(data.message, Private_Key)
-          const recieved_message = { ...data, decrypted_message: decrypted }
-          setmessages((prevMessages): any => {
-            const updatedMessages = [...prevMessages, recieved_message]
-            swal.fire({
-              title: `Message: ${recieved_message.sender_profile.username}`,
-              icon: 'success',
-              toast: true,
-              timer: 6000,
-              position: 'top-right',
-              timerProgressBar: true,
-              showConfirmButton: false,
-            })
-            setTimeout(() => {
-              if (messageRef.current) {
-                messageRef.current.scrollIntoView({
-                  block: 'end',
-                  inline: 'nearest',
-                })
-              }
-            }, 100)
-
-            return updatedMessages
-          })
-        }
-      })
-
-      setIsSubscribed(true)
-
-      return () => {
-        channel.unbind_all()
-        channel.unsubscribe()
-      }
-    }
-  }, [UserProfile])
+  }, [messages])  
 
   const LoadsearchedUser = (username?: string) => {
     const params = new URLSearchParams(window.location.search)
@@ -406,7 +363,9 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
   const SendMessage = async () => {
     const senderUserId = myProfile?.user_id?.toString() || ''
     const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
-      
+    
+    setIsSlowScroll(true)
+
     if (newMessage?.message && viewmsg?.public_key) {
       sendMessageToRustEncryption(newMessage.message, viewmsg.public_key);
       }
@@ -442,7 +401,24 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   imageUrl: res.data.reciever_profile.profile_picture,
                   status: 'online',
                 }
+                const sentMessageCount = totalSentMessageCount?.find(user => user.user_id === res.data.reciever)
+                
+                const newMsgCount: UserSentMessageCount = {
+                  user_id: res.data.reciever,
+                  total_sent_count: sentMessageCount ? sentMessageCount.total_sent_count + 1 : 0
+                }
+                setTotalSentMessageCount((previousCount: UserSentMessageCount[] | undefined) => {
+                  const index = previousCount?.findIndex(count => count.user_id === newMsgCount.user_id)
+
+                  if (index !== undefined && index> -1) {
+                    return previousCount?.map((count, i) => i === index ? newMsgCount : count)
+                  } else {
+                    return [...(previousCount || []), newMsgCount]
+                  }
+                })
+
                 handleViewMessage(newMsg)
+
                 setmessages((prevMessages) => {
                   const updatedMessages = [...prevMessages, sent_message]
                   return updatedMessages
@@ -460,7 +436,13 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                   inline: 'nearest',
                 })
               }
-            }, 20)
+            }, 100)
+
+            setTimeout(() => {
+             
+                setIsSlowScroll(false)
+              
+            }, 500)
 
             setnewMessage({ message: '' })
           })
@@ -837,7 +819,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                         <div  className="flex-1  mb-44 xl:mb-36 overflow-y-auto ">
                           {filteredMessages
                             .map((message: any, index: number) => (
-                              <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 + (simplifiedLocalMessageCount * 15) )) ? newMessagesRef : null}>
+                              <li key={message.id} ref={index === filteredMessages.length - ((filteredMessages?.length) - (numberOfLoadedMessages + 4 )) ? newMessagesRef : null}>
                                 <div
                                   className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==

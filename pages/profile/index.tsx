@@ -29,7 +29,7 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
-import { isMacOS } from '@tauri-apps/api/helpers/os-check'
+import {Card, Skeleton} from "@nextui-org/react";
 
 
 function classNames(...classes: any) {
@@ -104,7 +104,6 @@ const MyProfilePage: React.FC<{}> = () => {
   const { activeMessage } = router.query; 
   const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
-
   const navigation = [
     {
       name: 'My Profile',
@@ -262,8 +261,16 @@ const MyProfilePage: React.FC<{}> = () => {
               total_Msg_count: fetchedMessages.total_messages
             }
 
-            setTotalMessagesCount((previousCount: TotalMessagesPerUser[] | undefined) => [...previousCount || [], newCount])
-            console.log(totalMessagesCount, 'fix me please')
+            setTotalMessagesCount((previousCount: TotalMessagesPerUser[] | undefined) => {
+              
+              const index = previousCount?.findIndex(count => count.user_id === newCount.user_id);
+            
+              if (index !== undefined && index > -1) {
+                return previousCount?.map((count, i) => i === index ? newCount : count);
+              } else {
+                return [...(previousCount || []), newCount];
+              }
+            });
             
             if (!alreadyFetched) {
               setviewedMsgList([...viewedMsgList, lookUpUsername])
@@ -766,6 +773,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 />
                 <div className="mt-2">
                   <ListTabs
+                    isLoading={isLoading}
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
                   />
@@ -776,11 +784,23 @@ const MyProfilePage: React.FC<{}> = () => {
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 text-2xl py-6 font-bold text-white">
-                      Pinned Stocks
-                    </h1>
+                    {isLoading ? (
+                       <div className="w-full flex h-20 items-center">
+                          <div> 
+                             </div>  
+                              <Skeleton className="py-6 ml-5 w-56 bg-zinc-400 rounded-lg"/>
+                          </div>
+                      ) : (
+                       <h1 className="ml-5 text-2xl py-6 font-bold text-white">
+                       Pinned Stocks
+                     </h1>
+                    )}
+                   
                     <hr className="border-1 border-zinc-950" />
-                    <PinnedStocksList UserProfile={UserProfile} />
+                    <PinnedStocksList 
+                      UserProfile={UserProfile}
+                      isLoading={isLoading}
+                     />
                   </div>
                   <div
                     className={`flex-1 bg-zinc-900 ${
@@ -808,6 +828,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 />{' '}
                 <div className="mt-2">
                   <ListTabs
+                    isLoading={isLoading}
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
                   />
@@ -818,11 +839,22 @@ const MyProfilePage: React.FC<{}> = () => {
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
-                      Pinned Stocks
-                    </h1>
+                    {isLoading ? (
+                       <div className="w-full flex h-20 items-center">
+                          <div> 
+                             </div>  
+                              <Skeleton className="py-6 ml-5 w-56 bg-zinc-400 rounded-lg"/>
+                          </div>
+                      ) : (
+                       <h1 className="ml-5 text-2xl py-6 font-bold text-white">
+                       Pinned Stocks
+                     </h1>
+                    )}
                     <hr className="border-1 border-zinc-950" />
-                    <S_PinnedStocksList searchedprofile={SearchedProfile} />
+                    <S_PinnedStocksList 
+                      searchedprofile={SearchedProfile}
+                      isLoading={isLoading}
+                       />
                   </div>
                   <div
                     className={`flex-1 bg-zinc-900 ${

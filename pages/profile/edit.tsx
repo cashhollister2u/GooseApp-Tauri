@@ -11,6 +11,8 @@ import S_Header from '../../components/SearchedPages/sHeader'
 import S_PinnedStocksList from '../../components/SearchedPages/sPinnedStocksList'
 import useAxios from '../../utils/useAxios'
 import EditForm from '../../components/EditComponents/EditForm'
+import {Card, Skeleton} from "@nextui-org/react";
+
 
 import { Dialog, Transition } from '@headlessui/react'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
@@ -82,14 +84,13 @@ export default function MyProfilePageEdit() {
     },
   ]
 
+  //init page data
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const search = params.get('search')
     const controller = new AbortController()
-    const signal = controller.signal
 
+    
     const timer = setTimeout(() => {
-      console.log('get ran agian')
+      
       const fetchUserfollowing = async () => {
         try {
           const updatedUserData = await gooseApp.get(`${fetchUserURL}`)
@@ -97,56 +98,58 @@ export default function MyProfilePageEdit() {
           const fetchedUserProfile = jwtDecode<UserProfile>(
             updatedUserData.data.authToken
           )
+
           fetchedUserProfile.following.forEach((follow: any) => {
             if (!followingList.includes(follow.profile.username)) {
               followingList.push(follow.profile.username)
             }
           })
-          if (!UserProfile) {
           setUserProfile(fetchedUserProfile)
-          }
+
+          setTimeout(() => {
+            setIsLoading(false)
+          }, 400)
+
         } catch (error) {
-          if (!signal.aborted) {
-            window.location.href = '/login'
-          }
+          
         }
       }
 
-      fetchUserfollowing()
-      if (search) {
-        setSearchActive(true)
-
-        const handleSearchChange = async () => {
-          try {
-            const response = await gooseApp.get(`${searchUserURL}${search}/`)
-            const fetchedUserProfile: Profile = response.data
-            setSearchedprofile(fetchedUserProfile)
-          } catch (error) {
-            console.error('Error fetching user profile:')
-            if (!signal.aborted) {
-              window.location.href = '/sign-in'
-            }
-          }
-        }
-        handleSearchChange()
-      } else {
-        setSearchActive(false)
+      if(!UserProfile){
+        fetchUserfollowing()
       }
-    }, 100)
+
+    }, 0)
     return () => {
-      clearTimeout(timer)
-      controller.abort()
+      clearTimeout(timer), controller.abort()
     }
-  }, [window.location.href])
-
-  //Loading Screen
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 500)
-
-    return () => clearTimeout(timer)
   }, [])
+
+   //loading searched profiles
+   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const search = params.get('search')
+    
+    if (search) {
+      setSearchActive(true)
+
+      const handleSearchChange = async () => {
+        try {
+          const response = await gooseApp.get(`${searchUserURL}${search}/`)
+          const fetchedUserProfile: Profile = response.data
+          setSearchedprofile(fetchedUserProfile)
+        } catch (error) {
+          console.error('Error fetching user profile:')
+          window.location.href = '/profile'
+        }
+      }
+      handleSearchChange()
+    } else {
+      setSearchActive(false)
+    }
+
+
+  }, [window.location.href])
 
   const handleTabChange = (tabName: string) => {
     setActiveTab(tabName)
@@ -536,6 +539,7 @@ export default function MyProfilePageEdit() {
                 />
                 <div className="mt-2">
                   <ListTabs
+                    isLoading={isLoading}
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
                   />
@@ -546,11 +550,22 @@ export default function MyProfilePageEdit() {
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
-                      Pinned Stocks
-                    </h1>
+                    {isLoading ? (
+                       <div className="w-full flex h-20 items-center">
+                          <div> 
+                             </div>  
+                              <Skeleton className="py-6 ml-5 w-56 bg-zinc-400 rounded-lg"/>
+                          </div>
+                      ) : (
+                       <h1 className="ml-5 text-2xl py-6 font-bold text-white">
+                       Pinned Stocks
+                     </h1>
+                    )}
                     <hr className="border-1 border-zinc-950" />
-                    <PinnedStocksList UserProfile={UserProfile} />
+                    <PinnedStocksList 
+                      UserProfile={UserProfile}
+                      isLoading={isLoading}
+                       />
                   </div>
                   <div
                     className={`flex-1 bg-zinc-900 ${
@@ -578,6 +593,7 @@ export default function MyProfilePageEdit() {
                 />{' '}
                 <div className="mt-2">
                   <ListTabs
+                    isLoading={isLoading}
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
                   />
@@ -588,11 +604,22 @@ export default function MyProfilePageEdit() {
                       activeTab === 'Pinned' ? '' : 'hidden'
                     }`}
                   >
-                    <h1 className="ml-5 h-24 text-2xl py-8 font-bold text-white">
-                      Pinned Stocks
-                    </h1>
+                    {isLoading ? (
+                       <div className="w-full flex h-20 items-center">
+                          <div> 
+                             </div>  
+                              <Skeleton className="py-6 ml-5 w-56 bg-zinc-400 rounded-lg"/>
+                          </div>
+                      ) : (
+                       <h1 className="ml-5 text-2xl py-6 font-bold text-white">
+                       Pinned Stocks
+                     </h1>
+                    )}
                     <hr className="border-1 border-zinc-950" />
-                    <S_PinnedStocksList searchedprofile={SearchedProfile} />
+                    <S_PinnedStocksList 
+                      searchedprofile={SearchedProfile}
+                      isLoading={isLoading}
+                       />
                   </div>
                   <div
                     className={`flex-1 bg-zinc-900 ${
