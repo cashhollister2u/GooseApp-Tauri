@@ -36,7 +36,7 @@ interface ProfilePictureState {
   profilepictureFile: File | null
 }
 
-const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
+const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void }> = ({ UserProfile, onCancelEdit }) => {
   const [query, setQuery] = useState<string>('')
   const [listSuggestion, setlistSuggestion] = useState<string[]>([])
   const [Stock, setStock] = useState<StockType>([])
@@ -188,15 +188,13 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-      returnHome()
+      onCancelEdit()
     } catch (error) {
       console.error('Error updating user')
     }
   }
 
-  const returnHome = () => {
-    window.location.href = '/profile'
-  }
+  
 
   const handlevalues5Focus = (index: number) => {
     const clearvalues5 = [...EditedValues5]
@@ -215,7 +213,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
 
   return (
     <div>
-      <div className="space-y-12">
+      <div className="space-y-12 ml-4 mr-4">
         <div className="border-b border-white/10 pb-12">
           <h2 className="text-base font-semibold leading-7 text-zinc-200">
             Edit Profile
@@ -450,7 +448,7 @@ const EditForm: React.FC<{ UserProfile: UserProfile }> = ({ UserProfile }) => {
         <button
           type="button"
           className="text-sm font-semibold leading-6 text-zinc-200"
-          onClick={returnHome}
+          onClick={() => onCancelEdit()}
         >
           Cancel
         </button>

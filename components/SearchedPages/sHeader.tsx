@@ -251,7 +251,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
                   'flex rounded-md w-10 ml-1 items-center justfiy-center bg-gray-300 px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-white'
                 }
                 onClick={() => {
-                  onclick(), console.log('onclick')
+                  onclick()
                 }}
               >
                 <span className=" mx-auto">

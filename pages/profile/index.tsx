@@ -13,6 +13,7 @@ import ListTabs from '../../components/ListTabs'
 import TopStocksList from '../../components/TopStocksList'
 import S_Header from '../../components/SearchedPages/sHeader'
 import S_PinnedStocksList from '../../components/SearchedPages/sPinnedStocksList'
+import EditForm from '../../components/EditComponents/EditForm'
 import Messaging from '../../components/Messaging'
 import useAxios from '../../utils/useAxios'
 import { Dialog, Transition } from '@headlessui/react'
@@ -105,6 +106,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('');
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
+  const [isEditing, setIsEditing] = useState<boolean>(false)
   
   const navigation = [
     {
@@ -118,12 +120,6 @@ const MyProfilePage: React.FC<{}> = () => {
       icon: UsersIcon,
       current: false,
       children: followingList,
-    },
-    {
-      name: 'Edit Profile',
-      href: '/profile/edit',
-      icon: Cog6ToothIcon,
-      current: false,
     },
   ]
 
@@ -333,6 +329,7 @@ const MyProfilePage: React.FC<{}> = () => {
     setActiveTab(tabName)
   }
   const handleMessageScreen = () => {
+    setIsEditing(false)
     setIsMessaging(true)
     setActiveTab('empty')
     setSidebarOpen(false)
@@ -342,8 +339,14 @@ const MyProfilePage: React.FC<{}> = () => {
     setfollowing(newList)
   }
 
+  const handleEditButton = () => {
+    setIsEditing(true)
+    setIsMessaging(false)
+  }
+
   const updateIsMessaging = () => {
     setIsMessaging(false)
+    setIsEditing(false)
     setActiveTab('Pinned')
   }
 
@@ -533,6 +536,16 @@ const MyProfilePage: React.FC<{}> = () => {
                               />
                               Messages
                             </button>
+                            <button
+                              className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
+                              onClick={() => handleEditButton()}
+                            >
+                              <ChatBubbleLeftRightIcon
+                                className="h-6 w-6 text-zinc-600 shrink-0"
+                                aria-hidden="true"
+                              />
+                              Edit Profile 
+                            </button>
                           </ul>
                         </li>
                         <li>
@@ -656,6 +669,16 @@ const MyProfilePage: React.FC<{}> = () => {
                         aria-hidden="true"
                       />
                       Messages
+                    </button>
+                    <button
+                      className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
+                      onClick={() => handleEditButton()}
+                    >
+                      <Cog6ToothIcon
+                        className="h-6 w-6 text-zinc-600 shrink-0"
+                        aria-hidden="true"
+                      />
+                      Edit Profile
                     </button>
                   </ul>
                 </li>
@@ -787,7 +810,16 @@ const MyProfilePage: React.FC<{}> = () => {
                 />
               </div>
             </div>
-
+            {isEditing && (
+              <div className="fixed left-72 xl:hidden inset-0 z-50 overflow-y-auto bg-zinc-900 bg-zinc-800 flex items-start justify-center pt-4 pb-4">
+                <div className="w-full mr-2 max-w-4xl mx-auto lg:left-72">
+                  <EditForm 
+                    UserProfile={UserProfile as UserProfile}
+                    onCancelEdit={() => updateIsMessaging()}
+                  />
+                </div>
+              </div>
+            )}
             {!isSearchActive ? (
               <div className='bg-zinc-900'>
                 <Header 
@@ -839,7 +871,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 bg-zinc-900">
+              <div className={`${isEditing ? 'hidden' : "flex-1 bg-zinc-900"}`}>
                 {/* search active*/}
                 <S_Header
                   isLoading={isLoading}
@@ -898,7 +930,15 @@ const MyProfilePage: React.FC<{}> = () => {
 
         <aside className="fixed inset-y-0 right-0 hidden overflow-y-auto border-l-2 border-zinc-600 bg-zinc-900 xl:block w-1/3">
           {/* Secondary column (hidden on smaller screens) */}
-          <div>
+          {isEditing ? (
+            <div className="inset-0 mr-2 mt-4 z-50 bg-zinc-900 ">
+            <EditForm 
+              UserProfile={UserProfile as UserProfile}
+              onCancelEdit={() => updateIsMessaging()}
+              />
+            </div>
+          ) : ( 
+            <div>
             <Messaging
               onSendMessage={handleMsgUpdateBetweenMSGComponents}
               isLoading={isLoading}
@@ -913,7 +953,8 @@ const MyProfilePage: React.FC<{}> = () => {
               updateIsMessaging={updateIsMessaging}
               UserProfile={UserProfile as UserProfile}
             />
-          </div>
+          </div>)}
+         
         </aside>
       </div>
     </>
