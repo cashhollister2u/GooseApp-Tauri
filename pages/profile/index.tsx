@@ -200,6 +200,8 @@ const MyProfilePage: React.FC<{}> = () => {
           const response = await gooseApp.get(`${searchUserURL}${search}/`)
           const fetchedUserProfile: Profile = response.data
           setSearchedprofile(fetchedUserProfile)
+          console.log('search_profile: ', fetchedUserProfile?.profile.username)
+
         } catch (error) {
           console.error('Error fetching user profile:')
           window.location.href = '/profile'
@@ -293,6 +295,7 @@ const MyProfilePage: React.FC<{}> = () => {
           }
       }
   }
+
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
@@ -317,6 +320,7 @@ const MyProfilePage: React.FC<{}> = () => {
 
       fetchConversations()
     } 
+    console.log('user_profile: ', UserProfile?.username)
   }, [UserProfile])
 
   const handleSearch = (event: any) => {
@@ -352,15 +356,8 @@ const MyProfilePage: React.FC<{}> = () => {
 
   const sendMessageFromSearch = () => {
     setIsSeachMessage(true)
-    const checkSize = () => {
-      if (window.innerWidth >= 1280) {
-        setIsMessaging(true)
-      }
-    }
-    checkSize()
-    window.addEventListener('resize', checkSize)
+    setIsMessaging(true)
 
-    return () => window.removeEventListener('resize', checkSize)
   }
 
 
@@ -643,7 +640,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                         {/* 44px */}
                                         <Disclosure.Button
                                           as="div"
-                                          onClick={() => router.push(`/profile?search=${subItem}#`)}
+                                          onClick={() => {router.push(`/profile?search=${subItem}#`), setIsMessaging(false)}}
                                           className={classNames(
                                             'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
@@ -871,7 +868,7 @@ const MyProfilePage: React.FC<{}> = () => {
                 </div>
               </div>
             ) : (
-              <div className={`${isEditing ? 'hidden' : "flex-1 bg-zinc-900"}`}>
+              <div className={`${isEditing ? '' : "flex-1 bg-zinc-900"}`}>
                 {/* search active*/}
                 <S_Header
                   isLoading={isLoading}

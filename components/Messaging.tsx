@@ -218,7 +218,7 @@ const Messaging: React.FC<{
 
       settabvalue(false)
     }
-  }, [IsSearchMessage])
+  }, [IsSearchMessage, searchedprofile])
 
   useEffect(() => {
     if (isSearchMessageUpd) {
@@ -291,11 +291,8 @@ const Messaging: React.FC<{
   }, [messages])  
 
   const LoadsearchedUser = (username?: string) => {
-    const params = new URLSearchParams(window.location.search)
-    const search = params.get('search') as string
-    if (search === username) {
-      updateIsMessaging()
-    }
+    updateIsMessaging()
+    
     router.push(`/profile?search=${username}#`)
   }
 
@@ -783,10 +780,17 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/50 backdrop-blur-md py-2 rounded w-full hover:bg-zinc-300"
                       onClick={() => {
                         if (viewmsg?.handle) {
+                          if (viewmsg?.handle === searchedprofile.profile.username) {
+                            updateIsMessaging()
+                          } else {
                           LoadsearchedUser(viewmsg.handle)
+                          }
                         } else if (viewmsg?.profile.username) {
+                          if (viewmsg?.profile.username  === searchedprofile.profile.username) {
+                            updateIsMessaging()
+                          } else {
                           LoadsearchedUser(viewmsg.profile.username)
-                        }
+                          }}
                       }}
                     >
                       <div className="px-2 flex items-center">

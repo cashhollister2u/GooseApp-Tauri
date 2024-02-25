@@ -31,7 +31,7 @@ const PinnedStocksList: React.FC<{ UserProfile?: UserProfile, isLoading:boolean 
       {isLoading ? (
         loadingValues.map( (value, valueIndex) => (
          
-        <Card className="flex mt-2 mr-2 ml-2 bg-zinc-800" radius="lg">
+        <Card key={valueIndex} className="flex mt-2 mr-2 ml-2 bg-zinc-800" radius="lg">
           <div className=" w-full flex items-center">
             <div> 
                 </div>  
