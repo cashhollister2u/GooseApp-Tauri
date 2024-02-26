@@ -107,6 +107,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
   const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [ButtonPress, setButtonPress] = useState<boolean>(false)
   
   const navigation = [
     {
@@ -141,8 +142,6 @@ const MyProfilePage: React.FC<{}> = () => {
   //init page data
   useEffect(() => {
     const controller = new AbortController()
-
-    
     const timer = setTimeout(() => {
       
       if (activeMessage === 'true') {
@@ -194,13 +193,11 @@ const MyProfilePage: React.FC<{}> = () => {
     
     if (search) {
       setSearchActive(true)
-
       const handleSearchChange = async () => {
         try {
           const response = await gooseApp.get(`${searchUserURL}${search}/`)
           const fetchedUserProfile: Profile = response.data
           setSearchedprofile(fetchedUserProfile)
-          console.log('search_profile: ', fetchedUserProfile?.profile.username)
 
         } catch (error) {
           console.error('Error fetching user profile:')
@@ -296,6 +293,11 @@ const MyProfilePage: React.FC<{}> = () => {
       }
   }
 
+  const onSearchReset = () => {
+    setSearchedprofile(null)
+    setIsSeachMessage(false)
+  }
+
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
@@ -320,7 +322,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
       fetchConversations()
     } 
-    console.log('user_profile: ', UserProfile?.username)
   }, [UserProfile])
 
   const handleSearch = (event: any) => {
@@ -355,6 +356,7 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   const sendMessageFromSearch = () => {
+    setButtonPress(current => !current)
     setIsSeachMessage(true)
     setIsMessaging(true)
 
@@ -490,33 +492,24 @@ const MyProfilePage: React.FC<{}> = () => {
                                             aria-hidden="true"
                                           />
                                         </Disclosure.Button>
-                                        <Disclosure.Panel
-                                          as="ul"
-                                          className="mt-1 px-2"
-                                        >
-                                          {item.children.map(
-                                            (
-                                              subItem: string,
-                                              index: number
-                                            ) => (
-                                              <li key={index}>
-                                                {/* 44px */}
-                                                <Disclosure.Button
-                                                  as="div"
-                                                  onClick={() => {
-                                                    router.push(`/profile?search=${subItem}#`),
-                                                    setSidebarOpen(false)
-                                                  }}
-                                                  className={classNames(
-                                                    'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
-                                                  )}
-                                                >
-                                                  {subItem}
-                                              </Disclosure.Button>
-                                              </li>
-                                            )
-                                          )}
-                                        </Disclosure.Panel>
+                                        <Disclosure.Panel as="ul" className="mt-1 px-2">
+                                        {item.children.map(
+                                          (subItem: string, index: number) => (
+                                            <li key={index}>
+                                              {/* 44px */}
+                                              <Disclosure.Button
+                                                as="div"
+                                                onClick={() => {router.push(`/profile?search=${subItem}#`), setIsMessaging(false), updateIsMessaging(), setSidebarOpen(false)}}
+                                                className={classNames(
+                                                  'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
+                                                )}
+                                              >
+                                                {subItem}
+                                            </Disclosure.Button>
+                                            </li>
+                                          )
+                                        )}
+                                      </Disclosure.Panel>
                                       </>
                                     )}
                                   </Disclosure>
@@ -640,7 +633,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                         {/* 44px */}
                                         <Disclosure.Button
                                           as="div"
-                                          onClick={() => {router.push(`/profile?search=${subItem}#`), setIsMessaging(false)}}
+                                          onClick={() => {router.push(`/profile?search=${subItem}#`), setIsMessaging(false), updateIsMessaging()}}
                                           className={classNames(
                                             'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
@@ -792,6 +785,7 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
+                  ButtonPress={ButtonPress}
                   onSendMessage={handleMsgUpdateBetweenMSGComponents}
                   isLoading={isLoading}
                   onResetMessageCount={setLoadedMessageCount}
@@ -937,6 +931,7 @@ const MyProfilePage: React.FC<{}> = () => {
           ) : ( 
             <div>
             <Messaging
+              ButtonPress={ButtonPress}
               onSendMessage={handleMsgUpdateBetweenMSGComponents}
               isLoading={isLoading}
               onResetMessageCount={setLoadedMessageCount}

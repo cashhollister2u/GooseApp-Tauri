@@ -99,8 +99,10 @@ const Messaging: React.FC<{
   onResetMessageCount: (reset:number) => void
   importTotalMessageCount: TotalMessagesPerUser[] | undefined
   isLoading: boolean
+  ButtonPress: boolean
 }> = ({
   UserProfile,
+  ButtonPress,
   onLoadedMessageCount,
   onResetMessageCount,
   onMessageSelect,
@@ -203,6 +205,7 @@ const Messaging: React.FC<{
   }, [viewmsg, messages])
 
   useEffect(() => {
+
     if (IsSearchMessage) {
       setisSearchMessageUpd(IsSearchMessage)
       const newMsg: any = {
@@ -215,10 +218,9 @@ const Messaging: React.FC<{
       }
       handleViewMessage(newMsg)
       onMessageSelect(newMsg, false, numberOfFilteredMessages)
-
       settabvalue(false)
     }
-  }, [IsSearchMessage, searchedprofile])
+  }, [IsSearchMessage, searchedprofile, ButtonPress])
 
   useEffect(() => {
     if (isSearchMessageUpd) {
