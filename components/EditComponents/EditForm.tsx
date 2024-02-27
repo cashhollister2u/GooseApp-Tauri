@@ -36,7 +36,7 @@ interface ProfilePictureState {
   profilepictureFile: File | null
 }
 
-const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void }> = ({ UserProfile, onCancelEdit }) => {
+const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, updateProfilePage: () => void }> = ({ UserProfile, onCancelEdit, updateProfilePage }) => {
   const [query, setQuery] = useState<string>('')
   const [listSuggestion, setlistSuggestion] = useState<string[]>([])
   const [Stock, setStock] = useState<StockType>([])
@@ -179,6 +179,16 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void }>
           'Content-Type': 'multipart/form-data', // Important for file uploads
         },
       })
+      // Check if the response status is 200
+      if (response.status === 200) {
+        // Call your function here
+        updateProfilePage();
+      } else {
+        // Handle other statuses or errors
+        console.error('Received non-200 response:', response.status);
+      }
+  
+
       swal.fire({
         title: 'Profile Updated',
         icon: 'success',

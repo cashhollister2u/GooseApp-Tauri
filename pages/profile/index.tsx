@@ -30,8 +30,9 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
-import {Card, Skeleton} from "@nextui-org/react";
+import {Skeleton} from "@nextui-org/react";
 
+const swal = require('sweetalert2')
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -108,6 +109,8 @@ const MyProfilePage: React.FC<{}> = () => {
   const [totalMessagesCount, setTotalMessagesCount] = useState<TotalMessagesPerUser[]> ()
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [ButtonPress, setButtonPress] = useState<boolean>(false)
+  const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
+
   
   const navigation = [
     {
@@ -162,13 +165,29 @@ const MyProfilePage: React.FC<{}> = () => {
           })
           setUserProfile(fetchedUserProfile)
         } catch (error) {
+          swal.fire({
+            title: 'Failed To Fetch User',
+            text: 'Please Login Again',
+            icon: 'error',
+            toast: true,
+            timer: 3000,
+            position: 'top-right',
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
           
+          setTimeout(() => {
+            
+            handleLogout()
+            
+          }, 3000)
+
         }
       }
 
-      if(!UserProfile){
-        fetchUserfollowing()
-      }
+      
+      fetchUserfollowing()
+      
 
       if (SearchMsgString && typeof SearchMsgString === 'string') {
         try {
@@ -184,7 +203,8 @@ const MyProfilePage: React.FC<{}> = () => {
     return () => {
       clearTimeout(timer), controller.abort()
     }
-  }, [])
+  }, [RefreshProfilePage])
+  console.log(RefreshProfilePage, 'refresh')
 
   //loading searched profiles
   useEffect(() => {
@@ -293,11 +313,6 @@ const MyProfilePage: React.FC<{}> = () => {
       }
   }
 
-  const onSearchReset = () => {
-    setSearchedprofile(null)
-    setIsSeachMessage(false)
-  }
-
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
     setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
@@ -362,6 +377,9 @@ const MyProfilePage: React.FC<{}> = () => {
 
   }
 
+  const updateProfilePage = () => {
+    setRefreshProfilePage(current => !current)
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('ally-supports-cache')
@@ -807,6 +825,7 @@ const MyProfilePage: React.FC<{}> = () => {
                   <EditForm 
                     UserProfile={UserProfile as UserProfile}
                     onCancelEdit={() => updateIsMessaging()}
+                    updateProfilePage={updateProfilePage}
                   />
                 </div>
               </div>
@@ -926,6 +945,7 @@ const MyProfilePage: React.FC<{}> = () => {
             <EditForm 
               UserProfile={UserProfile as UserProfile}
               onCancelEdit={() => updateIsMessaging()}
+              updateProfilePage={updateProfilePage}
               />
             </div>
           ) : ( 

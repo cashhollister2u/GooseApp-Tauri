@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { leaderBoardURL } from './backendURL'
+import useAxios from '../utils/useAxios'
 
 
 const TopStocksList: React.FC = () => {
   const [ranked_list, setranked_list] = useState<string[]>([])
+  const gooseApp = useAxios()
 
-  const apiUrl = leaderBoardURL
   useEffect(() => {
     const fetchedLeaderBoard = async () => {
       try {
-        const response = await fetch(apiUrl)
-        const data = await response.json()
+        const response = await gooseApp.get(leaderBoardURL)
+        const data = response.data
         if (data.ranked_list) {
           // If the condition is met, update the state.
           setranked_list(data.ranked_list)

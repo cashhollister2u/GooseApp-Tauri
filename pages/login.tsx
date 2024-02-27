@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
-import { jwtDecode } from 'jwt-decode'
 import { fetchTokenURL } from '../components/backendURL'
 const swal = require('sweetalert2')
 
@@ -12,7 +11,7 @@ const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
   const [refresh, setrefresh] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [user, setUser] = useState()
+  
 
   const router = useRouter();
 
