@@ -7,6 +7,7 @@ import useAxios from '@/utils/useAxios'
 import { mediaURL, baseURL } from './backendURL'
 import { invoke } from '@tauri-apps/api/tauri';
 import { useRouter } from 'next/router'
+import { websocketService } from '@/utils/websocketservice';
 
 
 const swal = require('sweetalert2')
@@ -382,7 +383,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
         formdata.append('reciever', recieverId)
         formdata.append('message', encryptedMessage)
         formdata.append('sender_message', encryptedSenderMessage)
-        
+      
       try {
         gooseApp
           .post(baseURL + 'send-messages/', formdata, {
@@ -391,6 +392,9 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             },
           })
           .then((res: any) => {
+            if (res.status === 200) {
+              websocketService.sendMessage(res.data)
+            }
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }

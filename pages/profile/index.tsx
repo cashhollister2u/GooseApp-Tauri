@@ -1,4 +1,5 @@
 import React from 'react'
+import { websocketService } from '@/utils/websocketservice';
 import { useRouter } from 'next/router'
 import { Disclosure } from '@headlessui/react'
 import {
@@ -231,6 +232,27 @@ const MyProfilePage: React.FC<{}> = () => {
 
 
   }, [window.location.href])
+
+
+ // connect to websocket
+ useEffect(() => {
+  // Ensure IDs are strings and properly formatted, adjust the domain as necessary
+  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://192.168.1.72:8000';
+  const wsUrl = new WebSocket(`${wsBaseUrl}/ws/chat/${UserProfile?.user_id}/`);
+
+  // Connect to WebSocket
+  //try{
+    //websocketService.connect(wsUrl as any);
+  //} catch(error) {
+    //console.log('failed to connect to websocket')
+  //}
+
+  // Cleanup on component unmount
+  //return () => {
+    //websocketService.disconnect();
+  //};
+}, [SearchedProfile]); // Reconnect if userId or nonUserId changes
+
 
   const handleMsgUpdateBetweenMSGComponents = (filteredMessage: Message) => {
 
