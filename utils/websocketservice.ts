@@ -34,9 +34,13 @@ class WebSocketService {
       });
     }
   
-    sendMessage(message: any) {
+    sendMessage(message: any, recipientUserId: any) {
       if (this.socket?.readyState === WebSocket.OPEN) {
-        this.socket.send(JSON.stringify(message));
+        const messageData = {
+            message: message,
+            recipient_user_id: recipientUserId
+        }
+        this.socket.send(JSON.stringify(messageData))
       } else {
         console.error('WebSocket is not open. Cannot send message.');
       }

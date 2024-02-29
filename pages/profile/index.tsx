@@ -32,6 +32,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton} from "@nextui-org/react";
+import { event } from '@tauri-apps/api';
 
 const swal = require('sweetalert2')
 
@@ -111,8 +112,27 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [ButtonPress, setButtonPress] = useState<boolean>(false)
   const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
+  const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
 
-  
+
+  //webSocket 
+  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://192.168.1.72:8000';
+  const socket = new WebSocket(`${wsBaseUrl}/ws/chat/${UserProfile?.user_id}/`);
+
+  useEffect(() => {
+
+    if (!isSocketConnected && UserProfile) {
+      websocketService.connect(socket as any)
+    }
+
+  }, [UserProfile])
+
+  socket.onopen = () => {
+    setisSocketConnected(true)
+    console.log('websocket connection established');
+    
+  }
+
   const navigation = [
     {
       name: 'My Profile',
@@ -205,7 +225,6 @@ const MyProfilePage: React.FC<{}> = () => {
       clearTimeout(timer), controller.abort()
     }
   }, [RefreshProfilePage])
-  console.log(RefreshProfilePage, 'refresh')
 
   //loading searched profiles
   useEffect(() => {

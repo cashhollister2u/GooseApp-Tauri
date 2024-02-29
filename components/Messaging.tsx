@@ -385,15 +385,16 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
         formdata.append('sender_message', encryptedSenderMessage)
       
       try {
+
         gooseApp
-          .post(baseURL + 'send-messages/', formdata, {
+          .post(baseURL + 'send-messages/' + recieverId + '/', formdata, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           })
           .then((res: any) => {
             if (res.status === 200) {
-              websocketService.sendMessage(res.data)
+              websocketService.sendMessage(res.data, recieverId)
             }
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
