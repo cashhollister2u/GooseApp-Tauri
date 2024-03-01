@@ -13,8 +13,9 @@ class WebSocketService {
       // Connection opened
       this.socket.addEventListener('open', (event) => {
         console.log('WebSocket is connected');
+
       });
-  
+      
       // Listen for messages
       this.socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
@@ -33,14 +34,16 @@ class WebSocketService {
         console.error('WebSocket error: ', error);
       });
     }
-  
-    sendMessage(message: any, recipientUserId: any) {
+    
+    sendMessage(message: any) {
+      console.log(this.socket?.readyState )
       if (this.socket?.readyState === WebSocket.OPEN) {
         const messageData = {
+            type: 'chat.message',
             message: message,
-            recipient_user_id: recipientUserId
         }
         this.socket.send(JSON.stringify(messageData))
+        console.log('sendMessage accepted from socket file', messageData)
       } else {
         console.error('WebSocket is not open. Cannot send message.');
       }

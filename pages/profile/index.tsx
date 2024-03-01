@@ -113,25 +113,21 @@ const MyProfilePage: React.FC<{}> = () => {
   const [ButtonPress, setButtonPress] = useState<boolean>(false)
   const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
+  const wsBaseUrl = 'ws://192.168.1.72:8000';
 
 
   //webSocket 
-  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://192.168.1.72:8000';
-  const socket = new WebSocket(`${wsBaseUrl}/ws/chat/${UserProfile?.user_id}/`);
-
   useEffect(() => {
-
-    if (!isSocketConnected && UserProfile) {
+    if (UserProfile) {
+      const socket = `${wsBaseUrl}/ws/chat/${UserProfile.user_id}/`
       websocketService.connect(socket as any)
+      
+      return () => {
+        websocketService.disconnect();
+        
+      };
     }
-
   }, [UserProfile])
-
-  socket.onopen = () => {
-    setisSocketConnected(true)
-    console.log('websocket connection established');
-    
-  }
 
   const navigation = [
     {
@@ -251,26 +247,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
 
   }, [window.location.href])
-
-
- // connect to websocket
- useEffect(() => {
-  // Ensure IDs are strings and properly formatted, adjust the domain as necessary
-  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'ws://192.168.1.72:8000';
-  const wsUrl = new WebSocket(`${wsBaseUrl}/ws/chat/${UserProfile?.user_id}/`);
-
-  // Connect to WebSocket
-  //try{
-    //websocketService.connect(wsUrl as any);
-  //} catch(error) {
-    //console.log('failed to connect to websocket')
-  //}
-
-  // Cleanup on component unmount
-  //return () => {
-    //websocketService.disconnect();
-  //};
-}, [SearchedProfile]); // Reconnect if userId or nonUserId changes
 
 
   const handleMsgUpdateBetweenMSGComponents = (filteredMessage: Message) => {

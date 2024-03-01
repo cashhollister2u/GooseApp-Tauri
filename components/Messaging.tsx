@@ -393,8 +393,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
             },
           })
           .then((res: any) => {
-            if (res.status === 200) {
-              websocketService.sendMessage(res.data, recieverId)
+            if (res.status === 201) {
+              websocketService.sendMessage(res.data)
             }
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
