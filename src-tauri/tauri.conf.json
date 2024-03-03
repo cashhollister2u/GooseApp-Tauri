@@ -55,10 +55,19 @@
     },
     "windows": [
       {
+        "title": "goose-app",
+        "label": "goose-app-instance1",
         "fullscreen": false,
         "height": 800,
         "resizable": true,
-        "title": "goose-app",
+        "width": 1100
+      },
+      {
+        "title": "goose-app2",
+        "label": "goose-app-instance2",
+        "fullscreen": false,
+        "height": 800,
+        "resizable": true,
         "width": 1100
       }
     ]

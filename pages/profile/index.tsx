@@ -31,7 +31,7 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
-import {Skeleton} from "@nextui-org/react";
+import {Skeleton, User} from "@nextui-org/react";
 import { event } from '@tauri-apps/api';
 
 const swal = require('sweetalert2')
@@ -113,21 +113,26 @@ const MyProfilePage: React.FC<{}> = () => {
   const [ButtonPress, setButtonPress] = useState<boolean>(false)
   const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
+  const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
+
+  
   const wsBaseUrl = 'ws://192.168.1.72:8000';
 
+  //websocket
+  if (UserProfile && !isSocketConnected) {
+    setisSocketConnected(true)
+    const socket = `${wsBaseUrl}/ws/chat/${UserProfile.user_id}/`
+    websocketService.connect(socket as any)
+    
+  }
+  // handle incoming Websocket messages
+  function handleMessage(data: any) {
+    console.log('Received message:', data);
+    recievedWebsocketMessages(data)
+    setisWebsocketMessage(current => !current)
+  }
+  websocketService.setMessageHandler(handleMessage);
 
-  //webSocket 
-  useEffect(() => {
-    if (UserProfile) {
-      const socket = `${wsBaseUrl}/ws/chat/${UserProfile.user_id}/`
-      websocketService.connect(socket as any)
-      
-      return () => {
-        websocketService.disconnect();
-        
-      };
-    }
-  }, [UserProfile])
 
   const navigation = [
     {
@@ -262,7 +267,7 @@ const MyProfilePage: React.FC<{}> = () => {
 
 
   async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {
-    const usernameReciever = reciever_profile.handle || reciever_profile.profile.username
+    const usernameReciever = reciever_profile.handle || reciever_profile.profile?.username || reciever_profile.username
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
@@ -284,6 +289,18 @@ const MyProfilePage: React.FC<{}> = () => {
           console.error('Error sending data to Rust:', error);
       }
     
+  }
+  //websocket individual messages
+  async function sendMessagetoRustDecryption(message: any, private_key: string) {
+    try {
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: private_key });
+      console.log('Decrypted Websocket Msg: ', result)
+      const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
+      setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
+      return result
+    } catch (error) {
+        console.error('Error sending Websocket data to Rust:', error);
+    }
   }
   
   const fetchMessages = async (reciever_profile: any, isLoadMore:boolean, loadedMessageCountVar:number) => {
@@ -328,6 +345,14 @@ const MyProfilePage: React.FC<{}> = () => {
             console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
           }
       }
+  }
+
+  const recievedWebsocketMessages = async (SocketMessage: any) => {
+    console.log(SocketMessage.message)
+    const reciever_profile = SocketMessage.message.reciever_profile
+    
+    await  sendMessagetoRustDecryption(SocketMessage.message, UserProfile ? UserProfile?.private_key: 'goodluckdecrypting') as any
+              
   }
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
@@ -402,6 +427,7 @@ const MyProfilePage: React.FC<{}> = () => {
     localStorage.removeItem('ally-supports-cache')
     localStorage.removeItem('pusherTransportTLS')
     localStorage.removeItem('authTokens')
+    websocketService.disconnect();
     setUserProfile(undefined);
     router.push('/login');
 
@@ -820,6 +846,7 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
+                  isWebsocketMessage={isWebsocketMessage}
                   ButtonPress={ButtonPress}
                   onSendMessage={handleMsgUpdateBetweenMSGComponents}
                   isLoading={isLoading}
@@ -968,6 +995,7 @@ const MyProfilePage: React.FC<{}> = () => {
           ) : ( 
             <div>
             <Messaging
+              isWebsocketMessage={isWebsocketMessage}
               ButtonPress={ButtonPress}
               onSendMessage={handleMsgUpdateBetweenMSGComponents}
               isLoading={isLoading}

@@ -3,8 +3,16 @@
 
 class WebSocketService {
     private socket: WebSocket | null
+
+    private messageHandler: ((data: any) => void) | null;
+
     constructor() {
       this.socket = null;
+      this.messageHandler = null;
+    }
+
+    setMessageHandler(handler: (data: any) => void) {
+      this.messageHandler = handler;
     }
   
     connect(url: string) {
@@ -19,8 +27,10 @@ class WebSocketService {
       // Listen for messages
       this.socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
-        console.log('Message from server ', data);
-        // Handle incoming message
+        // Check if a message handler is set, then call it with the received data
+        if (this.messageHandler) {
+          this.messageHandler(data);
+        }
       });
   
       // Handle WebSocket closure
@@ -35,12 +45,13 @@ class WebSocketService {
       });
     }
     
-    sendMessage(message: any) {
+    sendMessage(message: any, reciever_id: any) {
       console.log(this.socket?.readyState )
       if (this.socket?.readyState === WebSocket.OPEN) {
         const messageData = {
             type: 'chat.message',
             message: message,
+            reciever_user_id: reciever_id,
         }
         this.socket.send(JSON.stringify(messageData))
         console.log('sendMessage accepted from socket file', messageData)

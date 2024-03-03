@@ -32,6 +32,7 @@ interface Message {
   sender_message: string
   decrypted_message?: string
   handle?: string
+  isWebsocket?: boolean
 }
 
 interface Profile {
@@ -101,6 +102,7 @@ const Messaging: React.FC<{
   importTotalMessageCount: TotalMessagesPerUser[] | undefined
   isLoading: boolean
   ButtonPress: boolean
+  isWebsocketMessage: boolean
 }> = ({
   UserProfile,
   ButtonPress,
@@ -114,7 +116,8 @@ const Messaging: React.FC<{
   importMessages,
   importTotalMessageCount,
   importConversations,
-  isLoading
+  isLoading,
+  isWebsocketMessage
 }) => {
   const [isSlowScroll, setIsSlowScroll] = useState<boolean>(false)
   const [followList, setFollowList] = useState<string[]>([])
@@ -166,10 +169,24 @@ const Messaging: React.FC<{
   } else {
     numberOfLoadedMessages = filteredMessages.length % 15;
   }
+console.log(filteredMessages.length)
+  //handle Websocket Messages
+  useEffect(() => {
+
+    setTimeout(() => {
+      if (messageRef.current) {
+        messageRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest',
+        })
+      }
+    }, 100)
+    
+  }, [isWebsocketMessage])
 
 //init click
   useEffect(() => {
-
 
     if (!isViewMsgChange) {
       if(filteredMessages.length > 0){
@@ -196,12 +213,14 @@ const Messaging: React.FC<{
             });}
           }, 100); 
     } else {
+      setTimeout(() => {
         if (newMessagesRef.current && !isSlowScroll) {
           newMessagesRef.current.scrollIntoView({
             block: 'end',
             inline: 'nearest',
           })
         }
+      }, 0); 
     }
   }, [viewmsg, messages])
 
@@ -265,9 +284,12 @@ const Messaging: React.FC<{
     const newMessages = importMessages.filter(importMessage => 
       !messages.some(message => message.id === importMessage.id)
       )
-
-      if (newMessages.length > 0) {
+    console.log(newMessages[0]?.isWebsocket)
+      if(newMessages[0]?.isWebsocket == true){
         setmessages(previousMessages => [...previousMessages, ...newMessages])
+      
+      } else if (newMessages.length > 0) {
+        setmessages(previousMessages => [...newMessages, ...previousMessages])
       }
       
   }, [importMessages, viewmsg])
@@ -387,14 +409,14 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
       try {
 
         gooseApp
-          .post(baseURL + 'send-messages/' + recieverId + '/', formdata, {
+          .post(baseURL + 'send-messages/', formdata, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           })
           .then((res: any) => {
             if (res.status === 201) {
-              websocketService.sendMessage(res.data)
+              websocketService.sendMessage(res.data, recieverId)
             }
             if (!messages.includes(res.data)) {
                 sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
@@ -787,13 +809,13 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                       className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/50 backdrop-blur-md py-2 rounded w-full hover:bg-zinc-300"
                       onClick={() => {
                         if (viewmsg?.handle) {
-                          if (viewmsg?.handle === searchedprofile.profile.username) {
+                          if (viewmsg?.handle === searchedprofile?.profile.username) {
                             updateIsMessaging()
                           } else {
                           LoadsearchedUser(viewmsg.handle)
                           }
                         } else if (viewmsg?.profile.username) {
-                          if (viewmsg?.profile.username  === searchedprofile.profile.username) {
+                          if (viewmsg?.profile.username  === searchedprofile?.profile.username) {
                             updateIsMessaging()
                           } else {
                           LoadsearchedUser(viewmsg.profile.username)
