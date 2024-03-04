@@ -60,15 +60,6 @@ const LoginPage = () => {
 
         if (response.status === 200) {
           localStorage.setItem('authTokens', JSON.stringify(data));
-          swal.fire({
-            title: 'Login Successful',
-            icon: 'success',
-            toast: true,
-            timer: 3000,
-            position: 'top-right',
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
           window.location.href = '/profile'
         } else {
           throw new Error('Login failed');
@@ -79,8 +70,10 @@ const LoginPage = () => {
           title: 'Login failed',
           text: 'Username or password does not exist',
           icon: 'error',
+          color: '#cfe8fc',
+          background: '#BC3838',
           toast: true,
-          timer: 3000,
+          timer: 6000,
           position: 'top-right',
           timerProgressBar: true,
           showConfirmButton: false,

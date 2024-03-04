@@ -38,6 +38,8 @@ const SignUpPage = () => {
       swal.fire({
         title: 'User Registration Successsful',
         icon: 'success',
+        color: '#cfe8fc',
+        background: '#58A564',
         toast: true,
         timer: 6000,
         position: 'top-right',
@@ -51,6 +53,8 @@ const SignUpPage = () => {
         swal.fire({
           title: 'Default is not an acceptable Username',
           icon: 'error',
+          color: '#cfe8fc',
+          background: '#BC3838',
           toast: true,
           timer: 6000,
           position: 'top-right',
@@ -62,6 +66,8 @@ const SignUpPage = () => {
           title: 'Username not available',
           icon: 'error',
           toast: true,
+          color: '#cfe8fc',
+          background: '#BC3838',
           timer: 6000,
           position: 'top-right',
           timerProgressBar: true,

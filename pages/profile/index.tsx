@@ -33,6 +33,7 @@ import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton, User} from "@nextui-org/react";
 import { event } from '@tauri-apps/api';
+import { Result } from 'postcss';
 
 const swal = require('sweetalert2')
 
@@ -130,6 +131,7 @@ const MyProfilePage: React.FC<{}> = () => {
     console.log('Received message:', data);
     recievedWebsocketMessages(data)
     setisWebsocketMessage(current => !current)
+    
   }
   websocketService.setMessageHandler(handleMessage);
 
@@ -186,10 +188,24 @@ const MyProfilePage: React.FC<{}> = () => {
             }
           })
           setUserProfile(fetchedUserProfile)
+          swal.fire({
+            title: `Login Successful`,
+            color: '#cfe8fc',
+            background: '#58A564',
+            icon: 'success',
+            toast: true,
+            timer: 3000,
+            position: 'top-right',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            
+          });
         } catch (error) {
           swal.fire({
             title: 'Failed To Fetch User',
             text: 'Please Login Again',
+            color: '#cfe8fc',
+            background: '#BC3838',
             icon: 'error',
             toast: true,
             timer: 3000,
@@ -292,11 +308,26 @@ const MyProfilePage: React.FC<{}> = () => {
   }
   //websocket individual messages
   async function sendMessagetoRustDecryption(message: any, private_key: string) {
+    
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: private_key });
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: private_key }) as string;
       console.log('Decrypted Websocket Msg: ', result)
       const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
       setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
+      swal.fire({
+        title: `Message: @${message.reciever_profile.username}`,
+        color: '#cfe8fc',
+        background: '#3864BC',
+        text: `${result.substring(0,60)}...`,
+        icon: 'warning',
+        iconColor: '#cfe8fc',
+        toast: true,
+        timer: 6000,
+        position: 'top-right',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        
+      });
       return result
     } catch (error) {
         console.error('Error sending Websocket data to Rust:', error);
