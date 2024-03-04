@@ -318,7 +318,7 @@ const MyProfilePage: React.FC<{}> = () => {
         title: `Message: @${message.reciever_profile.username}`,
         color: '#cfe8fc',
         background: '#3864BC',
-        text: `${result.substring(0,60)}...`,
+        text: result.length > 59 ? `${result.substring(0,60)}...` : result,
         icon: 'warning',
         iconColor: '#cfe8fc',
         toast: true,
