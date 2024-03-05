@@ -190,14 +190,17 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, u
   
 
       swal.fire({
-        title: 'Profile Updated',
+        title: `Profile Updated`,
+        color: '#cfe8fc',
+        background: '#58A564',
         icon: 'success',
         toast: true,
-        timer: 6000,
+        timer: 3000,
         position: 'top-right',
         timerProgressBar: true,
         showConfirmButton: false,
-      })
+        
+      });
       onCancelEdit()
     } catch (error) {
       console.error('Error updating user')

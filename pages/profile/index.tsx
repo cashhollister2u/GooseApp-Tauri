@@ -114,7 +114,8 @@ const MyProfilePage: React.FC<{}> = () => {
   const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
-  
+  const [isLoggedin, setisLoggedin] = useState<boolean>(false)
+
   const wsBaseUrl = 'ws://192.168.1.72:8000';
   
   //window size init
@@ -195,18 +196,21 @@ const MyProfilePage: React.FC<{}> = () => {
             }
           })
           setUserProfile(fetchedUserProfile)
-          swal.fire({
-            title: `Login Successful`,
-            color: '#cfe8fc',
-            background: '#58A564',
-            icon: 'success',
-            toast: true,
-            timer: 3000,
-            position: 'top-right',
-            timerProgressBar: true,
-            showConfirmButton: false,
-            
-          });
+          if (!isLoggedin) {
+            setisLoggedin(true)
+            swal.fire({
+              title: `Login Successful`,
+              color: '#cfe8fc',
+              background: '#58A564',
+              icon: 'success',
+              toast: true,
+              timer: 3000,
+              position: 'top-right',
+              timerProgressBar: true,
+              showConfirmButton: false,
+              
+            });
+          }
         } catch (error) {
           swal.fire({
             title: 'Failed To Fetch User',
@@ -223,17 +227,15 @@ const MyProfilePage: React.FC<{}> = () => {
           
           setTimeout(() => {
             
-            handleLogout()
+            //handleLogout()
             
           }, 3000)
 
         }
       }
 
-      
-      fetchUserfollowing()
-      
-
+        fetchUserfollowing();
+    
       if (SearchMsgString && typeof SearchMsgString === 'string') {
         try {
           const SearchMsg = JSON.parse(atob(SearchMsgString))
@@ -265,7 +267,7 @@ const MyProfilePage: React.FC<{}> = () => {
 
         } catch (error) {
           console.error('Error fetching user profile:')
-          window.location.href = '/profile'
+          router.push('/profile')
         }
       }
       handleSearchChange()

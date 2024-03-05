@@ -220,13 +220,13 @@ const S_Header: React.FC<S_HeaderProps> = ({
               </div>
               </div>
               <div
-              className={`flex mr-4 h-10 mt-3 ${
+              className={`h-8 mt-3 mr-3${
                 MYusername !== username ? '' : 'hidden'
               }`}
             >
               <button
                 type="button"
-                className={`rounded-md w-32 bg-gray-300 px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-white ${
+                className={`rounded-md w-32 h-8 bg-zinc-200 border-2 border-zinc-400/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-100 ${
                   !isFollowing ? '' : 'hidden'
                 }`}
                 onClick={() => FollowUser(searchedprofile?.id)}
@@ -238,7 +238,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
                 className={`${
                   !isFollowing
                     ? 'hidden'
-                    : 'rounded-md w-32 bg-gray-300 px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-white'
+                    : 'rounded-md w-32 h-8 bg-zinc-500 border-2 border-zinc-600/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-300'
                 }`}
                 onClick={() => unFollowUser(searchedprofile?.id)}
               >
@@ -248,18 +248,19 @@ const S_Header: React.FC<S_HeaderProps> = ({
               <button
                 type="button"
                 className={
-                  'flex rounded-md w-10 ml-1 items-center justfiy-center bg-gray-300 px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-white'
+                  'rounded-md w-32 h-6 mt-1 bg-zinc-200 border-2 border-zinc-400/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-100'
                 }
                 onClick={() => {
                   onclick()
                 }}
               >
-                <span className=" mx-auto">
+                <div className='flex'>
+                  Send Message
                   <EnvelopeIcon
-                    className="h-5 w-5 text-black"
-                    aria-hidden="true"
-                  />
-                </span>
+                  className="h-5 w-5 ml-1 text-black"
+                  aria-hidden="true"
+                />
+                  </div>
               </button>
             </div>
             
