@@ -116,6 +116,11 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
 
+  if (typeof window === 'undefined') return
+    import("@tauri-apps/api").then((tauri) => {
+        // use the api
+        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(1300, 800));
+    })
   
   const wsBaseUrl = 'ws://192.168.1.72:8000';
 

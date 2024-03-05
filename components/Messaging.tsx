@@ -861,8 +861,8 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                   className={`group relative flex flex-col break-words ${
                                     viewmsg?.handle !==
                                     message.sender_profile?.username
-                                      ? 'items-end xl:ml-56 lg:ml-80 ml-24'
-                                      : 'items-start xl:mr-56 lg:mr-80 '
+                                      ? 'items-end xl:ml-24 lg:ml-80 ml-24'
+                                      : 'items-start xl:mr-24 lg:mr-80 '
                                   }`}
                                 >
                                   <div className="flex-1 mt-2 text-gray-500 py-2 ml-4 text-sm">

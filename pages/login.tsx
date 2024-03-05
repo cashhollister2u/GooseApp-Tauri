@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
+import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import { fetchTokenURL } from '../components/backendURL'
+
 const swal = require('sweetalert2')
 
 interface UserProfile {
@@ -33,6 +35,13 @@ const LoginPage = () => {
     return null
   })
 
+  if (typeof window === 'undefined') return
+    import("@tauri-apps/api").then((tauri) => {
+        // use the api
+        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(360, 500));
+    })
+ 
+
   useEffect(() => {
     const tokenData = localStorage.getItem('authTokens');
     if (tokenData) {
@@ -61,6 +70,7 @@ const LoginPage = () => {
         if (response.status === 200) {
           localStorage.setItem('authTokens', JSON.stringify(data));
           window.location.href = '/profile'
+          
         } else {
           throw new Error('Login failed');
         }
@@ -89,7 +99,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex flex-col items-center justify-center h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="flex items-center justify-center mt-20">
             test
