@@ -15,7 +15,7 @@
       "all": false,
       "window": {
         "all": false,
-        "center": false,
+        "center": true,
         "close": false,
         "create": false,
         "hide": false,
@@ -39,7 +39,7 @@
         "setMaximizable": false,
         "setMinSize": false,
         "setMinimizable": false,
-        "setPosition": false,
+        "setPosition": true,
         "setResizable": true,
         "setSize": true,
         "setSkipTaskbar": false,
@@ -94,9 +94,9 @@
         "title": "goose-app",
         "label": "goose-app-instance1",
         "fullscreen": false,
-        "height": 800,
+        "height": 600,
         "resizable": true,
-        "width": 1300,
+        "width": 400,
         "url":"index.html"
       }
     ]

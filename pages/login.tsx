@@ -1,45 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
-import { appWindow, PhysicalSize } from '@tauri-apps/api/window';
 import { fetchTokenURL } from '../components/backendURL'
 
 const swal = require('sweetalert2')
 
-interface UserProfile {
-  values5: string[]
-}
 
 const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
-  const [refresh, setrefresh] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  
-
   const router = useRouter();
 
-  const [authTokens, setAuthTokens] = useState(() => {
-    if (typeof window != 'undefined') {
-      const tokenData = localStorage.getItem('authTokens')
-      if (tokenData) {
-        try {
-          // Attempt to parse the stored JSON
-          return JSON.parse(tokenData)
-        } catch (error) {
-          // If parsing fails, log the error and return null
-          console.error('Failed to parse auth tokens:', error)
-          return null
-        }
-      }
-    }
-    // If no data is found in localStorage, return null
-    return null
-  })
-
+useEffect(() => {
   if (typeof window === 'undefined') return
     import("@tauri-apps/api").then((tauri) => {
-        // use the api
-        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(360, 500));
+      tauri.window.appWindow.center()
+      tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 600));
     })
+}, [])
+ 
  
 
   useEffect(() => {
@@ -131,7 +109,6 @@ const LoginPage = () => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setemailname(e.target.value)}
-                  onFocus={() => setrefresh('refreshed')}
                   required
                   className="pl-4 block w-full rounded-md border-0 bg-gray-300 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/20 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                 />
@@ -165,7 +142,6 @@ const LoginPage = () => {
                   className="pl-4 block w-full rounded-md border-0 bg-gray-300 py-1.5 text-black shadow-sm ring-1 ring-inset ring-white/20 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setrefresh('refreshed')}
                 />
               </div>
             </div>
