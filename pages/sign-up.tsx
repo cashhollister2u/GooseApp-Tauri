@@ -15,7 +15,6 @@ const SignUpPage = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return
       import("@tauri-apps/api").then((tauri) => {
-        tauri.window.appWindow.center()
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 600));
       })
   }, [])
