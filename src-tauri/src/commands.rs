@@ -1,12 +1,17 @@
 // commands.rs
 use serde::{Deserialize, Serialize};
+use tauri::Result as TauriResult;
+use std::io::Write;
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use rsa::{pkcs8::{DecodePrivateKey, DecodePublicKey}};
 use rand::rngs::OsRng;
 use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
+use std::fs::{self, File};
+use std::path::Path;
 
+//--encryption start--//
 
 #[cfg(feature = "pem")]
 use rsa::pkcs8::LineEnding;
@@ -119,4 +124,31 @@ pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<S
         },
     }
 }
+//--encryption end--//
 
+
+//saving private info to file 
+
+#[derive(Serialize, Deserialize, Debug)]
+struct PrivateData {
+    private_key: String,
+}
+#[tauri::command]
+pub fn save_private_key_to_file() -> TauriResult<()> {
+    let data = PrivateData { private_key: "my key".to_string() };
+    let json_data = serde_json::to_string(&data)?;
+    println!("JSON Data: {:?}", json_data);
+
+    let path = Path::new("private_data/my_data.json");
+
+    // Ensure the directory exists
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    // Attempt to create the file
+    let mut file = File::create(path)?;
+    file.write_all(json_data.as_bytes())?;
+
+    Ok(())
+}

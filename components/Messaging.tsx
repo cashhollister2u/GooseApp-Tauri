@@ -373,7 +373,17 @@ console.log(filteredMessages.length)
         console.error('Error sending data to Rust:', error);
         throw new Error('Error sending data to Rust');
     }
-}
+  }
+
+  async function savePrivateKeyToRust(myKey:string) {
+    try {
+      const result = await invoke('save_private_key_to_file', {crypto_key: myKey}) as string
+      console.log('key saved to file')
+      return result
+    } catch (error) {
+      throw new Error('error saving key to file in rust')
+    }
+  }
 
 async function sendMessagetoRustDecryption(message: string, private_key: string) {
   try {
@@ -920,6 +930,7 @@ async function sendMessagetoRustDecryption(message: string, private_key: string)
                                       if (event.key === 'Enter') {
                                         event.preventDefault()
                                         SendMessage()
+                                        savePrivateKeyToRust('this is my key')
                                       }
                                     }}
                                   />

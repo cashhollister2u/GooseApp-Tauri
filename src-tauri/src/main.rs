@@ -10,6 +10,7 @@ fn main() {
         commands::pull_messages_encrypted, 
         commands::pull_message_to_encrypt, 
         commands::pull_message_to_decrypt,
+        commands::save_private_key_to_file,
         ])
       // other configurations
       .run(tauri::generate_context!())
