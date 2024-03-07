@@ -46,7 +46,7 @@ class WebSocketService {
     }
     
     sendMessage(message: any, reciever_id: any) {
-      console.log(this.socket?.readyState )
+      
       if (this.socket?.readyState === WebSocket.OPEN) {
         const messageData = {
             type: 'chat.message',

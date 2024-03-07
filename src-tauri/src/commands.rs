@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::Result as TauriResult;
 use std::io::Write;
+use std::io::{self, Read};
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use rsa::{pkcs8::{DecodePrivateKey, DecodePublicKey}};
 use rand::rngs::OsRng;
@@ -137,9 +138,8 @@ struct PrivateData {
 pub fn save_private_key_to_file() -> TauriResult<()> {
     let data = PrivateData { private_key: "my key".to_string() };
     let json_data = serde_json::to_string(&data)?;
-    println!("JSON Data: {:?}", json_data);
 
-    let path = Path::new("private_data/my_data.json");
+    let path = Path::new("../public/private_data/my_data.json");
 
     // Ensure the directory exists
     if let Some(parent) = path.parent() {
@@ -151,4 +151,57 @@ pub fn save_private_key_to_file() -> TauriResult<()> {
     file.write_all(json_data.as_bytes())?;
 
     Ok(())
+}
+
+#[tauri::command] 
+pub fn retrieve_privatekey_from_file() -> TauriResult<String> {
+    let path = Path::new("../public/private_data/my_data.json");
+    
+    // Open the file
+    let mut file = File::open(path).map_err(|err| {
+        eprintln!("Failed to open file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+
+    // Read the file's content into a String
+    let mut json_data = String::new();
+    file.read_to_string(&mut json_data).map_err(|err| {
+        eprintln!("Failed to read file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+   
+
+    // Deserialize the JSON data
+    let private_data: PrivateData = serde_json::from_str(&json_data).map_err(|err| {
+        eprintln!("Failed to deserialize JSON data: {:?}", err);
+        tauri::Error::Io(io::Error::new(io::ErrorKind::Other, err))
+    })?;
+    Ok(private_data.private_key)
+
+}
+
+// generate keys
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Keys {
+    private_key: String,
+    public_key: String,
+}
+
+#[tauri::command]
+pub fn generate_rsa_keys() -> Result<Keys, String> {
+    let mut rng = OsRng;
+    let bits = 2048;
+    let private_key = RsaPrivateKey::new(&mut rng, bits)
+        .map_err(|e| e.to_string())?;
+    let public_key = RsaPublicKey::from(&private_key);
+
+    // Convert the keys to a String format (e.g., PEM, DER). Here, it's simplified.
+    // Implement the actual conversion or serialization depending on your requirement.
+    let private_key_pem = format!("{:?}", private_key);
+    let public_key_pem = format!("{:?}", public_key);
+    println!("{:?}", private_key);
+    Ok(Keys {
+        private_key: private_key_pem,
+        public_key: public_key_pem,
+    })
 }

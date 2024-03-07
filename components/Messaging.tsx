@@ -169,7 +169,7 @@ const Messaging: React.FC<{
   } else {
     numberOfLoadedMessages = filteredMessages.length % 15;
   }
-console.log(filteredMessages.length)
+
   //handle Websocket Messages
   useEffect(() => {
 
@@ -185,7 +185,7 @@ console.log(filteredMessages.length)
     
   }, [isWebsocketMessage])
 
-//init click
+  //init click
   useEffect(() => {
 
     if (!isViewMsgChange) {
@@ -284,7 +284,6 @@ console.log(filteredMessages.length)
     const newMessages = importMessages.filter(importMessage => 
       !messages.some(message => message.id === importMessage.id)
       )
-    console.log(newMessages[0]?.isWebsocket)
       if(newMessages[0]?.isWebsocket == true){
         setmessages(previousMessages => [...previousMessages, ...newMessages])
       
@@ -375,25 +374,48 @@ console.log(filteredMessages.length)
     }
   }
 
+  async function sendMessagetoRustDecryption(message: string, private_key: string) {
+    try {
+      const result = await invoke('pull_message_to_decrypt', { message: message, privateKey: private_key });
+      console.log('Decryption executed successfully', result);
+      return result
+    } catch (error) {
+        console.error('Error sending data to Rust:', error);
+    }
+  }
+///////////////////////////
+  async function retrievePrivateKeyFromRust() {
+    try {
+      const result = await invoke('retrieve_privatekey_from_file')
+      console.log('key retrieved from file: ', result)
+      return result
+    } catch (error) {
+      throw new Error('error saving key to file in rust')
+    }
+  }
+  
   async function savePrivateKeyToRust(myKey:string) {
     try {
       const result = await invoke('save_private_key_to_file', {crypto_key: myKey}) as string
       console.log('key saved to file')
+      retrievePrivateKeyFromRust()
+      generateRSAkeys()
       return result
     } catch (error) {
       throw new Error('error saving key to file in rust')
     }
   }
 
-async function sendMessagetoRustDecryption(message: string, private_key: string) {
-  try {
-    const result = await invoke('pull_message_to_decrypt', { message: message, privateKey: private_key });
-    console.log('Decryption executed successfully', result);
-    return result
-  } catch (error) {
-      console.error('Error sending data to Rust:', error);
+  async function generateRSAkeys() {
+    try {
+      const result = await invoke('generate_rsa_keys')
+      console.log('RSA key generated: ', result)
+      return result
+    } catch (error) {
+      throw new Error('error saving key to file in rust')
+    }
   }
-}
+////////////////////////////
 
   const SendMessage = async () => {
     const senderUserId = myProfile?.user_id?.toString() || ''
