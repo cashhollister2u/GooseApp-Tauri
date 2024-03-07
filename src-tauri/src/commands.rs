@@ -11,6 +11,7 @@ use rayon::prelude::*;
 use std::sync::Arc;
 use std::fs::{self, File};
 use std::path::Path;
+use std::path::PathBuf;
 
 //--encryption start--//
 
@@ -135,11 +136,12 @@ struct PrivateData {
     private_key: String,
 }
 #[tauri::command]
-pub fn save_private_key_to_file() -> TauriResult<()> {
-    let data = PrivateData { private_key: "my key".to_string() };
+pub fn save_private_key_to_file(private_rsa_key:String, username:String) -> TauriResult<()> {
+    let data = PrivateData { private_key: private_rsa_key };
     let json_data = serde_json::to_string(&data)?;
 
-    let path = Path::new("../public/private_data/my_data.json");
+    let file_name = format!("../public/private_data/{}_data.json", username);
+    let path = PathBuf::from(file_name);
 
     // Ensure the directory exists
     if let Some(parent) = path.parent() {
@@ -154,8 +156,9 @@ pub fn save_private_key_to_file() -> TauriResult<()> {
 }
 
 #[tauri::command] 
-pub fn retrieve_privatekey_from_file() -> TauriResult<String> {
-    let path = Path::new("../public/private_data/my_data.json");
+pub fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
+    let file_name = format!("../public/private_data/{}_data.json", username);
+    let path = PathBuf::from(file_name);
     
     // Open the file
     let mut file = File::open(path).map_err(|err| {
@@ -183,12 +186,11 @@ pub fn retrieve_privatekey_from_file() -> TauriResult<String> {
 // generate keys
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Keys {
-    private_key: String,
     public_key: String,
 }
 
 #[tauri::command]
-pub fn generate_rsa_keys() -> Result<Keys, String> {
+pub fn generate_rsa_keys(username:String) -> Result<Keys, String> {
     let mut rng = OsRng;
     let bits = 2048;
     let private_key = RsaPrivateKey::new(&mut rng, bits)
@@ -199,9 +201,9 @@ pub fn generate_rsa_keys() -> Result<Keys, String> {
     // Implement the actual conversion or serialization depending on your requirement.
     let private_key_pem = format!("{:?}", private_key);
     let public_key_pem = format!("{:?}", public_key);
-    println!("{:?}", private_key);
+    //println!("{:?}", private_key);
+    save_private_key_to_file(private_key_pem, username);
     Ok(Keys {
-        private_key: private_key_pem,
         public_key: public_key_pem,
     })
 }

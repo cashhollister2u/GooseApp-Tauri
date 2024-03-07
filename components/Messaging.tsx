@@ -384,35 +384,34 @@ const Messaging: React.FC<{
     }
   }
 ///////////////////////////
-  async function retrievePrivateKeyFromRust() {
+  async function retrievePrivateKeyFromRust(username:String) {
     try {
-      const result = await invoke('retrieve_privatekey_from_file')
+      const result = await invoke('retrieve_privatekey_from_file', {username:username})
       console.log('key retrieved from file: ', result)
       return result
     } catch (error) {
-      throw new Error('error saving key to file in rust')
+      throw new Error('error retrieving key to file in rust')
     }
   }
   
-  async function savePrivateKeyToRust(myKey:string) {
+  async function savePrivateKeyToRust(username:string) {
     try {
-      const result = await invoke('save_private_key_to_file', {crypto_key: myKey}) as string
       console.log('key saved to file')
-      retrievePrivateKeyFromRust()
-      generateRSAkeys()
-      return result
+      
+      generateRSAkeys(username)
+      
     } catch (error) {
       throw new Error('error saving key to file in rust')
     }
   }
 
-  async function generateRSAkeys() {
+  async function generateRSAkeys(username: string) {
     try {
-      const result = await invoke('generate_rsa_keys')
+      const result = await invoke('generate_rsa_keys', {username: username})
       console.log('RSA key generated: ', result)
       return result
     } catch (error) {
-      throw new Error('error saving key to file in rust')
+      throw new Error('error generating key in rust')
     }
   }
 ////////////////////////////
@@ -952,7 +951,8 @@ const Messaging: React.FC<{
                                       if (event.key === 'Enter') {
                                         event.preventDefault()
                                         SendMessage()
-                                        savePrivateKeyToRust('this is my key')
+                                        retrievePrivateKeyFromRust(UserProfile.username)
+                                        //savePrivateKeyToRust(UserProfile.username)
                                       }
                                     }}
                                   />

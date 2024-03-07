@@ -143,7 +143,6 @@ const MyProfilePage: React.FC<{}> = () => {
   }
   websocketService.setMessageHandler(handleMessage);
 
-
   const navigation = [
     {
       name: 'My Profile',
