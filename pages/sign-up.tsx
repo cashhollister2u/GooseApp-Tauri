@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router';
 import { registerURL } from '../components/backendURL'
+import { generateKey } from 'crypto';
 const swal = require('sweetalert2')
 const forge = require('node-forge');
 
@@ -11,6 +12,8 @@ const SignUpPage = () => {
   const [username, setusername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [publicKey, setpublicKey] = useState<string>('')
+  const [privateKey, setprivateKey] = useState<string>('')
   const router = useRouter();
 
   //windowsize
@@ -22,24 +25,26 @@ const SignUpPage = () => {
   }, [])
 
   const generateRSAkeys = () => {
-    forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err:any, keypair:any) {
-      if(err) {
-        console.error(err);
-        return;
-      }
+    return new Promise<void>((resolve, reject) => {
+      forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err:any, keypair:any) {
+        if(err) {
+          console.error(err);
+          reject(err)
+          return;
+        }
 
-      const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
-      console.log('Private Key in PEM format:');
-      console.log(pemPrivate);
+        const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
+        setprivateKey(pemPrivate)
 
-      const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
-      console.log('Public Key in PEM format:');
-      console.log(pemPublic);
-    });
+        const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
+        setpublicKey(pemPublic)
+
+        resolve();
+      })
+    })
   }
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSignUp = async () => {
 
     try {
       // Create an object with the user data
@@ -48,17 +53,14 @@ const SignUpPage = () => {
         username: username,
         password: password,
         password2: confirmPassword,
+        public_key: publicKey,
       }
-
       // Make the POST request with json
       const response = await axios.post(`${registerURL}`, userData, {
         headers: {
           'Content-Type': 'application/json', // Set the content type for FormData
         },
       })
-      if (response.status === 201) {
-        generateRSAkeys()
-      }
       // Clear form fields
       setusername('')
       setemailname('')
@@ -106,6 +108,18 @@ const SignUpPage = () => {
     }
   }
 
+  const handleOnClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    generateRSAkeys().then(() => {
+      if(publicKey) {
+        handleSignUp()
+      }
+    }).catch((err: any) => {
+      console.log(err)
+    })
+  }
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6  lg:px-8">
@@ -127,7 +141,7 @@ const SignUpPage = () => {
             className="space-y-1"
             action="#"
             method="POST"
-            onSubmit={handleSignUp}
+            onSubmit={handleOnClick}
           >
             <div>
               <label

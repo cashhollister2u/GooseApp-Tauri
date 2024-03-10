@@ -10,7 +10,6 @@ use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
 use std::fs::{self, File};
-use std::path::Path;
 use std::path::PathBuf;
 
 //--encryption start--//
