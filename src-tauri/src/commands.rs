@@ -183,27 +183,3 @@ pub fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
 
 }
 
-// generate keys
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Keys {
-    public_key: String,
-}
-
-#[tauri::command]
-pub fn generate_rsa_keys(username:String) -> Result<Keys, String> {
-    let mut rng = OsRng;
-    let bits = 2048;
-    let private_key = RsaPrivateKey::new(&mut rng, bits)
-        .map_err(|e| e.to_string())?;
-    let public_key = RsaPublicKey::from(&private_key);
-
-    // Convert the keys to a String format (e.g., PEM, DER). Here, it's simplified.
-    // Implement the actual conversion or serialization depending on your requirement.
-    let private_key_pem = format!("{:?}", private_key);
-    let public_key_pem = format!("{:?}", public_key);
-    //println!("{:?}", private_key);
-    save_private_key_to_file(private_key_pem, username);
-    Ok(Keys {
-        public_key: public_key_pem,
-    })
-}

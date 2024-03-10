@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useRouter } from 'next/router';
 import { registerURL } from '../components/backendURL'
 const swal = require('sweetalert2')
+const forge = require('node-forge');
+
 
 const SignUpPage = () => {
   const [email, setemailname] = useState<string>('')
@@ -18,6 +20,23 @@ const SignUpPage = () => {
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 600));
       })
   }, [])
+
+  const generateRSAkeys = () => {
+    forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err:any, keypair:any) {
+      if(err) {
+        console.error(err);
+        return;
+      }
+
+      const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
+      console.log('Private Key in PEM format:');
+      console.log(pemPrivate);
+
+      const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
+      console.log('Public Key in PEM format:');
+      console.log(pemPublic);
+    });
+  }
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -37,7 +56,9 @@ const SignUpPage = () => {
           'Content-Type': 'application/json', // Set the content type for FormData
         },
       })
-
+      if (response.status === 201) {
+        generateRSAkeys()
+      }
       // Clear form fields
       setusername('')
       setemailname('')
@@ -55,7 +76,7 @@ const SignUpPage = () => {
         showConfirmButton: false,
       })
 
-      router.push('/login')
+      //router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {
         swal.fire({
