@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router';
 import { registerURL } from '../components/backendURL'
-import { generateKey } from 'crypto';
+import { invoke } from '@tauri-apps/api';
 const swal = require('sweetalert2')
 const forge = require('node-forge');
 
@@ -23,6 +23,13 @@ const SignUpPage = () => {
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 600));
       })
   }, [])
+
+
+  async function savePrivateKeyToRust() {
+    invoke('save_private_key_to_file', { privateKey, username })
+      .then(() => console.log('Private key saved successfully'))
+      .catch((err) => console.error('Error saving private key:', err));
+  }
 
   const generateRSAkeys = () => {
     return new Promise<void>((resolve, reject) => {
@@ -45,6 +52,7 @@ const SignUpPage = () => {
   }
 
   const handleSignUp = async () => {
+    await savePrivateKeyToRust()
 
     try {
       // Create an object with the user data
@@ -61,12 +69,7 @@ const SignUpPage = () => {
           'Content-Type': 'application/json', // Set the content type for FormData
         },
       })
-      // Clear form fields
-      setusername('')
-      setemailname('')
-      setPassword('')
-      setConfirmPassword('')
-      swal.fire({
+        swal.fire({
         title: 'User Registration Successsful',
         icon: 'success',
         color: '#cfe8fc',
@@ -108,12 +111,14 @@ const SignUpPage = () => {
     }
   }
 
-  const handleOnClick = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnClick = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     generateRSAkeys().then(() => {
-      if(publicKey) {
+      if(publicKey && privateKey) {
         handleSignUp()
+        
+
       }
     }).catch((err: any) => {
       console.log(err)

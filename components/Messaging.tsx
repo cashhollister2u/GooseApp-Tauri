@@ -394,16 +394,7 @@ const Messaging: React.FC<{
     }
   }
   
-  async function savePrivateKeyToRust(username:string) {
-    try {
-      console.log('key saved to file')
-      
-      generateRSAkeys(username)
-      
-    } catch (error) {
-      throw new Error('error saving key to file in rust')
-    }
-  }
+  
 
   async function generateRSAkeys(username: string) {
     try {
@@ -951,8 +942,6 @@ const Messaging: React.FC<{
                                       if (event.key === 'Enter') {
                                         event.preventDefault()
                                         SendMessage()
-                                        retrievePrivateKeyFromRust(UserProfile.username)
-                                        //savePrivateKeyToRust(UserProfile.username)
                                       }
                                     }}
                                   />

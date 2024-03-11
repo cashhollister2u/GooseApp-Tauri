@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::Result as TauriResult;
 use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
 use std::io::{self, Read};
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use rsa::{pkcs8::{DecodePrivateKey, DecodePublicKey}};
@@ -132,24 +133,31 @@ pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<S
 
 #[derive(Serialize, Deserialize, Debug)]
 struct PrivateData {
-    private_key: String,
+    priv_key: String,
 }
 #[tauri::command]
-pub fn save_private_key_to_file(private_rsa_key:String, username:String) -> TauriResult<()> {
-    let data = PrivateData { private_key: private_rsa_key };
-    let json_data = serde_json::to_string(&data)?;
+pub fn save_private_key_to_file(private_key: String, username: String) -> Result<(), String> {
+    let path = format!("User_keys/{}_data.pem", username);
+    
+    let mut file = File::create(path)
+        .map_err(|e| format!("Failed to create file: {}", e))?;
+    file.write_all(private_key.as_bytes())
+        .map_err(|e| format!("Failed to write to file: {}", e))?;
+        
+    // Set file permissions to owner read/write (600) on Unix-based systems
+    #[cfg(unix)]
+    {
+        use std::fs;
 
-    let file_name = format!("../public/private_data/{}_data.json", username);
-    let path = PathBuf::from(file_name);
-
-    // Ensure the directory exists
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
+        let metadata = file.metadata()
+            .map_err(|e| format!("Failed to read file metadata: {}", e))?;
+        let mut permissions = metadata.permissions();
+        
+        // Remove all permissions, then set to 600 (owner read/write)
+        permissions.set_mode(0o600);
+        fs::set_permissions("public/private_data/username_data.json", permissions)
+            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
     }
-
-    // Attempt to create the file
-    let mut file = File::create(path)?;
-    file.write_all(json_data.as_bytes())?;
 
     Ok(())
 }
@@ -178,7 +186,7 @@ pub fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
         eprintln!("Failed to deserialize JSON data: {:?}", err);
         tauri::Error::Io(io::Error::new(io::ErrorKind::Other, err))
     })?;
-    Ok(private_data.private_key)
+    Ok(private_data.priv_key)
 
 }
 
