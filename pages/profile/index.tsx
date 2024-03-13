@@ -116,9 +116,24 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
   const [windowreload, setWindowReload] = useState<boolean>(false)
+  const [authTokens, setAuthTokens] = useState<any | null>(null)
 
   const wsBaseUrl = 'ws://192.168.1.72:8000';
-  
+  //needed to use the router.push funct from login and not break window resize
+  useEffect(() => {
+    const updateAuthTokens = () => {
+      setAuthTokens(
+        localStorage.getItem('authTokens')
+          ? JSON.parse(localStorage.getItem('authTokens') || '')
+          : null
+      )
+    }
+    
+
+    updateAuthTokens()
+  }, [])
+
+
   //window size init
   useEffect(() => {
    
@@ -248,11 +263,11 @@ const MyProfilePage: React.FC<{}> = () => {
           console.error('Error parsing JSON:', error)
         }
       }
-    }, 0)
+    }, 100)
     return () => {
       clearTimeout(timer), controller.abort()
     }
-  }, [RefreshProfilePage])
+  }, [RefreshProfilePage, authTokens])
 
   //loading searched profiles
   useEffect(() => {

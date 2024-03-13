@@ -48,7 +48,7 @@ const LoginPage = () => {
           setPassword('')
           setemailname('')
           
-          window.location.href = '/profile/' 
+          router.push('/profile')         
         } else {
           throw new Error('Login failed');
         }

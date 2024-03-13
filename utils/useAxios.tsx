@@ -5,6 +5,7 @@ import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
 import { AuthContextType } from '../context/AuthContext'
 import { baseURL } from '@/components/backendURL'
+import { user } from '@nextui-org/react'
 
 interface AuthTokens {
   access: string
@@ -19,7 +20,7 @@ interface DecodedToken {
 const useAxios = () => {
   const context = useContext(AuthContext) as AuthContextType
   const { authTokens, setUser, setAuthTokens } = context ?? {}
-
+  console.log(user, 'axiossss')
   const axiosInstance = axios.create({
     baseURL,
     headers: { Authorization: `Bearer ${authTokens?.access}` },
@@ -43,7 +44,7 @@ const useAxios = () => {
 
     setAuthTokens(newToken)
     setUser(jwtDecode(newToken.access))
-
+    
     req.headers.Authorization = `Bearer ${response.data.access}`
     return req
   })

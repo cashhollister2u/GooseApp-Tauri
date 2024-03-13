@@ -38,7 +38,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : null
       )
     }
-
     const updateUser = () => {
       setUser(
         localStorage.getItem('authTokens')
@@ -50,6 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateAuthTokens()
     updateUser()
   }, [router.asPath])
+  console.log(user, 'context')
 console.log(router.asPath, 'aspath')
   
 
@@ -65,7 +65,7 @@ console.log(user)
       setUser(jwtDecode(authTokens.access))
     }
     setLoading(false)
-  }, [authTokens, loading, router.asPath])
+  }, [authTokens, loading])
 
   return (
     <AuthContext.Provider value={contextData}>
