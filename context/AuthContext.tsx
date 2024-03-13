@@ -49,8 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateAuthTokens()
     updateUser()
   }, [router.asPath])
-  console.log(user, 'context')
-console.log(router.asPath, 'aspath')
+
   
 
   const contextData = {
