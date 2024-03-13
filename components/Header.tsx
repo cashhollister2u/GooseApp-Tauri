@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { mediaURL } from './backendURL'
 import {Card, Skeleton} from "@nextui-org/react";
 
-
 const swal = require('sweetalert2')
 
 export interface UserProfile {
@@ -27,24 +26,33 @@ const Header: React.FC<{
     const fetchUserData = async () => {
       if (UserProfile) {
         setfull_name(UserProfile.full_name)
-        setbackground_image(UserProfile.background_image)
         setbio(UserProfile.bio)
         setusername(UserProfile.username)
-        setprofile_picture(UserProfile.profile_picture)
+
+        if (!UserProfile.background_image.includes(UserProfile.username)){
+          setbackground_image('')
+        } else {
+          setbackground_image(`${mediaURL}${UserProfile.background_image}`)
+        }
+        if (!UserProfile.profile_picture.includes(UserProfile.username)){
+          setprofile_picture('')
+        } else {
+          setprofile_picture(`${mediaURL}${UserProfile.profile_picture}`)
+        }
       }
     }
 
     fetchUserData()
   }, [UserProfile])
+console.log(background_image)
 
-  
   return (
     <div>
       <div>
         {!isLoading ? (
           <img
             className="max-h-128 w-full object-fill"
-            src={`${mediaURL}${background_image}`}
+            src={`${background_image}` || '/profile_pic_def/gooseCom_slim.png'}
             alt="background"
           />
         ) : (
@@ -60,13 +68,11 @@ const Header: React.FC<{
           <div className="flex rounded-lg items-center justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800" >
           <div className="w-full flex items-center">
              <div>
-              {profile_picture && (
                 <img
                   className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-white"
-                  src={`${mediaURL}${profile_picture}`}
+                  src={`${profile_picture}` || '/profile_pic_def/gooseCom.png'}
                   alt="profile"
                 />
-              )}
             </div>  
                   <div className="w-full border-l-2 border-zinc-400 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
                   <div className="h-6 w-48 rounded-lg">{full_name}</div>

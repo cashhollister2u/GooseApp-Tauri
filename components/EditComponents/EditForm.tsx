@@ -199,7 +199,6 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, u
         position: 'top-right',
         timerProgressBar: true,
         showConfirmButton: false,
-        
       });
       onCancelEdit()
     } catch (error) {

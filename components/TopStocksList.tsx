@@ -13,21 +13,18 @@ const TopStocksList: React.FC = () => {
         const response = await gooseApp.get(leaderBoardURL)
         const data = response.data
         if (data.ranked_list) {
-          // If the condition is met, update the state.
           setranked_list(data.ranked_list)
          
         } else {
-          // If the condition is not met, handle it here (e.g., log a message or set an error state).
           console.log('The response does not contain a ranked_list.')
         }
       } catch (error) {
-        // Handle any errors from the fetch request here (e.g., network issues, response parsing errors).
         console.error('Failed to fetch the leaderboard:', error)
       }
     }
 
     fetchedLeaderBoard()
-  }, []) // Dependency array for useEffect
+  }, [])
 
   return (
     <ul role="list">

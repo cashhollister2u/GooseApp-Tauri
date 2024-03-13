@@ -10,7 +10,7 @@ use rand::rngs::OsRng;
 use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
-use std::fs::{self, File};
+use std::fs::File;
 use std::path::PathBuf;
 
 //--encryption start--//

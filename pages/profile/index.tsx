@@ -32,7 +32,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton} from "@nextui-org/react";
-import { LogicalPosition } from '@tauri-apps/api/window';
+import { LogicalPosition, appWindow } from '@tauri-apps/api/window';
 
 const swal = require('sweetalert2')
 
@@ -115,17 +115,20 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
+  const [windowreload, setWindowReload] = useState<boolean>(false)
 
   const wsBaseUrl = 'ws://192.168.1.72:8000';
   
   //window size init
   useEffect(() => {
-    if (typeof window === 'undefined') return
-      import("@tauri-apps/api").then((tauri) => {
-          tauri.window.appWindow.setPosition(new LogicalPosition(200, 100));
-          tauri.window.appWindow.setSize(new tauri.window.LogicalSize(1300, 800));
+   
+    import("@tauri-apps/api").then((tauri) => {
+        tauri.window.appWindow.setPosition(new LogicalPosition(200, 100));
+        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(1300, 800));
+        
       })
-  }, [])
+    
+}, [])
 
   //websocket
   if (UserProfile && !isSocketConnected) {
@@ -226,7 +229,7 @@ const MyProfilePage: React.FC<{}> = () => {
           
           setTimeout(() => {
             
-            //handleLogout()
+           // handleLogout()
             
           }, 3000)
 
@@ -449,6 +452,7 @@ const MyProfilePage: React.FC<{}> = () => {
     setIsMessaging(false)
     setIsEditing(false)
     setActiveTab('Pinned')
+    setWindowReload(current => !current)
   }
 
   const sendMessageFromSearch = () => {
@@ -464,7 +468,6 @@ const MyProfilePage: React.FC<{}> = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('ally-supports-cache')
-    localStorage.removeItem('pusherTransportTLS')
     localStorage.removeItem('authTokens')
     websocketService.disconnect();
     setUserProfile(undefined);
@@ -903,8 +906,8 @@ const MyProfilePage: React.FC<{}> = () => {
               </div>
             </div>
             {isEditing && (
-              <div className="fixed left-72 xl:hidden inset-0 z-50 overflow-y-auto bg-zinc-900 bg-zinc-800 flex items-start justify-center pt-4 pb-4">
-                <div className="w-full mr-2 max-w-4xl mx-auto lg:left-72">
+              <div className="fixed lg:left-72 xl:hidden inset-0 z-20 overflow-y-auto bg-zinc-900 bg-zinc-800 flex items-start justify-center pt-4 pb-4">
+                <div className="mt-14 w-full mr-2 max-w-4xl mx-auto lg:left-72">
                   <EditForm 
                     UserProfile={UserProfile as UserProfile}
                     onCancelEdit={() => updateIsMessaging()}

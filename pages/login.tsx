@@ -25,7 +25,6 @@ const LoginPage = () => {
       router.push('/profile'); 
     }
   }, [router]);
-
   const handleLogin = async (e: any) => {
     e.preventDefault();
 
@@ -46,7 +45,10 @@ const LoginPage = () => {
 
         if (response.status === 200) {
           localStorage.setItem('authTokens', JSON.stringify(data));
-          window.location.href = '/profile'         
+          setPassword('')
+          setemailname('')
+          
+          window.location.href = '/profile/' 
         } else {
           throw new Error('Login failed');
         }
