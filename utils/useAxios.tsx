@@ -20,7 +20,7 @@ interface DecodedToken {
 const useAxios = () => {
   const context = useContext(AuthContext) as AuthContextType
   const { authTokens, setUser, setAuthTokens } = context ?? {}
-  console.log(user, 'axiossss')
+  
   const axiosInstance = axios.create({
     baseURL,
     headers: { Authorization: `Bearer ${authTokens?.access}` },

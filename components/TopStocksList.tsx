@@ -3,28 +3,32 @@ import { leaderBoardURL } from './backendURL'
 import useAxios from '../utils/useAxios'
 
 
-const TopStocksList: React.FC = () => {
+const TopStocksList: React.FC<{imported_rankedList:string[]}> = ({imported_rankedList}) => {
   const [ranked_list, setranked_list] = useState<string[]>([])
   const gooseApp = useAxios()
+  const [authTokens, setAuthTokens] = useState<any | null>(null)
+
+  //needed to use the router.push funct from login and not break window resize
+  useEffect(() => {
+    const updateAuthTokens = () => {
+      setAuthTokens(
+        localStorage.getItem('authTokens')
+          ? JSON.parse(localStorage.getItem('authTokens') || '')
+          : null
+      )
+    }
+    
+
+    updateAuthTokens()
+  }, [])
 
   useEffect(() => {
-    const fetchedLeaderBoard = async () => {
-      try {
-        const response = await gooseApp.get(leaderBoardURL)
-        const data = response.data
-        if (data.ranked_list) {
-          setranked_list(data.ranked_list)
-         
-        } else {
-          console.log('The response does not contain a ranked_list.')
-        }
-      } catch (error) {
-        console.error('Failed to fetch the leaderboard:', error)
-      }
+    const fetchedLeaderBoard = () => {
+      setranked_list(imported_rankedList)
     }
 
     fetchedLeaderBoard()
-  }, [])
+  }, [authTokens])
 
   return (
     <ul role="list">

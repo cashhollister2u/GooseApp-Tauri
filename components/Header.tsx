@@ -44,7 +44,6 @@ const Header: React.FC<{
 
     fetchUserData()
   }, [UserProfile])
-console.log(background_image)
 
   return (
     <div>

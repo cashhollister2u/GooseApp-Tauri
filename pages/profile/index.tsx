@@ -6,6 +6,7 @@ import {
   fetchUserURL,
   searchUserURL,
   baseURL,
+  leaderBoardURL,
 } from '../../components/backendURL'
 import { jwtDecode } from 'jwt-decode'
 import { Fragment, useEffect, useState } from 'react'
@@ -115,8 +116,9 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
-  const [windowreload, setWindowReload] = useState<boolean>(false)
+  const [isfetchedUserProfile, setIsfetchedUserProfile] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<any | null>(null)
+  const [ranked_list, setranked_list] = useState<string[]>([])
 
   const wsBaseUrl = 'ws://192.168.1.72:8000';
   //needed to use the router.push funct from login and not break window resize
@@ -199,7 +201,8 @@ const MyProfilePage: React.FC<{}> = () => {
       if (activeMessage === 'true') {
         setIsMessaging(true)
       }
-      const fetchUserfollowing = async () => {
+      //GET profile data
+      const fetchUserProfile = async () => {
         try {
           const updatedUserData = await gooseApp.get(`${fetchUserURL}`)
 
@@ -244,14 +247,34 @@ const MyProfilePage: React.FC<{}> = () => {
           
           setTimeout(() => {
             
-           // handleLogout()
+           handleLogout()
             
           }, 3000)
 
         }
       }
+      //GET Trending Data
+      const fetchedLeaderBoard = async () => {
+        try {
+          const response = await gooseApp.get(leaderBoardURL)
+          const data = response.data
+          if (data.ranked_list) {
+            setranked_list(data.ranked_list)
+           
+          } else {
+            console.log('The response does not contain a ranked_list.')
+          }
+        } catch (error) {
+          console.error('Failed to fetch the leaderboard:', error)
+        }
+      }
+  
+      fetchedLeaderBoard()
 
-        fetchUserfollowing();
+      if (!isfetchedUserProfile) {
+        fetchUserProfile();
+        setIsfetchedUserProfile(true)
+      }
     
       if (SearchMsgString && typeof SearchMsgString === 'string') {
         try {
@@ -467,7 +490,6 @@ const MyProfilePage: React.FC<{}> = () => {
     setIsMessaging(false)
     setIsEditing(false)
     setActiveTab('Pinned')
-    setWindowReload(current => !current)
   }
 
   const sendMessageFromSearch = () => {
@@ -977,7 +999,9 @@ const MyProfilePage: React.FC<{}> = () => {
                       Trending Stocks
                     </h1>
                     <hr className="border-1 border-zinc-950" />
-                    <TopStocksList />
+                    <TopStocksList
+                      imported_rankedList={ranked_list}
+                    />
                   </div>
                 </div>
               </div>
@@ -1031,7 +1055,9 @@ const MyProfilePage: React.FC<{}> = () => {
                       Trending Stocks
                     </h1>
                     <hr className="border-1 border-zinc-950" />
-                    <TopStocksList />
+                    <TopStocksList
+                      imported_rankedList={ranked_list}
+                    />
                   </div>
                 </div>
               </div>

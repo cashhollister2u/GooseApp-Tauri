@@ -58,7 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authTokens,
     setAuthTokens,
   }
-console.log(user)
   useEffect(() => {
     if (authTokens) {
       setUser(jwtDecode(authTokens.access))
