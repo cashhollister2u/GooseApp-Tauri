@@ -74,7 +74,6 @@ interface UserProfile {
   user_id: number
   following: any
   public_key: string
-  private_key: string
   id: number
 }
 
@@ -117,7 +116,7 @@ const Messaging: React.FC<{
   importTotalMessageCount,
   importConversations,
   isLoading,
-  isWebsocketMessage
+  isWebsocketMessage,
 }) => {
   const [isSlowScroll, setIsSlowScroll] = useState<boolean>(false)
   const [followList, setFollowList] = useState<string[]>([])
@@ -138,13 +137,8 @@ const Messaging: React.FC<{
   const newMessagesRef = useRef<HTMLLIElement>(null)
   const gooseApp = useAxios()
   const router = useRouter()
-
-  let [newMessage, setnewMessage] = useState({ message: '' })
-  let Private_Key = UserProfile?.private_key
   const tabs = [{ name: 'Inbox', href: '#', current: tabvalue }]
-  
   const allConversations = (importConversations || [])
-    
     .map((conversation: UserProfile) => {
         return {
           name: conversation.full_name,
@@ -155,7 +149,6 @@ const Messaging: React.FC<{
           status: 'online',
         }
     })
-
   const filteredMessages = messages?.filter(
       (message) =>
         viewmsg?.handle === message.sender_profile?.username ||
@@ -163,13 +156,16 @@ const Messaging: React.FC<{
     );
   const numberOfFilteredMessages = Math.ceil((filteredMessages?.length - localMessageCount) / 15);
 
+  let [newMessage, setnewMessage] = useState({ message: '' })
+  
   let numberOfLoadedMessages
   if (filteredMessages.length % 15 === 0) {
     numberOfLoadedMessages = 15;
   } else {
     numberOfLoadedMessages = filteredMessages.length % 15;
   }
-
+  
+  
   //handle Websocket Messages
   useEffect(() => {
 
@@ -374,38 +370,15 @@ const Messaging: React.FC<{
     }
   }
 
-  async function sendMessagetoRustDecryption(message: string, private_key: string) {
+  async function sendMessagetoRustDecryption(message: string) {
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message, privateKey: private_key });
+      const result = await invoke('pull_message_to_decrypt', { message: message, username: UserProfile.username});
       console.log('Decryption executed successfully', result);
       return result
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
   }
-///////////////////////////
-  async function retrievePrivateKeyFromRust(username:String) {
-    try {
-      const result = await invoke('retrieve_privatekey_from_file', {username:username})
-      console.log('key retrieved from file: ', result)
-      return result
-    } catch (error) {
-      throw new Error('error retrieving key to file in rust')
-    }
-  }
-  
-  
-
-  async function generateRSAkeys(username: string) {
-    try {
-      const result = await invoke('generate_rsa_keys', {username: username})
-      console.log('RSA key generated: ', result)
-      return result
-    } catch (error) {
-      throw new Error('error generating key in rust')
-    }
-  }
-////////////////////////////
 
   const SendMessage = async () => {
     const senderUserId = myProfile?.user_id?.toString() || ''
@@ -441,7 +414,7 @@ const Messaging: React.FC<{
               websocketService.sendMessage(res.data, recieverId)
             }
             if (!messages.includes(res.data)) {
-                sendMessagetoRustDecryption(res.data.sender_message, Private_Key).then(decrypted => {
+                sendMessagetoRustDecryption(res.data.sender_message).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
                   
                 const newMsg: any = {

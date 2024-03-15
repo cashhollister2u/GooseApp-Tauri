@@ -3,21 +3,76 @@ use serde::{Deserialize, Serialize};
 use tauri::Result as TauriResult;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::io::{self, Read};
+use std::io::Read;
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
-use rsa::{pkcs8::{DecodePrivateKey, DecodePublicKey}};
+use rsa::{pkcs8::{DecodePublicKey}, pkcs1::{DecodeRsaPrivateKey}};
 use rand::rngs::OsRng;
 use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
 use std::fs::File;
-use std::path::PathBuf;
+
+//saving private info to file 
+
+#[derive(Serialize, Deserialize, Debug)]
+struct PrivateData {
+    priv_key: String,
+}
+
+#[tauri::command]
+pub fn save_private_key_to_file(private_key: String, username: String) -> Result<(), String> {
+    let path = format!("User_keys/{}_data.pem", username);
+    
+    let mut file = File::create(path)
+        .map_err(|e| format!("Failed to create file: {}", e))?;
+    file.write_all(private_key.as_bytes())
+        .map_err(|e| format!("Failed to write to file: {}", e))?;
+        
+    // Set file permissions to owner read/write (600) on Unix-based systems
+    #[cfg(unix)]
+    {
+        use std::fs;
+
+        let metadata = file.metadata()
+            .map_err(|e| format!("Failed to read file metadata: {}", e))?;
+        let mut permissions = metadata.permissions();
+        
+        // Remove all permissions, then set to 600 (owner read/write)
+        permissions.set_mode(0o600);
+        fs::set_permissions("public/private_data/username_data.json", permissions)
+            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command] 
+fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
+    let path = format!("User_keys/{}_data.pem", username);
+
+    // Open the file
+    let mut file = File::open(path).map_err(|err| {
+        eprintln!("Failed to open file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+
+    // Read the file's content into a String
+    let mut data = String::new();
+    file.read_to_string(&mut data).map_err(|err| {
+        eprintln!("Failed to read file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+    
+    Ok(data)
+
+}
+
+
 
 //--encryption start--//
 
 #[cfg(feature = "pem")]
 use rsa::pkcs8::LineEnding;
-
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Profile {
@@ -45,8 +100,13 @@ pub struct Message {
 }
 
 #[tauri::command]
-pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key: String) -> Result<Vec<Message>, String> {
-    let key = match RsaPrivateKey::from_pkcs8_pem(&private_key) {
+pub fn pull_messages_encrypted(messages: Vec<Message>, username: String) -> Result<Vec<Message>, String> {
+    let private_key = match retrieve_privatekey_from_file(username.clone()){
+        Ok(keypriv) => keypriv,
+        Err(e) => return Err(e.to_string()),
+    };
+
+    let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {
         Ok(k) => Arc::new(k), 
         Err(e) => return Err(e.to_string()),
     };
@@ -96,8 +156,13 @@ pub fn pull_message_to_encrypt(message: String, public_key: String) -> Result<St
 }
 
 #[tauri::command]
-pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<String, String> {
-    let key = match RsaPrivateKey::from_pkcs8_pem(&private_key) {
+pub fn pull_message_to_decrypt(message: String, username:String) -> Result<String, String> {
+    let private_key = match retrieve_privatekey_from_file(username){
+        Ok(keypriv) => keypriv,
+        Err(e) => return Err(e.to_string()),
+    };
+        
+    let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {
         Ok(k) => k,
         Err(e) => return Err(format!("Failed to parse private key: {:?}", e)),
     };
@@ -129,64 +194,5 @@ pub fn pull_message_to_decrypt(message: String, private_key: String) -> Result<S
 //--encryption end--//
 
 
-//saving private info to file 
 
-#[derive(Serialize, Deserialize, Debug)]
-struct PrivateData {
-    priv_key: String,
-}
-#[tauri::command]
-pub fn save_private_key_to_file(private_key: String, username: String) -> Result<(), String> {
-    let path = format!("User_keys/{}_data.pem", username);
-    
-    let mut file = File::create(path)
-        .map_err(|e| format!("Failed to create file: {}", e))?;
-    file.write_all(private_key.as_bytes())
-        .map_err(|e| format!("Failed to write to file: {}", e))?;
-        
-    // Set file permissions to owner read/write (600) on Unix-based systems
-    #[cfg(unix)]
-    {
-        use std::fs;
-
-        let metadata = file.metadata()
-            .map_err(|e| format!("Failed to read file metadata: {}", e))?;
-        let mut permissions = metadata.permissions();
-        
-        // Remove all permissions, then set to 600 (owner read/write)
-        permissions.set_mode(0o600);
-        fs::set_permissions("public/private_data/username_data.json", permissions)
-            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
-    }
-
-    Ok(())
-}
-
-#[tauri::command] 
-pub fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
-    let file_name = format!("../public/private_data/{}_data.json", username);
-    let path = PathBuf::from(file_name);
-    
-    // Open the file
-    let mut file = File::open(path).map_err(|err| {
-        eprintln!("Failed to open file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-
-    // Read the file's content into a String
-    let mut json_data = String::new();
-    file.read_to_string(&mut json_data).map_err(|err| {
-        eprintln!("Failed to read file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-   
-
-    // Deserialize the JSON data
-    let private_data: PrivateData = serde_json::from_str(&json_data).map_err(|err| {
-        eprintln!("Failed to deserialize JSON data: {:?}", err);
-        tauri::Error::Io(io::Error::new(io::ErrorKind::Other, err))
-    })?;
-    Ok(private_data.priv_key)
-
-}
 

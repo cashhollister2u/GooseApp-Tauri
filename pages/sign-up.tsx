@@ -52,7 +52,6 @@ const SignUpPage = () => {
   }
 
   const handleSignUp = async () => {
-    await savePrivateKeyToRust()
 
     try {
       // Create an object with the user data
@@ -80,7 +79,7 @@ const SignUpPage = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-
+      await savePrivateKeyToRust()
       //router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {

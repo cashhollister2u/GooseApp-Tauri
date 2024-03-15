@@ -56,7 +56,6 @@ interface UserProfile {
   user_id: number
   following: any
   public_key: string
-  private_key: string
   id: number
 }
 
@@ -119,8 +118,8 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isfetchedUserProfile, setIsfetchedUserProfile] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<any | null>(null)
   const [ranked_list, setranked_list] = useState<string[]>([])
-
   const wsBaseUrl = 'ws://192.168.1.72:8000';
+  
   //needed to use the router.push funct from login and not break window resize
   useEffect(() => {
     const updateAuthTokens = () => {
@@ -239,7 +238,7 @@ const MyProfilePage: React.FC<{}> = () => {
             background: '#BC3838',
             icon: 'error',
             toast: true,
-            timer: 3000,
+            timer: 2000,
             position: 'top-right',
             timerProgressBar: true,
             showConfirmButton: false,
@@ -249,7 +248,7 @@ const MyProfilePage: React.FC<{}> = () => {
             
            handleLogout()
             
-          }, 3000)
+          }, 2000)
 
         }
       }
@@ -337,8 +336,7 @@ const MyProfilePage: React.FC<{}> = () => {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
           username: UserProfile?.username, 
-          privateKey: UserProfile?.private_key, 
-          recieverUsername: usernameReciever,
+          //recieverUsername: usernameReciever,
         }); 
         const newMessages = (result as Message[]).filter((newDecryptedMesssage: Message) => 
           !decryptedMessages.some(message => message.id === newDecryptedMesssage.id)
@@ -356,10 +354,10 @@ const MyProfilePage: React.FC<{}> = () => {
     
   }
   //websocket individual messages
-  async function sendMessagetoRustDecryption(message: any, private_key: string) {
+  async function sendMessagetoRustDecryption(message: any) {
     
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: private_key }) as string;
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, username: UserProfile?.username }) as string;
       console.log('Decrypted Websocket Msg: ', result)
       const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
       setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
@@ -431,7 +429,7 @@ const MyProfilePage: React.FC<{}> = () => {
     console.log(SocketMessage.message)
     const reciever_profile = SocketMessage.message.reciever_profile
     
-    await  sendMessagetoRustDecryption(SocketMessage.message, UserProfile ? UserProfile?.private_key: 'goodluckdecrypting') as any
+    await  sendMessagetoRustDecryption(SocketMessage.message) as any
               
   }
 
@@ -644,7 +642,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                                   'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                                 )}
                                               >
-                                                {subItem}
+                                                @{subItem}
                                             </Disclosure.Button>
                                             </li>
                                           )
@@ -778,7 +776,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                             'hover:bg-zinc-800 hover:text-white block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-400'
                                           )}
                                         >
-                                          {subItem}
+                                          @{subItem}
                                       </Disclosure.Button>
                                       </li>
                                     )
