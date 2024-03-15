@@ -11,6 +11,8 @@ fn main() {
         commands::pull_message_to_encrypt, 
         commands::pull_message_to_decrypt,
         commands::save_private_key_to_file,
+        commands::save_jwt_to_file,
+        commands::retrieve_jwt_from_file,
         ])
       // other configurations
       .run(tauri::generate_context!())

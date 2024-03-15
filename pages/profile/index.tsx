@@ -122,16 +122,17 @@ const MyProfilePage: React.FC<{}> = () => {
   
   //needed to use the router.push funct from login and not break window resize
   useEffect(() => {
-    const updateAuthTokens = () => {
-      setAuthTokens(
-        localStorage.getItem('authTokens')
-          ? JSON.parse(localStorage.getItem('authTokens') || '')
-          : null
-      )
+    async function retireveJWTfromRust() {
+      try {
+        const result = await invoke('retrieve_jwt_from_file') as string
+        const jsonData = JSON.parse(result); // Parse the JSON string to an object
+        setAuthTokens(jsonData); // Assuming setJwt_token is a state setter from a useState hook
+        return jsonData
+      } catch (err) {
+        console.error('Error retrieving jwt:', err);
+      }
     }
-    
-
-    updateAuthTokens()
+    retireveJWTfromRust()
   }, [])
 
 
@@ -501,9 +502,15 @@ const MyProfilePage: React.FC<{}> = () => {
     setRefreshProfilePage(current => !current)
   }
 
+  async function deleteJWTRust(token: string) {
+    invoke('save_jwt_to_file', { token })
+      .then(() => console.log('jwt saved successfully'))
+      .catch((err) => console.error('Error saving jwt:', err));
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('ally-supports-cache')
-    localStorage.removeItem('authTokens')
+    deleteJWTRust('')
     websocketService.disconnect();
     setUserProfile(undefined);
     router.push('/login');

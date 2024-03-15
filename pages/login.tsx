@@ -1,14 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { fetchTokenURL } from '../components/backendURL'
+import { invoke } from '@tauri-apps/api/tauri';
+import { json } from 'stream/consumers';
 
 const swal = require('sweetalert2')
 
+interface Token {
+  refresh: string,
+  access: string,
+}
 
 const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [jwt_token, setJwt_token] = useState<Token>()
   const router = useRouter();
+
+  async function saveJWTToRust(token: string) {
+    invoke('save_jwt_to_file', { token })
+      .then(() => console.log('jwt saved successfully'))
+      .catch((err) => console.error('Error saving jwt:', err));
+  }
+
+  async function retireveJWTfromRust() {
+    try {
+      const result = await invoke('retrieve_jwt_from_file') as string
+      const jsonData = JSON.parse(result); // Parse the JSON string to an object
+      setJwt_token(jsonData); // Assuming setJwt_token is a state setter from a useState hook
+      return jsonData
+    } catch (err) {
+      console.error('Error retrieving jwt:', err);
+    }
+  }
 
   //windowsize
   useEffect(() => {
@@ -16,15 +40,17 @@ const LoginPage = () => {
       import("@tauri-apps/api").then((tauri) => {
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 500));
       })
+    
   }, [])
  
  //checks of user is logged in from previous session
   useEffect(() => {
-    const tokenData = localStorage.getItem('authTokens');
-    if (tokenData) {
+    retireveJWTfromRust()
+    if (jwt_token) {
       router.push('/profile'); 
     }
-  }, [router]);
+  }, [router, jwt_token]);
+
   const handleLogin = async (e: any) => {
     e.preventDefault();
 
@@ -44,7 +70,7 @@ const LoginPage = () => {
         const data = await response.json();
 
         if (response.status === 200) {
-          localStorage.setItem('authTokens', JSON.stringify(data));
+          await saveJWTToRust(JSON.stringify(data))
           setPassword('')
           setemailname('')
           

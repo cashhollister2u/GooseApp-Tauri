@@ -13,12 +13,6 @@ use std::sync::Arc;
 use std::fs::File;
 
 //saving private info to file 
-
-#[derive(Serialize, Deserialize, Debug)]
-struct PrivateData {
-    priv_key: String,
-}
-
 #[tauri::command]
 pub fn save_private_key_to_file(private_key: String, username: String) -> Result<(), String> {
     let path = format!("User_keys/{}_data.pem", username);
@@ -63,6 +57,56 @@ fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
         tauri::Error::Io(err)
     })?;
     
+    Ok(data)
+
+}
+
+
+//saving JWT to file 
+#[tauri::command]
+pub fn save_jwt_to_file(token:String) -> Result<(), String> {
+    let path = format!("User_token/jwt.json");
+    
+    let mut file = File::create(path)
+        .map_err(|e| format!("Failed to create jwt file: {}", e))?;
+    file.write_all(token.as_bytes())
+        .map_err(|e| format!("Failed to write jwt to file: {}", e))?;
+        
+    // Set file permissions to owner read/write (600) on Unix-based systems
+    #[cfg(unix)]
+    {
+        use std::fs;
+
+        let metadata = file.metadata()
+            .map_err(|e| format!("Failed to read jwt file metadata: {}", e))?;
+        let mut permissions = metadata.permissions();
+        
+        // Remove all permissions, then set to 600 (owner read/write)
+        permissions.set_mode(0o600);
+        fs::set_permissions("User_token/jwt.json", permissions)
+            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command] 
+pub fn retrieve_jwt_from_file() -> TauriResult<String> {
+    let path = format!("User_token/jwt.json");
+
+    // Open the file
+    let mut file = File::open(path).map_err(|err| {
+        eprintln!("Failed to open jwt file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+
+    // Read the file's content into a String
+    let mut data = String::new();
+    file.read_to_string(&mut data).map_err(|err| {
+        eprintln!("Failed to read file: {:?}", err);
+        tauri::Error::Io(err)
+    })?;
+
     Ok(data)
 
 }

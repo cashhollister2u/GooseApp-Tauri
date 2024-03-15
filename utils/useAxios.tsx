@@ -5,7 +5,7 @@ import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
 import { AuthContextType } from '../context/AuthContext'
 import { baseURL } from '@/components/backendURL'
-import { user } from '@nextui-org/react'
+import { invoke } from '@tauri-apps/api/tauri';
 
 interface AuthTokens {
   access: string
@@ -21,6 +21,13 @@ const useAxios = () => {
   const context = useContext(AuthContext) as AuthContextType
   const { authTokens, setUser, setAuthTokens } = context ?? {}
   
+
+  async function saveJWTToRust(token: string) {
+    invoke('save_jwt_to_file', { token })
+      .then(() => console.log('jwt saved successfully'))
+      .catch((err) => console.error('Error saving jwt:', err));
+  }
+
   const axiosInstance = axios.create({
     baseURL,
     headers: { Authorization: `Bearer ${authTokens?.access}` },
@@ -40,7 +47,7 @@ const useAxios = () => {
 
     const newToken: AuthTokens = response.data
 
-    localStorage.setItem('authTokens', JSON.stringify(newToken))
+    await saveJWTToRust(JSON.stringify(newToken))
 
     setAuthTokens(newToken)
     setUser(jwtDecode(newToken.access))

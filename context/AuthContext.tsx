@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/router';
+import { invoke } from '@tauri-apps/api/tauri';
 
 const swal = require('sweetalert2')
 
@@ -30,24 +31,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  useEffect(() => {
-    const updateAuthTokens = () => {
-      setAuthTokens(
-        localStorage.getItem('authTokens')
-          ? JSON.parse(localStorage.getItem('authTokens') || '')
-          : null
-      )
-    }
-    const updateUser = () => {
-      setUser(
-        localStorage.getItem('authTokens')
-          ? jwtDecode<User>(localStorage.getItem('authTokens') || '')
-          : null
-      )
-    }
 
-    updateAuthTokens()
-    updateUser()
+  
+
+  useEffect(() => {
+    async function retireveJWTfromRust() {
+      try {
+        const result = await invoke('retrieve_jwt_from_file') as string
+        const jsonData = JSON.parse(result); 
+        setAuthTokens(jsonData);
+        setUser(jwtDecode<User>(jsonData || '')
+        )
+      } catch (err) {
+        console.error('Error retrieving jwt:', err);
+      }
+    }
+    
+    retireveJWTfromRust()
+
   }, [router.asPath])
 
   
