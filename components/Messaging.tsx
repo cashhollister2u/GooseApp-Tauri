@@ -125,7 +125,7 @@ const Messaging: React.FC<{
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
   const [isViewMsgChange, setisViewMsgChange] = useState<boolean>(false)
-  const [recommendationList, setRecommendaionsList] = useState<recommendationList>([])
+  const [recommendationList, setRecommendationsList] = useState<Recommendation[]>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
   const [localMessageCount, setLocalMessageCount] = useState<number> (0)
@@ -421,12 +421,11 @@ const Messaging: React.FC<{
                 }
                 
                 const conversationExists = allConversations.some(conversation => conversation.handle === newMsg.handle)
-
+                
                 if (!conversationExists) {
                   updateConvo()
                 }
-
-                
+                                
                 const sentMessageCount = totalSentMessageCount?.find(user => user.user_id === res.data.reciever)
                 
                 const newMsgCount: UserSentMessageCount = {
@@ -593,6 +592,7 @@ const Messaging: React.FC<{
                                       reciever_profile?.profile
                                         ?.profile_picture || ''
                                     }`}
+                                    onError={(e) => (e.currentTarget.src = '/profile_pic_def/gooseCom.png')}
                                     alt=""
                                   />
                                   <span
@@ -701,6 +701,7 @@ const Messaging: React.FC<{
                                 <img
                                   className="h-10 w-10 rounded-full"
                                   src={`${reciever_profile.imageUrl}` || profile_pic_url }
+                                  onError={(e) => (e.currentTarget.src = '/profile_pic_def/gooseCom.png')}
                                   alt=""
                                 />
                                 <span
@@ -813,6 +814,7 @@ const Messaging: React.FC<{
                           <img
                             className="inline-block h-9 w-9 rounded-full"
                             src={viewmsg?.imageUrl || `${profile_pic_url}`}
+                            onError={(e) => (e.currentTarget.src = '/profile_pic_def/gooseCom.png')}
                             alt=""
                           />
                         </div>
@@ -885,6 +887,7 @@ const Messaging: React.FC<{
                               <img
                                 className="ml-2 inline-block h-12 w-12 rounded-full"
                                 src={`${mediaURL}${myProfile?.profile_picture}`}
+                                onError={(e) => (e.currentTarget.src = '/profile_pic_def/gooseCom.png')}
                                 alt=""
                               />
                             </div>
