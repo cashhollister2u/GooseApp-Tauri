@@ -96,7 +96,7 @@ const SignUpPage = () => {
         })
       } else {
         swal.fire({
-          title: 'Username not available',
+          title: 'Username or email not available',
           icon: 'error',
           toast: true,
           color: '#cfe8fc',
