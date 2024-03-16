@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { fetchTokenURL } from '../components/backendURL'
 import { invoke } from '@tauri-apps/api/tauri';
-import { json } from 'stream/consumers';
 
 const swal = require('sweetalert2')
 
@@ -15,6 +14,8 @@ const LoginPage = () => {
   const [email, setemailname] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [jwt_token, setJwt_token] = useState<Token>()
+  const [isrouterCalled, setisrouterCalled] = useState<boolean>(false)
+
   const router = useRouter();
 
   async function saveJWTToRust(token: string) {
@@ -46,7 +47,8 @@ const LoginPage = () => {
  //checks of user is logged in from previous session
   useEffect(() => {
     retireveJWTfromRust()
-    if (jwt_token) {
+    if (jwt_token && !isrouterCalled) {
+      setisrouterCalled(true)
       router.push('/profile'); 
     }
   }, [router, jwt_token]);
@@ -66,32 +68,45 @@ const LoginPage = () => {
             password,
           }),
         });
-
         const data = await response.json();
 
         if (response.status === 200) {
           await saveJWTToRust(JSON.stringify(data))
           setPassword('')
           setemailname('')
-          
-          router.push('/profile')         
-        } else {
-          throw new Error('Login failed');
+
+          setisrouterCalled(true)
+          router.push('/profile')      
+             
+        } else if (response.status === 401) {
+          swal.fire({
+            title: 'Login failed',
+            text: 'Username or password does not exist',
+            icon: 'error',
+            color: '#cfe8fc',
+            background: '#BC3838',
+            toast: true,
+            timer: 6000,
+            position: 'top-right',
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        } if (response.status === 403) {
+          swal.fire({
+            title: 'Login failed',
+            text: 'User not approved my admin',
+            icon: 'error',
+            color: '#cfe8fc',
+            background: '#BC3838',
+            toast: true,
+            timer: 6000,
+            position: 'top-right',
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
         }
-      } catch (error) {
-        console.error('Login error:', error);
-        swal.fire({
-          title: 'Login failed',
-          text: 'Username or password does not exist',
-          icon: 'error',
-          color: '#cfe8fc',
-          background: '#BC3838',
-          toast: true,
-          timer: 6000,
-          position: 'top-right',
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
+      } catch (error:any) {
+        console.log('error', error) 
       }
     };
 
