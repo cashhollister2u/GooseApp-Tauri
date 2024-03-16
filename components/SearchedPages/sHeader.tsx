@@ -63,7 +63,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
           setbackground_image(fetchedUserProfile.profile.background_image)
           setprofile_picture(fetchedUserProfile.profile.profile_picture)
           setusername(fetchedUserProfile.profile.username)
-
+          
           setbio(fetchedUserProfile.profile.bio)
         }
       } catch (error) {
@@ -213,7 +213,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
                 />
               )}
             </div>  
-                  <div className="w-full border-l-2 border-zinc-400 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
+                  <div className="w-full border-l-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
                   <div className="h-6 w-48 rounded-lg">{full_name}</div>
                   <div className="h-6 w-48 rounded-lg">{username}</div>
                   <div className="h-12 w-48 rounded-lg">{bio}</div>
@@ -224,46 +224,38 @@ const S_Header: React.FC<S_HeaderProps> = ({
                 MYusername !== username ? '' : 'hidden'
               }`}
             >
-              <button
-                type="button"
-                className={`rounded-md w-32 h-8 bg-zinc-200 border-2 border-zinc-400/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-100 ${
-                  !isFollowing ? '' : 'hidden'
-                }`}
-                onClick={() => FollowUser(searchedprofile?.id)}
-              >
-                Follow
-              </button>
-              <button
-                type="button"
-                className={`${
-                  !isFollowing
-                    ? 'hidden'
-                    : 'rounded-md w-32 h-8 bg-zinc-500 border-2 border-zinc-600/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-300'
-                }`}
-                onClick={() => unFollowUser(searchedprofile?.id)}
-              >
-                Unfollow
-              </button>
-
-              <button
-                type="button"
-                className={
-                  'rounded-md w-32 h-6 mt-1 bg-zinc-200 border-2 border-zinc-400/50 text-sm font-semibold text-gray-900 shadow-sm hover:border-2 hover:border-zinc-400/50 hover:bg-zinc-100'
-                }
-                onClick={() => {
-                  onclick()
-                }}
-              >
-                <div className='flex'>
-                  Send Message
-                  <EnvelopeIcon
-                  className="h-5 w-5 ml-1 text-black"
-                  aria-hidden="true"
-                />
-                  </div>
-              </button>
+              <span className="isolate inline-flex rounded-md shadow-xl">
+                <button
+                  type="button"
+                  className={`w-20 relative inline-flex border-r-3 border-zinc-400 justify-center items-center gap-x-1.5 rounded-l-md bg-zinc-300 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${
+                    !isFollowing ? '' : 'hidden'
+                  }`}
+                  onClick={() => FollowUser(searchedprofile?.id)}
+                >
+                  Follow
+                  </button>
+                      <button
+                        type="button"
+                        className={`w-20 relative inline-flex items-center gap-x-1.5 rounded-l-md bg-zinc-600 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-zinc-500 hover:ring-zinc-300 hover:bg-zinc-300 hover:border-r-3 hover:border-zinc-400 focus:z-10 ${
+                          isFollowing ? '' : 'hidden'}`}
+                        onClick={() => unFollowUser(searchedprofile?.id)}
+                      >
+                        Unfollow
+                      </button>
+                    <button
+                      type="button"
+                      className="relative -ml-px inline-flex items-center rounded-r-md bg-zinc-300 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+                      onClick={() => {
+                        onclick()
+                      }}
+                    >
+                   <EnvelopeIcon
+                    className="h-5 w-5 ml-1 text-black"
+                    aria-hidden="true"
+                  />
+                </button>
+              </span>
             </div>
-            
         </div>
         ) : (
         <Card className="flex justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800" radius="lg">

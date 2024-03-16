@@ -9,6 +9,7 @@ import {
   MinusCircleIcon,
 } from '@heroicons/react/20/solid'
 
+
 const swal = require('sweetalert2')
 
 
@@ -179,12 +180,10 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, u
           'Content-Type': 'multipart/form-data', // Important for file uploads
         },
       })
-      // Check if the response status is 200
       if (response.status === 200) {
-        // Call your function here
         updateProfilePage();
+        
       } else {
-        // Handle other statuses or errors
         console.error('Received non-200 response:', response.status);
       }
   

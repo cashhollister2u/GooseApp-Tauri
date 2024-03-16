@@ -33,7 +33,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton} from "@nextui-org/react";
-import { LogicalPosition, appWindow } from '@tauri-apps/api/window';
+import { LogicalPosition } from '@tauri-apps/api/window';
 
 const swal = require('sweetalert2')
 
@@ -133,7 +133,7 @@ const MyProfilePage: React.FC<{}> = () => {
       }
     }
     retireveJWTfromRust()
-  }, [])
+  }, [RefreshProfilePage])
 
 
   //window size init
@@ -156,7 +156,6 @@ const MyProfilePage: React.FC<{}> = () => {
   }
   // handle incoming Websocket messages
   function handleMessage(data: any) {
-    console.log('Received message:', data);
     recievedWebsocketMessages(data)
     setisWebsocketMessage(current => !current)
     
@@ -271,11 +270,8 @@ const MyProfilePage: React.FC<{}> = () => {
   
       fetchedLeaderBoard()
 
-      if (!isfetchedUserProfile) {
-        fetchUserProfile();
-        setIsfetchedUserProfile(true)
-      }
-    
+      fetchUserProfile();
+      
       if (SearchMsgString && typeof SearchMsgString === 'string') {
         try {
           const SearchMsg = JSON.parse(atob(SearchMsgString))
@@ -298,7 +294,11 @@ const MyProfilePage: React.FC<{}> = () => {
     const search = params.get('search')
     
     if (search) {
-      setSearchActive(true)
+      if (search === UserProfile?.username) {
+        setSearchActive(false)
+      } else {
+        setSearchActive(true)
+      }
       const handleSearchChange = async () => {
         try {
           const response = await gooseApp.get(`${searchUserURL}${search}/`)
@@ -346,9 +346,6 @@ const MyProfilePage: React.FC<{}> = () => {
           if (newMessages.length > 0) {
             setDecryptedMessages((currentMessages: Message[]) => [...(newMessages as Message[]).slice().reverse(), ...currentMessages])
           }
-        
-        console.log('Command executed successfully', result); 
-
       } catch (error) {
           console.error('Error sending data to Rust:', error);
       }
@@ -359,9 +356,10 @@ const MyProfilePage: React.FC<{}> = () => {
     
     try {
       const result = await invoke('pull_message_to_decrypt', { message: message.message, username: UserProfile?.username }) as string;
-      console.log('Decrypted Websocket Msg: ', result)
       const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
+      
       setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
+      
       swal.fire({
         title: `Message: @${message.reciever_profile.username}`,
         color: '#cfe8fc',
@@ -426,12 +424,8 @@ const MyProfilePage: React.FC<{}> = () => {
       }
   }
 
-  const recievedWebsocketMessages = async (SocketMessage: any) => {
-    console.log(SocketMessage.message)
-    const reciever_profile = SocketMessage.message.reciever_profile
-    
+  const recievedWebsocketMessages = async (SocketMessage: any) => {    
     await  sendMessagetoRustDecryption(SocketMessage.message) as any
-              
   }
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {

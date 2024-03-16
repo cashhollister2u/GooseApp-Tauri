@@ -362,8 +362,8 @@ const Messaging: React.FC<{
   async function sendMessageToRustEncryption(message: string, public_key: string): Promise<string> {
     try {
       const result = await invoke('pull_message_to_encrypt', { message: message, publicKey: public_key }) as string;
-      console.log('Encryption executed successfully', result);
       return result
+
     } catch (error) {
         console.error('Error sending data to Rust:', error);
         throw new Error('Error sending data to Rust');
@@ -373,8 +373,8 @@ const Messaging: React.FC<{
   async function sendMessagetoRustDecryption(message: string) {
     try {
       const result = await invoke('pull_message_to_decrypt', { message: message, username: UserProfile.username});
-      console.log('Decryption executed successfully', result);
       return result
+      
     } catch (error) {
         console.error('Error sending data to Rust:', error);
     }
