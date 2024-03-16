@@ -10,8 +10,6 @@ import { useRouter } from 'next/router'
 import { websocketService } from '@/utils/websocketservice';
 
 
-const swal = require('sweetalert2')
-
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -91,13 +89,13 @@ const Messaging: React.FC<{
   searchedprofile: any
   UserProfile: UserProfile
   updateIsMessaging: () => void
+  updateConvo: () => void
   onMessageSelect: (reciever_profile: UserProfile, isLoadMore:boolean, loadedMessageCount:number) => void
   onSendMessage: (filteredMessages: any) => void
   IsSearchMessage: boolean
   importMessages: Message[]
   importConversations: UserProfile[]
   onLoadedMessageCount:(loadedMessageCount: number, reciever_profile: any, isLoadMore:boolean) => void
-  onResetMessageCount: (reset:number) => void
   importTotalMessageCount: TotalMessagesPerUser[] | undefined
   isLoading: boolean
   ButtonPress: boolean
@@ -105,8 +103,8 @@ const Messaging: React.FC<{
 }> = ({
   UserProfile,
   ButtonPress,
+  updateConvo,
   onLoadedMessageCount,
-  onResetMessageCount,
   onMessageSelect,
   onSendMessage,
   updateIsMessaging,
@@ -328,23 +326,19 @@ const Messaging: React.FC<{
 
   const handleViewMessage = (reciever_profile: allConversations) => {
     setviewmsg(reciever_profile)
-    handleMessageCountReset()
   }
 
   const handleViewMsgInitialMessageCase = (reciever_profile: allConversations) => {
     if (allConversations.length === 0) {
       setviewmsg(reciever_profile)
-      handleMessageCountReset()
       allConversations.push(reciever_profile)
     }
     for (const user of allConversations as any) {
       if (user.user_id === reciever_profile.id) {
         setviewmsg(user)
-        handleMessageCountReset()
         break
       } else {
         setviewmsg(reciever_profile)
-        handleMessageCountReset()
       }
     }
   }
@@ -425,6 +419,14 @@ const Messaging: React.FC<{
                   imageUrl: res.data.reciever_profile.profile_picture,
                   status: 'online',
                 }
+                
+                const conversationExists = allConversations.some(conversation => conversation.handle === newMsg.handle)
+
+                if (!conversationExists) {
+                  updateConvo()
+                }
+
+                
                 const sentMessageCount = totalSentMessageCount?.find(user => user.user_id === res.data.reciever)
                 
                 const newMsgCount: UserSentMessageCount = {
@@ -482,15 +484,10 @@ const Messaging: React.FC<{
     onLoadedMessageCount(numberOfFilteredMessages, viewmsg, isLoadMore)
   }
 
-  const handleMessageCountReset = () => {
-    const resetCount = 0
-    onResetMessageCount(resetCount)
-  }
 
   const handleInboxTabClick = () => {
     setisViewMsgChange(false)
     setviewmsg(undefined)
-    handleMessageCountReset()
     settabvalue(true)
     setRecommendations(false)
     setisSearchMessageUpd(false)
@@ -554,7 +551,6 @@ const Messaging: React.FC<{
                       </button>
                     ))}
                     <button
-                      
                       className={classNames(
                         !tabvalue
                           ? 'text-indigo-600'
@@ -613,7 +609,7 @@ const Messaging: React.FC<{
                                   <p className="truncate text-sm font-medium text-white">
                                     {reciever_profile?.profile?.full_name || ''}
                                   </p>
-                                  <p className="truncate text-sm text-gray-400/80">
+                                  <p className="truncate text-left text-sm text-gray-400/80">
                                     {'@' + reciever_profile?.profile?.username}
                                   </p>
                                 </div>
@@ -704,12 +700,7 @@ const Messaging: React.FC<{
                               <span className="relative inline-block flex-shrink-0">
                                 <img
                                   className="h-10 w-10 rounded-full"
-                                  src={
-                                    `${
-                                      reciever_profile.imageUrl
-                                    }` ||
-                                    profile_pic_url
-                                  }
+                                  src={`${reciever_profile.imageUrl}` || profile_pic_url }
                                   alt=""
                                 />
                                 <span
@@ -726,7 +717,7 @@ const Messaging: React.FC<{
                                 <p className="truncate text-sm font-medium text-white">
                                   {reciever_profile.name}
                                 </p>
-                                <p className="truncate text-sm text-gray-400/80">
+                                <p className="truncate text-left text-sm text-gray-400/80">
                                   {'@' + reciever_profile.handle}
                                 </p>
                               </div>
@@ -829,7 +820,7 @@ const Messaging: React.FC<{
                           <p className="text-sm font-medium text-black group-hover:text-gray-900">
                             {viewmsg?.name || viewmsg?.profile?.full_name}
                           </p>
-                          <p className="text-xs font-medium text-gray-800 group-hover:text-gray-700">
+                          <p className="text-xs text-left font-medium text-gray-800 group-hover:text-gray-700">
                             @{viewmsg?.handle || viewmsg?.profile?.username}
                           </p>
                         </div>
