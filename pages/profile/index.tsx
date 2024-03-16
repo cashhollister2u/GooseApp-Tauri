@@ -127,7 +127,7 @@ const MyProfilePage: React.FC<{}> = () => {
         setAuthTokens(jsonData); // Assuming setJwt_token is a state setter from a useState hook
         return jsonData
       } catch (err) {
-        console.error('Error retrieving jwt:', err);
+        console.error('attempt to retrieve jwt');
       }
     }
     retireveJWTfromRust()
@@ -284,7 +284,7 @@ const MyProfilePage: React.FC<{}> = () => {
     return () => {
       clearTimeout(timer), controller.abort()
     }
-  }, [RefreshProfilePage, authTokens])
+  }, [RefreshProfilePage, authTokens, followingList])
 
   //loading searched profiles
   useEffect(() => {
@@ -330,6 +330,7 @@ const MyProfilePage: React.FC<{}> = () => {
 
 
   async function initialdecrypttoRust(updMessages: Message[]) {
+    console.log(updMessages)
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
