@@ -123,7 +123,6 @@ struct Profile {
     username: String,
     public_key: String,
     full_name: String,
-    profile_picture: String,
     verified: bool,
 }
 
@@ -158,6 +157,7 @@ pub fn pull_messages_encrypted(messages: Vec<Message>, username: String) -> Resu
     // Step 3: Decrypt messages within the specified range
     let decrypted_messages: Result<Vec<_>, _> = messages.into_par_iter()
         .map(|mut message| {
+
             let encrypted_data = if message.sender_profile.username == username {
                 &message.sender_message
             } else {
@@ -176,7 +176,6 @@ pub fn pull_messages_encrypted(messages: Vec<Message>, username: String) -> Resu
             Ok(message)
         })
         .collect();
-
     decrypted_messages
 }
 
