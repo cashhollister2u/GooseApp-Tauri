@@ -224,7 +224,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
             </div>  
                   <div className="w-full border-l-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
                   <div className="h-6 w-48 rounded-lg">{full_name}</div>
-                  <div className="h-6 w-48 rounded-lg">{username}</div>
+                  <div className="h-6 w-48 rounded-lg">@{username}</div>
                   <div className="h-12 w-48 rounded-lg">{bio}</div>
               </div>
               </div>
