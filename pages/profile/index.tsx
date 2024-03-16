@@ -104,7 +104,6 @@ const MyProfilePage: React.FC<{}> = () => {
   const SearchMsgString = router.query.SearchMessage
   const [decryptedMessages, setDecryptedMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<any>([])
-  const [loadedMessageCount, setLoadedMessageCount] = useState<number> (0)
   const { activeMessage } = router.query; 
   const [viewedMsgList, setviewedMsgList] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,7 +114,6 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
-  const [isfetchedUserProfile, setIsfetchedUserProfile] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<any | null>(null)
   const [ranked_list, setranked_list] = useState<string[]>([])
   const wsBaseUrl = 'ws://192.168.1.72:8000';
@@ -331,13 +329,11 @@ const MyProfilePage: React.FC<{}> = () => {
 };
 
 
-  async function initialdecrypttoRust(reciever_profile: any, updMessages: Message[], messageFetched: boolean) {
-    const usernameReciever = reciever_profile.handle || reciever_profile.profile?.username || reciever_profile.username
+  async function initialdecrypttoRust(updMessages: Message[]) {
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
           username: UserProfile?.username, 
-          //recieverUsername: usernameReciever,
         }); 
         const newMessages = (result as Message[]).filter((newDecryptedMesssage: Message) => 
           !decryptedMessages.some(message => message.id === newDecryptedMesssage.id)
@@ -345,7 +341,7 @@ const MyProfilePage: React.FC<{}> = () => {
         
           if (newMessages.length > 0) {
             setDecryptedMessages((currentMessages: Message[]) => [...(newMessages as Message[]).slice().reverse(), ...currentMessages])
-          }
+          } 
       } catch (error) {
           console.error('Error sending data to Rust:', error);
       }
@@ -416,7 +412,7 @@ const MyProfilePage: React.FC<{}> = () => {
               setviewedMsgList([...viewedMsgList, lookUpUsername])
             }
 
-            await  initialdecrypttoRust(reciever_profile, fetchedMessages.messages, alreadyFetched) as any
+            await  initialdecrypttoRust( fetchedMessages.messages) as any
               
           } catch (error) {
             console.log(`failed to fetch messages for ${reciever_profile.handle || reciever_profile.profile.username}`)
@@ -429,27 +425,25 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   const fetchUnloadedMessages = async (loadedMessageCount: number, reciever_profile: any, isLoadMore: boolean) => {
-    setLoadedMessageCount(loadedMessageCount)
     fetchMessages(reciever_profile, isLoadMore, loadedMessageCount)
+  }
+  const fetchConversations = async () => {
+    try {
+      const response = await gooseApp.get(
+        `${baseURL}conversations/${UserProfile?.user_id}/`
+      )
+      const fetchedConversations = response.data
+   
+      setConversations(fetchedConversations)
+      setIsLoading(false)
+    
+    } catch (error) {}
   }
 
   useEffect(() => {
     const istauri = (window as any).__TAURI__ !== undefined;
     
     if (UserProfile && istauri) {
-      const fetchConversations = async () => {
-        try {
-          const response = await gooseApp.get(
-            `${baseURL}conversations/${UserProfile?.user_id}/`
-          )
-          const fetchedConversations = response.data
-       
-          setConversations(fetchedConversations)
-          setIsLoading(false)
-        
-        } catch (error) {}
-      }
-
       fetchConversations()
     } 
   }, [UserProfile])
@@ -924,11 +918,11 @@ const MyProfilePage: React.FC<{}> = () => {
             <div className={` ${isMessaging ? 'xl:hidden' : 'hidden'}`}>
               <div className="fixed inset-0 lg:left-72 bg-zinc-900 z-20">
                 <Messaging
+                  updateConvo={fetchConversations}
                   isWebsocketMessage={isWebsocketMessage}
                   ButtonPress={ButtonPress}
                   onSendMessage={handleMsgUpdateBetweenMSGComponents}
                   isLoading={isLoading}
-                  onResetMessageCount={setLoadedMessageCount}
                   onLoadedMessageCount={fetchUnloadedMessages}
                   importConversations={conversations}
                   importTotalMessageCount={totalMessagesCount}
@@ -1077,11 +1071,11 @@ const MyProfilePage: React.FC<{}> = () => {
           ) : ( 
             <div>
             <Messaging
+              updateConvo={fetchConversations}
               isWebsocketMessage={isWebsocketMessage}
               ButtonPress={ButtonPress}
               onSendMessage={handleMsgUpdateBetweenMSGComponents}
               isLoading={isLoading}
-              onResetMessageCount={setLoadedMessageCount}
               onLoadedMessageCount={fetchUnloadedMessages}
               importConversations={conversations as UserProfile[]}
               importTotalMessageCount={totalMessagesCount}
@@ -1093,7 +1087,6 @@ const MyProfilePage: React.FC<{}> = () => {
               UserProfile={UserProfile as UserProfile}
             />
           </div>)}
-         
         </aside>
       </div>
     </>
