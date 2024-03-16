@@ -1,26 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { leaderBoardURL } from './backendURL'
-import useAxios from '../utils/useAxios'
 
 
 const TopStocksList: React.FC<{imported_rankedList:string[]}> = ({imported_rankedList}) => {
   const [ranked_list, setranked_list] = useState<string[]>([])
-  const gooseApp = useAxios()
-  const [authTokens, setAuthTokens] = useState<any | null>(null)
 
-  //needed to use the router.push funct from login and not break window resize
-  useEffect(() => {
-    const updateAuthTokens = () => {
-      setAuthTokens(
-        localStorage.getItem('authTokens')
-          ? JSON.parse(localStorage.getItem('authTokens') || '')
-          : null
-      )
-    }
-    
-
-    updateAuthTokens()
-  }, [])
 
   useEffect(() => {
     const fetchedLeaderBoard = () => {
@@ -28,7 +11,7 @@ const TopStocksList: React.FC<{imported_rankedList:string[]}> = ({imported_ranke
     }
 
     fetchedLeaderBoard()
-  }, [authTokens])
+  }, [imported_rankedList])
 
   return (
     <ul role="list">
@@ -44,7 +27,7 @@ const TopStocksList: React.FC<{imported_rankedList:string[]}> = ({imported_ranke
               <p className="ml-5 mr-10 font-bold text-white">
                 {stockindex + 1}.
               </p>
-              <p className="font-bold text-white">{stock[0]}</p>
+              <p className="font-bold w-80 text-white">{stock[0]}</p>
             </div>
             <div className="text-right font-bold mr-4">
           <span>{stock[1]}</span>
