@@ -60,11 +60,19 @@ const S_Header: React.FC<S_HeaderProps> = ({
         const fetchedUserProfile = searchedprofile
         if (fetchedUserProfile) {
           setfull_name(fetchedUserProfile.profile.full_name)
-          setbackground_image(fetchedUserProfile.profile.background_image)
-          setprofile_picture(fetchedUserProfile.profile.profile_picture)
           setusername(fetchedUserProfile.profile.username)
-          
           setbio(fetchedUserProfile.profile.bio)
+
+          if (fetchedUserProfile.profile.background_image === null){
+            setbackground_image(`/profile_pic_def/gooseCom_slim.png`)
+          } else {
+            setbackground_image(`${fetchedUserProfile.profile.background_image}`)
+          }
+          if (fetchedUserProfile.profile.profile_picture === null){
+            setprofile_picture(`/profile_pic_def/gooseCom.png`)
+          } else {
+            setprofile_picture(`${fetchedUserProfile.profile.profile_picture}`)
+          }
         }
       } catch (error) {
         swal.fire({
@@ -88,6 +96,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
         })
       }
     }
+    console.log(background_image)
     const followingStatus = () => {
       if (UserProfile) {
         const istheUserFollowing: boolean = UserProfile.following.some(
