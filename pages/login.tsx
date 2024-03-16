@@ -38,7 +38,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return
       import("@tauri-apps/api").then((tauri) => {
-        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 500));
+        tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 550));
       })
     
   }, [])
@@ -184,12 +184,18 @@ const LoginPage = () => {
             Not a member?{' '}
             <button
               onClick={() => router.push('/sign-up')}
-              className="font-semibold mb-10 leading-6 text-indigo-400 hover:text-indigo-300"
+              className="font-semibold mb-4 leading-6 text-indigo-400 hover:text-indigo-300"
             >
               Create an Account
             </button>
           </p>
         </div>
+        <p className='text-sm text-red-500 ml-4 mr-4 mb-6'>
+          Disclaimer :
+          “While privacy and security are a priority, 
+          this is a personal project used for educational 
+          purposes. Privacy and security are not guaranteed”
+            </p>
       </div>
     </>
   )
