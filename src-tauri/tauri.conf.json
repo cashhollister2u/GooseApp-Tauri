@@ -94,7 +94,7 @@
         "title": "goose-app",
         "label": "goose-app-instance1",
         "fullscreen": false,
-        "height": 500,
+        "height": 550,
         "resizable": true,
         "width": 400,
         "url":"index.html"
