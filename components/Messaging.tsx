@@ -125,6 +125,7 @@ const Messaging: React.FC<{
   const [tabvalue, settabvalue] = useState<boolean>(true)
   const [isRecommendations, setRecommendations] = useState<boolean>(false)
   const [isViewMsgChange, setisViewMsgChange] = useState<boolean>(false)
+  const [isfirstmessageref, setisfirstmessageref] = useState<boolean>(true)
   const [recommendationList, setRecommendationsList] = useState<Recommendation[]>([])
   const [filteredRecommendations, setFilteredRecommendations] = useState(recommendationList)
   const [messages, setmessages] = useState<Message[]>([])
@@ -205,10 +206,10 @@ const Messaging: React.FC<{
               block: 'end',
               inline: 'nearest',
             });}
-          }, 100); 
-    } else {
+          }, 0); 
+    } else if (!isSlowScroll && !isfirstmessageref) {
       setTimeout(() => {
-        if (newMessagesRef.current && !isSlowScroll) {
+        if (newMessagesRef.current ) {
           newMessagesRef.current.scrollIntoView({
             block: 'end',
             inline: 'nearest',
@@ -326,6 +327,7 @@ const Messaging: React.FC<{
 
   const handleViewMessage = (reciever_profile: allConversations) => {
     setviewmsg(reciever_profile)
+    setisfirstmessageref(false)
   }
 
   const handleViewMsgInitialMessageCase = (reciever_profile: allConversations) => {
@@ -485,6 +487,7 @@ const Messaging: React.FC<{
 
 
   const handleInboxTabClick = () => {
+    setisfirstmessageref(true)
     setisViewMsgChange(false)
     setviewmsg(undefined)
     settabvalue(true)
