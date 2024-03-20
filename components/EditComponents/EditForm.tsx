@@ -37,7 +37,9 @@ interface ProfilePictureState {
   profilepictureFile: File | null
 }
 
-const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, updateProfilePage: () => void }> = ({ UserProfile, onCancelEdit, updateProfilePage }) => {
+const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => 
+void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (profile_Pic:string) => void, updateProfilePage: () => void }> = 
+({ UserProfile, onCancelEdit, updateProfilePage, onbackgroundPrev, onprofilepicPrev }) => {
   const [query, setQuery] = useState<string>('')
   const [listSuggestion, setlistSuggestion] = useState<string[]>([])
   const [Stock, setStock] = useState<StockType>([])
@@ -99,9 +101,11 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, u
     const file = e.target.files ? e.target.files[0] : null
     if (file) {
       const formData = new FormData()
+      
+      onbackgroundPrev(URL.createObjectURL(file))
 
       formData.append('background_image', file)
-
+      console.log(file, 'file')
       setbackground_image({
         ...background_image,
         background_image: URL.createObjectURL(file),
@@ -117,6 +121,8 @@ const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => void, u
     if (file) {
       const formData = new FormData()
 
+      onprofilepicPrev(URL.createObjectURL(file))
+      
       formData.append('profile_picture', file)
 
       setprofile_picture({

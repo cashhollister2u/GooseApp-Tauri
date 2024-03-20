@@ -113,6 +113,8 @@ const MyProfilePage: React.FC<{}> = () => {
   const [RefreshProfilePage, setRefreshProfilePage] = useState<boolean>(false)
   const [isSocketConnected, setisSocketConnected] = useState<boolean>(false)
   const [isWebsocketMessage, setisWebsocketMessage] = useState<boolean>(false)
+  const [backgroundPrev, setbackgroundPrev] = useState<string>()
+  const [profilepicPrev,setprofilepicPrev] = useState<string>()
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<any | null>(null)
   const [ranked_list, setranked_list] = useState<string[]>([])
@@ -478,6 +480,8 @@ const MyProfilePage: React.FC<{}> = () => {
     setIsMessaging(false)
     setIsEditing(false)
     setActiveTab('Pinned')
+    setbackgroundPrev('')
+    setprofilepicPrev('')
   }
 
   const sendMessageFromSearch = () => {
@@ -495,6 +499,14 @@ const MyProfilePage: React.FC<{}> = () => {
     invoke('save_jwt_to_file', { token })
       .then(() => console.log('jwt saved successfully'))
       .catch((err) => console.error('Error saving jwt:', err));
+  }
+
+  const handlebackgroundPrev = (backgroundPrev: string) => {
+    setbackgroundPrev(backgroundPrev)
+  }
+
+  const handleprofilepicPrev = (profilePicPrev: string) => {
+    setprofilepicPrev(profilePicPrev)
   }
 
   const handleLogout = () => {
@@ -943,6 +955,8 @@ const MyProfilePage: React.FC<{}> = () => {
                     UserProfile={UserProfile as UserProfile}
                     onCancelEdit={() => updateIsMessaging()}
                     updateProfilePage={updateProfilePage}
+                    onbackgroundPrev={handlebackgroundPrev}
+                    onprofilepicPrev={handleprofilepicPrev}
                   />
                 </div>
               </div>
@@ -952,6 +966,8 @@ const MyProfilePage: React.FC<{}> = () => {
                 <Header 
                 UserProfile={UserProfile} 
                 isLoading={isLoading}
+                backgroundImagePrev={backgroundPrev ? backgroundPrev: ''}
+                profilepicturePrev={profilepicPrev ? profilepicPrev: ''}
                 />
                 <div className="mt-2">
                   <ListTabs
@@ -1067,6 +1083,8 @@ const MyProfilePage: React.FC<{}> = () => {
               UserProfile={UserProfile as UserProfile}
               onCancelEdit={() => updateIsMessaging()}
               updateProfilePage={updateProfilePage}
+              onbackgroundPrev={handlebackgroundPrev}
+              onprofilepicPrev={handleprofilepicPrev}
               />
             </div>
           ) : ( 

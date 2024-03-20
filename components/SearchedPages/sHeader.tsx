@@ -197,7 +197,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
       <div>
         {!isLoading ? (
           <img
-            className="max-h-128 w-full object-fill"
+            className="h-[40vh] w-full object-fill"
             src={`${background_image}`}
             alt="background"
           />
@@ -281,7 +281,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
             </div>
         </Card>
         )}
-
+      
            
           </div>
   )

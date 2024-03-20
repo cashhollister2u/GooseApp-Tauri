@@ -15,9 +15,13 @@ export interface UserProfile {
 const Header: React.FC<{ 
   UserProfile?: UserProfile
   isLoading:boolean 
-  }> = ({ UserProfile, isLoading }) => {
+  backgroundImagePrev: string
+  profilepicturePrev: string
+  }> = ({ UserProfile, isLoading, backgroundImagePrev, profilepicturePrev}) => {
   const [full_name, setfull_name] = useState<string>()
   const [background_image, setbackground_image] = useState<string>()
+  const [backgroundPrev, setbackgroundprev] = useState<string>()
+  const [profilepicPrev, setprofilepicprev] = useState<string>()
   const [profile_picture, setprofile_picture] = useState<string>()
   const [username, setusername] = useState<string>()
   const [bio, setbio] = useState<string>()
@@ -45,13 +49,22 @@ const Header: React.FC<{
     fetchUserData()
   }, [UserProfile])
 
+  useEffect(() => {
+    setprofilepicprev(`${profilepicturePrev}`)
+  }, [profilepicturePrev])
+
+  useEffect(() => {
+    setbackgroundprev(`${backgroundImagePrev}`)
+  }, [backgroundImagePrev])
+
+console.log(background_image)
   return (
     <div>
       <div>
         {!isLoading ? (
           <img
-            className="max-h-128 w-full object-fill"
-            src={`${background_image}` || '/profile_pic_def/gooseCom_slim.png'}
+            className="h-[40vh] w-full object-fit"
+            src={`${backgroundPrev}` || `${background_image}` || '/profile_pic_def/gooseCom_slim.png'}
             alt="background"
           />
         ) : (
@@ -69,7 +82,7 @@ const Header: React.FC<{
              <div>
                 <img
                   className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-white"
-                  src={`${profile_picture}` || '/profile_pic_def/gooseCom.png'}
+                  src={`${profilepicPrev}` || `${profile_picture}` || '/profile_pic_def/gooseCom.png'}
                   alt="profile"
                 />
             </div>  
