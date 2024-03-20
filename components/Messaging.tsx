@@ -180,24 +180,9 @@ const Messaging: React.FC<{
     
   }, [isWebsocketMessage])
 
-  //init click
-  useEffect(() => {
+ 
 
-    if (!isViewMsgChange) {
-      if(filteredMessages.length > 0){
-        setisViewMsgChange(true)
-      }
-      if (messageRef.current && !isSlowScroll) {
-        messageRef.current.scrollIntoView({
-          block: 'end',
-          inline: 'nearest',
-        })
-      }
-    }
-    
-  }, [filteredMessages])
-
-  //subsiquent clicks and load more...
+  //init clicks and load more...
   useEffect(() => {
     if (!isLoadMore && !isSlowScroll) {
         setTimeout(() => {
@@ -206,7 +191,7 @@ const Messaging: React.FC<{
               block: 'end',
               inline: 'nearest',
             });}
-          }, 0); 
+          }, 10); 
     } else if (!isSlowScroll && !isfirstmessageref) {
       setTimeout(() => {
         if (newMessagesRef.current ) {
