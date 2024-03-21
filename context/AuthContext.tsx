@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(jwtDecode<User>(jsonData || '')
         )
       } catch (err) {
-        console.error('Error retrieving jwt:', err);
+        //console.error('Error retrieving jwt:', err);
       }
     }
     

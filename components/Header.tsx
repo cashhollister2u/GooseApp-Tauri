@@ -57,7 +57,6 @@ const Header: React.FC<{
     setbackgroundprev(`${backgroundImagePrev}`)
   }, [backgroundImagePrev])
 
-console.log(background_image)
   return (
     <div>
       <div>
@@ -81,15 +80,15 @@ console.log(background_image)
           <div className="w-full flex items-center">
              <div>
                 <img
-                  className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-white"
+                  className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-zinc-200"
                   src={`${profilepicPrev}` || `${profile_picture}` || '/profile_pic_def/gooseCom.png'}
                   alt="profile"
                 />
             </div>  
-                  <div className="w-full border-l-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
-                  <div className="h-6 w-48 rounded-lg">{full_name}</div>
-                  <div className="h-6 w-48 rounded-lg">@{username}</div>
-                  <div className="h-12 w-48 rounded-lg">{bio}</div>
+                  <div className="w-full border-l-2 border-zinc-600 p-5 font-bold flex flex-col gap-3 ml-8">
+                  <div className="h-6 w-48 text-xl  rounded-lg">{full_name}</div>
+                  <div className="h-6 w-48 text-md border-2 border-zinc-600 w-full px-2 h-8 rounded-lg">@{username}</div>
+                  <div className="h-12 w-48 border-2 border-zinc-600 w-full px-2 py-1 text-sm rounded-lg">{bio}</div>
               </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ const LoginPage = () => {
       setJwt_token(jsonData); // Assuming setJwt_token is a state setter from a useState hook
       return jsonData
     } catch (err) {
-      console.error('Error retrieving jwt:', err);
+      //console.error('Error retrieving jwt:', err);
     }
   }
 

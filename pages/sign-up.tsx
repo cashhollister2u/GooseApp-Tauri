@@ -37,7 +37,7 @@ const SignUpPage = () => {
         if(err) {
           console.error(err);
           reject(err)
-          return;
+          return 200;
         }
 
         const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
@@ -79,8 +79,8 @@ const SignUpPage = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-      await savePrivateKeyToRust()
-      //router.push('/login')
+      //await savePrivateKeyToRust()
+      router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {
         swal.fire({
@@ -114,11 +114,11 @@ const SignUpPage = () => {
     e.preventDefault()
     
     generateRSAkeys().then(() => {
-      if(publicKey && privateKey) {
-        handleSignUp()
+        handleSignUp().then(() => {
+          savePrivateKeyToRust()
+        })
         
 
-      }
     }).catch((err: any) => {
       console.log(err)
     })

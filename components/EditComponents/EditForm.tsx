@@ -105,7 +105,7 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
       onbackgroundPrev(URL.createObjectURL(file))
 
       formData.append('background_image', file)
-      console.log(file, 'file')
+      
       setbackground_image({
         ...background_image,
         background_image: URL.createObjectURL(file),

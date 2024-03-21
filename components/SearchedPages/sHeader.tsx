@@ -96,7 +96,6 @@ const S_Header: React.FC<S_HeaderProps> = ({
         })
       }
     }
-    console.log(background_image)
     const followingStatus = () => {
       if (UserProfile) {
         const istheUserFollowing: boolean = UserProfile.following.some(
@@ -216,16 +215,16 @@ const S_Header: React.FC<S_HeaderProps> = ({
              <div>
               {profile_picture && (
                 <img
-                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-white "
+                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-zinc-200"
                   src={`${profile_picture}`}
                   alt="profile"
                 />
               )}
             </div>  
                   <div className="w-full border-l-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
-                  <div className="h-6 w-48 rounded-lg">{full_name}</div>
-                  <div className="h-6 w-48 rounded-lg">@{username}</div>
-                  <div className="h-12 w-48 rounded-lg">{bio}</div>
+                  <div className="h-6 w-48 text-xl  rounded-lg">{full_name}</div>
+                  <div className="h-6 w-48 text-md border-2 border-zinc-600 w-full px-2 h-8 rounded-lg">@{username}</div>
+                  <div className="h-12 w-48 border-2 border-zinc-600 w-full px-2 py-1 text-sm rounded-lg">{bio}</div>
               </div>
               </div>
               <div
