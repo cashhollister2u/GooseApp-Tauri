@@ -69,7 +69,6 @@ const LoginPage = () => {
           }),
         });
         const data = await response.json();
-
         if (response.status === 200) {
           await saveJWTToRust(JSON.stringify(data))
           setPassword('')

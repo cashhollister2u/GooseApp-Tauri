@@ -13,7 +13,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [publicKey, setpublicKey] = useState<string>('')
-  const [privateKey, setprivateKey] = useState<string>('')
+  const [privateKey, setprivateKey] = useState<string>('') 
   const router = useRouter();
 
   //windowsize
@@ -46,13 +46,12 @@ const SignUpPage = () => {
         const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
         setpublicKey(pemPublic)
 
-        resolve();
+        resolve(pemPublic);
       })
     })
   }
 
-  const handleSignUp = async () => {
-
+  const handleSignUp = async (pemPublic:any) => {
     try {
       // Create an object with the user data
       const userData = {
@@ -60,7 +59,7 @@ const SignUpPage = () => {
         username: username,
         password: password,
         password2: confirmPassword,
-        public_key: publicKey,
+        public_key: pemPublic,
       }
       // Make the POST request with json
       const response = await axios.post(`${registerURL}`, userData, {
@@ -111,17 +110,16 @@ const SignUpPage = () => {
   }
 
   const handleOnClick = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    generateRSAkeys().then(() => {
-        handleSignUp().then(() => {
-          savePrivateKeyToRust()
-        })
-        
-
-    }).catch((err: any) => {
-      console.log(err)
-    })
+    try {
+      const newPublicPem = await generateRSAkeys();
+      await handleSignUp(newPublicPem);
+      await savePrivateKeyToRust();
+    } catch (error) {
+      console.error("An error occurred during the sign-up process:", error);
+      // Handle or report error appropriately
+    }
   }
 
   return (
