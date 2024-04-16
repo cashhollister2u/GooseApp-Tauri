@@ -17,25 +17,12 @@ use std::fs::File;
 pub fn save_private_key_to_file(private_key: String, username: String) -> Result<(), String> {
     let path = format!("User_keys/{}_data.pem", username);
     
-    let mut file = File::create(path)
+    let mut file = File::create(path.clone())
         .map_err(|e| format!("Failed to create file: {}", e))?;
     file.write_all(private_key.as_bytes())
         .map_err(|e| format!("Failed to write to file: {}", e))?;
         
-    // Set file permissions to owner read/write (600) on Unix-based systems
-    #[cfg(unix)]
-    {
-        use std::fs;
-
-        let metadata = file.metadata()
-            .map_err(|e| format!("Failed to read file metadata: {}", e))?;
-        let mut permissions = metadata.permissions();
-        
-        // Remove all permissions, then set to 600 (owner read/write)
-        permissions.set_mode(0o600);
-        fs::set_permissions("public/private_data/username_data.json", permissions)
-            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
-    }
+    
 
     Ok(())
 }
@@ -72,20 +59,7 @@ pub fn save_jwt_to_file(token:String) -> Result<(), String> {
     file.write_all(token.as_bytes())
         .map_err(|e| format!("Failed to write jwt to file: {}", e))?;
         
-    // Set file permissions to owner read/write (600) on Unix-based systems
-    #[cfg(unix)]
-    {
-        use std::fs;
-
-        let metadata = file.metadata()
-            .map_err(|e| format!("Failed to read jwt file metadata: {}", e))?;
-        let mut permissions = metadata.permissions();
-        
-        // Remove all permissions, then set to 600 (owner read/write)
-        permissions.set_mode(0o600);
-        fs::set_permissions("User_token/jwt.json", permissions)
-            .map_err(|e| format!("Failed to set file permissions: {}", e))?;
-    }
+    
 
     Ok(())
 }

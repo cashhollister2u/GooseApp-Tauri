@@ -48,7 +48,7 @@ const S_PinnedStocksList: React.FC<S_PinnedStocksListProps> = ({
     {isLoading ? (
       loadingValues.map( (value, valueIndex) => (
        
-      <Card className="flex mt-2 mr-2 ml-2 bg-zinc-800" radius="lg">
+      <Card key={`loading-${valueIndex}`} className="flex mt-2 mr-2 ml-2 bg-zinc-800" radius="lg">
         <div className=" w-full flex items-center">
           <div> 
               </div>  

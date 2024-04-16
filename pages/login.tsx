@@ -197,7 +197,7 @@ const LoginPage = () => {
           <p className="mt-4 text-center text-sm text-gray-400">
             Not a member?{' '}
             <button
-              onClick={() => router.push('/sign-up')}
+              onClick={() => router.push('/sign_up')}
               className="font-semibold mb-4 leading-6 text-indigo-400 hover:text-indigo-300"
             >
               Create an Account

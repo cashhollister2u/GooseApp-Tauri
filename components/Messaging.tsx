@@ -157,12 +157,12 @@ const Messaging: React.FC<{
 
   let [newMessage, setnewMessage] = useState({ message: '' })
   
-  let numberOfLoadedMessages
+  let numberOfLoadedMessages: number
   if (filteredMessages.length % 15 === 0) {
     numberOfLoadedMessages = 15;
   } else {
     numberOfLoadedMessages = filteredMessages.length % 15;
-  }
+  } 
   
   
   //handle Websocket Messages
@@ -341,11 +341,9 @@ const Messaging: React.FC<{
   }
 
   async function sendMessageToRustEncryption(message: string, public_key: string): Promise<string> {
-    console.log('encrypt ran')
     
     try {
       const result = await invoke('pull_message_to_encrypt', { message: message, publicKey: public_key }) as string;
-      console.log(result)
       
       return result
 
@@ -366,7 +364,6 @@ const Messaging: React.FC<{
   }
 
   const SendMessage = async () => {
-    console.log("message sent")
     const senderUserId = myProfile?.user_id?.toString() || ''
     const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
     
@@ -385,7 +382,6 @@ const Messaging: React.FC<{
         formdata.append('sender_message', encryptedSenderMessage)
       
       try {
-        console.log('try command')
         gooseApp
           .post(baseURL + 'send-messages/', formdata, {
             headers: {
@@ -393,13 +389,10 @@ const Messaging: React.FC<{
             },
           })
           .then((res: any) => {
-            console.log('then statement')
             if (res.status === 201) {
               websocketService.sendMessage(res.data, recieverId)
             }
             if (!messages.includes(res.data)) {
-              console.log('if conditional')
-              console.log(res.data.sender_message)
                 sendMessagetoRustDecryption(res.data.sender_message).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
                   

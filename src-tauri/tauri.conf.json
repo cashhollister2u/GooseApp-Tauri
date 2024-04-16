@@ -65,7 +65,7 @@
         "icons/gooseCom.icns",
         "icons/gooseCom.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.gooseApp.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

@@ -3,8 +3,10 @@ import axios from 'axios'
 import { useRouter } from 'next/router';
 import { registerURL } from '../components/backendURL'
 import { invoke } from '@tauri-apps/api';
-const swal = require('sweetalert2')
-const forge = require('node-forge');
+import swal from 'sweetalert2';
+import forge from 'node-forge';
+
+
 
 
 const SignUpPage = () => {
@@ -40,9 +42,9 @@ const SignUpPage = () => {
         }
 
         const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
-        console.log(pemPrivate)
+   
         const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
-        console.log(pemPublic)
+        
         resolve({
           public_key: pemPublic,
           private_key: pemPrivate
@@ -51,9 +53,9 @@ const SignUpPage = () => {
     })
   }
 
-  const handleSignUp = async (pemPublic:any) => {
+  const handleSignUp = async (pemPublic:any, pemPrivate:any)=> {
     try {
-      // Create an object with the user data
+
       const userData = {
         email: email,
         username: username,
@@ -61,10 +63,10 @@ const SignUpPage = () => {
         password2: confirmPassword,
         public_key: pemPublic,
       }
-      // Make the POST request with json
+      
       const response = await axios.post(`${registerURL}`, userData, {
         headers: {
-          'Content-Type': 'application/json', // Set the content type for FormData
+          'Content-Type': 'application/json',
         },
       })
         swal.fire({
@@ -78,7 +80,7 @@ const SignUpPage = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-      //await savePrivateKeyToRust()
+      await savePrivateKeyToRust(pemPrivate);
       router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {
@@ -116,11 +118,11 @@ const SignUpPage = () => {
       const keys = await generateRSAkeys()
       const newPublicPem = keys.public_key
       const newPrivatePem = keys.private_key
-      await handleSignUp(newPublicPem);
-      await savePrivateKeyToRust(newPrivatePem);
+      await handleSignUp(newPublicPem, newPrivatePem);
+      
     } catch (error) {
       console.error("An error occurred during the sign-up process:", error);
-      // Handle or report error appropriately
+     
     }
   }
 

@@ -98,7 +98,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [IsSeachMessage, setIsSeachMessage] = useState<boolean>(false)
   const [followingList, setfollowing] = useState<string[]>(UserProfile?.follow_list || [])
   const [isSearchActive, setSearchActive] = useState<boolean>(false)
-  const [SearchedProfile, setSearchedprofile] = useState<Profile | null>(null)
+  const [SearchedProfile, setSearchedprofile] = useState<any>()
   const gooseApp = useAxios()
   const router = useRouter()
   const SearchMsgString = router.query.SearchMessage
@@ -116,7 +116,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [backgroundPrev, setbackgroundPrev] = useState<string>()
   const [profilepicPrev,setprofilepicPrev] = useState<string>()
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
-  const [authTokens, setAuthTokens] = useState<any | null>(null)
+  const [authTokens, setAuthTokens] = useState<any>()
   const [ranked_list, setranked_list] = useState<string[]>([])
   const wsBaseUrl = 'wss://www.gooseadmin.com';
   
@@ -125,8 +125,8 @@ const MyProfilePage: React.FC<{}> = () => {
     async function retireveJWTfromRust() {
       try {
         const result = await invoke('retrieve_jwt_from_file') as string
-        const jsonData = JSON.parse(result); // Parse the JSON string to an object
-        setAuthTokens(jsonData); // Assuming setJwt_token is a state setter from a useState hook
+        const jsonData = JSON.parse(result); 
+        setAuthTokens(jsonData); 
         return jsonData
       } catch (err) {
         console.error('attempt to retrieve jwt');
@@ -871,9 +871,9 @@ const MyProfilePage: React.FC<{}> = () => {
               </form>
             </div>
           )}
-          <a
+          <button
             className={` ${isMessaging ? 'flex justify-end flex-grow' : ''}`}
-            href="/profile"
+            onClick={() => router.push('/profile')}
           >
             <span className="sr-only">Your profile</span>
             <img
@@ -881,7 +881,7 @@ const MyProfilePage: React.FC<{}> = () => {
               src={'/profile_pic_def/gooseCom.png'}
               alt=""
             />
-          </a>
+          </button>
         </div>
 
         <main className="lg:pl-72 xl:w-2/3">
@@ -917,14 +917,14 @@ const MyProfilePage: React.FC<{}> = () => {
           )}
               </div>
           
-              <a href="/profile">
+              <button onClick={() => router.push('/profile')}>
                 <span className="sr-only">Your profile</span>
                 <img
                   className="h-12 w-12 rounded-full bg-gray-50"
                   src={'/profile_pic_def/gooseCom.png'}
                   alt=""
                 />
-              </a>
+              </button>
             </div>
             {/* search not active */}
             
