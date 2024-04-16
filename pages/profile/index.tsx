@@ -118,7 +118,7 @@ const MyProfilePage: React.FC<{}> = () => {
   const [isLoggedin, setisLoggedin] = useState<boolean>(false)
   const [authTokens, setAuthTokens] = useState<any | null>(null)
   const [ranked_list, setranked_list] = useState<string[]>([])
-  const wsBaseUrl = 'ws://192.168.1.72:8000';
+  const wsBaseUrl = 'wss://www.gooseadmin.com';
   
   //needed to use the router.push funct from login and not break window resize
   useEffect(() => {

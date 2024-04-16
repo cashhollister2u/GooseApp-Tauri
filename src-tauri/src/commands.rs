@@ -182,7 +182,11 @@ pub fn pull_messages_encrypted(messages: Vec<Message>, username: String) -> Resu
 #[tauri::command]
 pub fn pull_message_to_encrypt(message: String, public_key: String) -> Result<String, String> {
     let mut rng = OsRng;
-    let key = RsaPublicKey::from_public_key_pem(&public_key).unwrap();
+
+    let key = match RsaPublicKey::from_public_key_pem(&public_key) {
+    Ok(k) => k,
+    Err(e) => return Err(format!("Failed to parse public key: {:?}", e)),
+};
     // Encrypt
     let data = message.as_bytes();
     match key.encrypt(&mut rng, Pkcs1v15Encrypt, &data[..]) {
@@ -204,10 +208,10 @@ pub fn pull_message_to_decrypt(message: String, username:String) -> Result<Strin
         Ok(keypriv) => keypriv,
         Err(e) => return Err(e.to_string()),
     };
-        
+
     let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {
-        Ok(k) => k,
-        Err(e) => return Err(format!("Failed to parse private key: {:?}", e)),
+    Ok(k) => k,
+    Err(e) => return Err(format!("Failed to parse private key: {:?}", e)),
     };
     
     // Attempt to base64 decode the message
@@ -235,7 +239,3 @@ pub fn pull_message_to_decrypt(message: String, username:String) -> Result<Strin
     }
 }
 //--encryption end--//
-
-
-
-

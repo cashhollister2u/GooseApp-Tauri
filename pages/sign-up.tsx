@@ -12,8 +12,6 @@ const SignUpPage = () => {
   const [username, setusername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
-  const [publicKey, setpublicKey] = useState<string>('')
-  const [privateKey, setprivateKey] = useState<string>('') 
   const router = useRouter();
 
   //windowsize
@@ -25,14 +23,15 @@ const SignUpPage = () => {
   }, [])
 
 
-  async function savePrivateKeyToRust() {
+  async function savePrivateKeyToRust(privateKey:string) {
     invoke('save_private_key_to_file', { privateKey, username })
       .then(() => console.log('Private key saved successfully'))
       .catch((err) => console.error('Error saving private key:', err));
   }
 
-  const generateRSAkeys = () => {
-    return new Promise<void>((resolve, reject) => {
+  const generateRSAkeys = (): Promise<{public_key: string, private_key: string}> => {
+
+    return new Promise((resolve, reject) => {
       forge.pki.rsa.generateKeyPair({bits: 2048, workers: -1}, function(err:any, keypair:any) {
         if(err) {
           console.error(err);
@@ -41,12 +40,13 @@ const SignUpPage = () => {
         }
 
         const pemPrivate = forge.pki.privateKeyToPem(keypair.privateKey);
-        setprivateKey(pemPrivate)
-
+        console.log(pemPrivate)
         const pemPublic = forge.pki.publicKeyToPem(keypair.publicKey);
-        setpublicKey(pemPublic)
-
-        resolve(pemPublic);
+        console.log(pemPublic)
+        resolve({
+          public_key: pemPublic,
+          private_key: pemPrivate
+        });
       })
     })
   }
@@ -113,9 +113,11 @@ const SignUpPage = () => {
     e.preventDefault();
     
     try {
-      const newPublicPem = await generateRSAkeys();
+      const keys = await generateRSAkeys()
+      const newPublicPem = keys.public_key
+      const newPrivatePem = keys.private_key
       await handleSignUp(newPublicPem);
-      await savePrivateKeyToRust();
+      await savePrivateKeyToRust(newPrivatePem);
     } catch (error) {
       console.error("An error occurred during the sign-up process:", error);
       // Handle or report error appropriately

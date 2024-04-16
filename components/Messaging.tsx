@@ -341,8 +341,12 @@ const Messaging: React.FC<{
   }
 
   async function sendMessageToRustEncryption(message: string, public_key: string): Promise<string> {
+    console.log('encrypt ran')
+    
     try {
       const result = await invoke('pull_message_to_encrypt', { message: message, publicKey: public_key }) as string;
+      console.log(result)
+      
       return result
 
     } catch (error) {
@@ -362,14 +366,12 @@ const Messaging: React.FC<{
   }
 
   const SendMessage = async () => {
+    console.log("message sent")
     const senderUserId = myProfile?.user_id?.toString() || ''
     const recieverId = viewmsg?.user_id?.toString() || viewmsg?.id?.toString() || ''
     
     setIsSlowScroll(true)
 
-    if (newMessage?.message && viewmsg?.public_key) {
-      sendMessageToRustEncryption(newMessage.message, viewmsg.public_key);
-      }
       if (newMessage?.message && viewmsg?.public_key) {
         const encryptedMessage = await sendMessageToRustEncryption(newMessage.message, viewmsg.public_key);
         const encryptedSenderMessage = await sendMessageToRustEncryption(newMessage.message, UserProfile.public_key);
@@ -383,7 +385,7 @@ const Messaging: React.FC<{
         formdata.append('sender_message', encryptedSenderMessage)
       
       try {
-
+        console.log('try command')
         gooseApp
           .post(baseURL + 'send-messages/', formdata, {
             headers: {
@@ -391,10 +393,13 @@ const Messaging: React.FC<{
             },
           })
           .then((res: any) => {
+            console.log('then statement')
             if (res.status === 201) {
               websocketService.sendMessage(res.data, recieverId)
             }
             if (!messages.includes(res.data)) {
+              console.log('if conditional')
+              console.log(res.data.sender_message)
                 sendMessagetoRustDecryption(res.data.sender_message).then(decrypted => {
                 const sent_message = { ...res.data, decrypted_message: decrypted }
                   
@@ -781,7 +786,7 @@ const Messaging: React.FC<{
                 ) : (
                   <div className="pr-8 flex flex-col">
                     <button
-                      className="sticky top-1 flex z-20 items-start  ml-4 bg-zinc-400/50 backdrop-blur-md py-2 rounded w-full hover:bg-zinc-300"
+                      className="sticky top-2 flex z-20 items-start  ml-4 bg-zinc-400/50 backdrop-blur-md py-2 rounded w-full hover:bg-zinc-300"
                       onClick={() => {
                         if (viewmsg?.handle) {
                           if (viewmsg?.handle === searchedprofile?.profile.username) {
