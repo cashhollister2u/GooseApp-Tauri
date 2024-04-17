@@ -2,7 +2,6 @@
 use serde::{Deserialize, Serialize};
 use tauri::Result as TauriResult;
 use std::io::Write;
-use std::os::unix::fs::PermissionsExt;
 use std::io::Read;
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use rsa::{pkcs8::{DecodePublicKey}, pkcs1::{DecodeRsaPrivateKey}};
@@ -63,6 +62,8 @@ pub fn save_jwt_to_file(token:String) -> Result<(), String> {
 
     Ok(())
 }
+
+
 
 #[tauri::command] 
 pub fn retrieve_jwt_from_file() -> TauriResult<String> {

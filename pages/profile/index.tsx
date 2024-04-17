@@ -33,7 +33,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton} from "@nextui-org/react";
-import { LogicalPosition } from '@tauri-apps/api/window';
+
 
 const swal = require('sweetalert2')
 
@@ -137,15 +137,17 @@ const MyProfilePage: React.FC<{}> = () => {
 
 
   //window size init
+  
   useEffect(() => {
-   
+    if (typeof window === 'undefined') return
     import("@tauri-apps/api").then((tauri) => {
-        tauri.window.appWindow.setPosition(new LogicalPosition(200, 100));
+        tauri.window.appWindow.setPosition(new tauri.window.LogicalPosition(200, 100));
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(1300, 800));
         
       })
     
 }, [])
+
 
   //websocket
   if (UserProfile && !isSocketConnected) {

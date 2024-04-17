@@ -36,6 +36,7 @@ const LoginPage = () => {
   }
 
   //windowsize
+  
   useEffect(() => {
     if (typeof window === 'undefined') return
       import("@tauri-apps/api").then((tauri) => {
@@ -44,6 +45,7 @@ const LoginPage = () => {
     
   }, [])
  
+
  //checks of user is logged in from previous session
   useEffect(() => {
     retireveJWTfromRust()

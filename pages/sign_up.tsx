@@ -24,11 +24,22 @@ const SignUpPage = () => {
       })
   }, [])
 
+  /*
 
   async function savePrivateKeyToRust(privateKey:string) {
     invoke('save_private_key_to_file', { privateKey, username })
       .then(() => console.log('Private key saved successfully'))
       .catch((err) => console.error('Error saving private key:', err));
+  }
+*/
+  async function savePrivateKeyToRust(privateKey:string) {
+    if (typeof window !== 'undefined') {
+      // Dynamic import inside the client-side check
+      const tauriApi = await import('@tauri-apps/api');
+      tauriApi.invoke('save_private_key_to_file', { privateKey, username })
+        .then(() => console.log('Private key saved successfully'))
+        .catch((err) => console.error('Error saving private key:', err));
+    }
   }
 
   const generateRSAkeys = (): Promise<{public_key: string, private_key: string}> => {
