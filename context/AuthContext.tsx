@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/router';
-import { invoke } from '@tauri-apps/api/tauri';
+import { readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 
 const swal = require('sweetalert2')
 
@@ -37,13 +37,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     async function retireveJWTfromRust() {
       try {
-        const result = await invoke('retrieve_jwt_from_file') as string
-        const jsonData = JSON.parse(result); 
+        const contents = await readTextFile('JWTtoken/jwt.json', { dir: BaseDirectory.AppData }) as string;
+        const jsonData = JSON.parse(contents);
         setAuthTokens(jsonData);
-        setUser(jwtDecode<User>(jsonData || '')
-        )
+        setUser(jwtDecode<User>(jsonData || ''))
+        
       } catch (err) {
-        //console.error('Error retrieving jwt:', err);
+        console.error('Error retrieving jwt:', err);
       }
     }
     

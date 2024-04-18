@@ -33,7 +33,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import PinnedStocksList from '../../components/PinnedStocksList'
 import { invoke } from '@tauri-apps/api/tauri';
 import {Skeleton} from "@nextui-org/react";
-
+import { exists, createDir, writeTextFile, readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 
 const swal = require('sweetalert2')
 
@@ -122,19 +122,39 @@ const MyProfilePage: React.FC<{}> = () => {
   
   //needed to use the router.push funct from login and not break window resize
   useEffect(() => {
-    async function retireveJWTfromRust() {
+    async function retireveJWT() {
       try {
-        const result = await invoke('retrieve_jwt_from_file') as string
-        const jsonData = JSON.parse(result); 
+        // Read the text file in the `$APPDATA/app.conf` path
+        const contents = await readTextFile('JWTtoken/jwt.json', { dir: BaseDirectory.AppData }) as string;
+        const jsonData = JSON.parse(contents);
         setAuthTokens(jsonData); 
         return jsonData
       } catch (err) {
-        console.error('attempt to retrieve jwt');
+        console.error('Error retrieving jwt:', err);
       }
     }
-    retireveJWTfromRust()
+    retireveJWT()
   }, [RefreshProfilePage])
 
+  async function saveJWT(token: string) {
+
+    const doesExist = await exists('JWTtoken/jwt.json', { dir: BaseDirectory.AppData });
+    if (!doesExist) {
+      await createDir('JWTtoken', { dir: BaseDirectory.AppData, recursive: true });
+      try {
+        await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
+      } catch (err) {
+        console.error('Error saving jwt:', err);
+      }
+    }
+    else {
+      try {
+        await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
+      } catch (err) {
+        console.error('Error saving jwt:', err);
+      }
+    }
+  }
 
   //window size init
   
@@ -332,13 +352,24 @@ const MyProfilePage: React.FC<{}> = () => {
     }
 };
 
+async function retirevePrivKey(username:string) {
+  try {
+    const contents = await readTextFile(`User_keys/${username}_privKey.pem`, { dir: BaseDirectory.AppData }) as string;
+
+    return contents
+
+  } catch (err) {
+    console.error('Error retrieving jwt:', err);
+  }
+}
 
   async function initialdecrypttoRust(updMessages: Message[]) {
-    console.log(updMessages)
+    const Priv_key = UserProfile && await retirevePrivKey(UserProfile?.username)
       try {
         const result = await invoke('pull_messages_encrypted', 
         { messages: updMessages, 
           username: UserProfile?.username, 
+          privateKey: Priv_key
         }); 
         const newMessages = (result as Message[]).filter((newDecryptedMesssage: Message) => 
           !decryptedMessages.some(message => message.id === newDecryptedMesssage.id)
@@ -354,9 +385,9 @@ const MyProfilePage: React.FC<{}> = () => {
   }
   //websocket individual messages
   async function sendMessagetoRustDecryption(message: any) {
-    
+    const Priv_key = UserProfile && await retirevePrivKey(UserProfile?.username)
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message.message, username: UserProfile?.username }) as string;
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, username: UserProfile?.username, private_key: Priv_key }) as string;
       const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
       
       setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
@@ -496,11 +527,9 @@ const MyProfilePage: React.FC<{}> = () => {
   const updateProfilePage = () => {
     setRefreshProfilePage(current => !current)
   }
-
+  
   async function deleteJWTRust(token: string) {
-    invoke('save_jwt_to_file', { token })
-      .then(() => console.log('jwt saved successfully'))
-      .catch((err) => console.error('Error saving jwt:', err));
+    await saveJWT('')
   }
 
   const handlebackgroundPrev = (backgroundPrev: string) => {

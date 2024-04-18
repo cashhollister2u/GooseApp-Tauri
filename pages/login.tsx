@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { fetchTokenURL } from '../components/backendURL'
-import { invoke } from '@tauri-apps/api/tauri';
+import { readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 
 const swal = require('sweetalert2')
 
@@ -15,28 +15,44 @@ const LoginPage = () => {
   const [password, setPassword] = useState<string>('')
   const [jwt_token, setJwt_token] = useState<Token>()
   const [isrouterCalled, setisrouterCalled] = useState<boolean>(false)
-
   const router = useRouter();
 
-  async function saveJWTToRust(token: string) {
-    invoke('save_jwt_to_file', { token })
-      .then(() => console.log('jwt saved successfully'))
-      .catch((err) => console.error('Error saving jwt:', err));
-  }
+ 
 
-  async function retireveJWTfromRust() {
+
+  //JWT token management
+  async function saveJWT(token: string) {
+    // Dynamic import 
+    const { BaseDirectory } = await import('@tauri-apps/api/path');
+    const { exists, createDir, writeTextFile } = await import('@tauri-apps/api/fs');
+  
     try {
-      const result = await invoke('retrieve_jwt_from_file') as string
-      const jsonData = JSON.parse(result); // Parse the JSON string to an object
-      setJwt_token(jsonData); // Assuming setJwt_token is a state setter from a useState hook
-      return jsonData
+      const doesExist = await exists('JWTtoken/jwt.json', { dir: BaseDirectory.AppData });
+  
+      if (!doesExist) {
+        await createDir('JWTtoken', { dir: BaseDirectory.AppData, recursive: true });
+      }
+  
+      await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
+  
     } catch (err) {
-      //console.error('Error retrieving jwt:', err);
+      console.error('Error saving jwt:', err);
     }
   }
 
-  //windowsize
+  async function retireveJWT() {
+    try {
+      const contents = await readTextFile('JWTtoken/jwt.json', { dir: BaseDirectory.AppData }) as string;
+      const jsonData = JSON.parse(contents);
+      setJwt_token(jsonData)
+      return jsonData
+    } catch (err) {
+      console.error('Error retrieving jwt:', err);
+    }
+  }
   
+
+  //windowsize
   useEffect(() => {
     if (typeof window === 'undefined') return
       import("@tauri-apps/api").then((tauri) => {
@@ -48,7 +64,7 @@ const LoginPage = () => {
 
  //checks of user is logged in from previous session
   useEffect(() => {
-    retireveJWTfromRust()
+    retireveJWT()
     if (jwt_token && !isrouterCalled) {
       setisrouterCalled(true)
       router.push('/profile'); 
@@ -72,7 +88,7 @@ const LoginPage = () => {
         });
         const data = await response.json();
         if (response.status === 200) {
-          await saveJWTToRust(JSON.stringify(data))
+          await saveJWT(JSON.stringify(data))
           setPassword('')
           setemailname('')
 
@@ -87,7 +103,7 @@ const LoginPage = () => {
             color: '#cfe8fc',
             background: '#BC3838',
             toast: true,
-            timer: 6000,
+            timer: 4000,
             position: 'top-right',
             timerProgressBar: true,
             showConfirmButton: false,
@@ -100,7 +116,7 @@ const LoginPage = () => {
             color: '#cfe8fc',
             background: '#BC3838',
             toast: true,
-            timer: 6000,
+            timer: 4000,
             position: 'top-right',
             timerProgressBar: true,
             showConfirmButton: false,
@@ -204,7 +220,7 @@ const LoginPage = () => {
             >
               Create an Account
             </button>
-          </p>
+          </p> 
         </div>
         <p className='text-sm text-red-500 ml-4 mr-4 mb-6'>
           Disclaimer :

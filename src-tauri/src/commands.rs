@@ -1,6 +1,8 @@
 // commands.rs
 use serde::{Deserialize, Serialize};
 use tauri::Result as TauriResult;
+use tauri::api::path::{BaseDirectory, resolve_path};
+use std::fs::File;
 use std::io::Write;
 use std::io::Read;
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
@@ -9,7 +11,6 @@ use rand::rngs::OsRng;
 use base64::prelude::*;
 use rayon::prelude::*;
 use std::sync::Arc;
-use std::fs::File;
 
 //saving private info to file 
 #[tauri::command]
@@ -26,65 +27,9 @@ pub fn save_private_key_to_file(private_key: String, username: String) -> Result
     Ok(())
 }
 
-#[tauri::command] 
-fn retrieve_privatekey_from_file(username:String) -> TauriResult<String> {
-    let path = format!("User_keys/{}_data.pem", username);
-
-    // Open the file
-    let mut file = File::open(path).map_err(|err| {
-        eprintln!("Failed to open file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-
-    // Read the file's content into a String
-    let mut data = String::new();
-    file.read_to_string(&mut data).map_err(|err| {
-        eprintln!("Failed to read file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-    
-    Ok(data)
-
-}
-
-
-//saving JWT to file 
-#[tauri::command]
-pub fn save_jwt_to_file(token:String) -> Result<(), String> {
-    let path = format!("User_token/jwt.json");
-    
-    let mut file = File::create(path)
-        .map_err(|e| format!("Failed to create jwt file: {}", e))?;
-    file.write_all(token.as_bytes())
-        .map_err(|e| format!("Failed to write jwt to file: {}", e))?;
-        
-    
-
-    Ok(())
-}
 
 
 
-#[tauri::command] 
-pub fn retrieve_jwt_from_file() -> TauriResult<String> {
-    let path = format!("User_token/jwt.json");
-
-    // Open the file
-    let mut file = File::open(path).map_err(|err| {
-        eprintln!("Failed to open jwt file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-
-    // Read the file's content into a String
-    let mut data = String::new();
-    file.read_to_string(&mut data).map_err(|err| {
-        eprintln!("Failed to read file: {:?}", err);
-        tauri::Error::Io(err)
-    })?;
-
-    Ok(data)
-
-}
 
 
 
@@ -118,11 +63,7 @@ pub struct Message {
 }
 
 #[tauri::command]
-pub fn pull_messages_encrypted(messages: Vec<Message>, username: String) -> Result<Vec<Message>, String> {
-    let private_key = match retrieve_privatekey_from_file(username.clone()){
-        Ok(keypriv) => keypriv,
-        Err(e) => return Err(e.to_string()),
-    };
+pub fn pull_messages_encrypted(messages: Vec<Message>, username: String, private_key:String) -> Result<Vec<Message>, String> {
 
     let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {
         Ok(k) => Arc::new(k), 
@@ -178,11 +119,8 @@ pub fn pull_message_to_encrypt(message: String, public_key: String) -> Result<St
 }
 
 #[tauri::command]
-pub fn pull_message_to_decrypt(message: String, username:String) -> Result<String, String> {
-    let private_key = match retrieve_privatekey_from_file(username){
-        Ok(keypriv) => keypriv,
-        Err(e) => return Err(e.to_string()),
-    };
+pub fn pull_message_to_decrypt(message: String, username:String, private_key:String) -> Result<String, String> {
+    
 
     let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {
     Ok(k) => k,

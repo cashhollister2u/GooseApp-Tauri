@@ -24,23 +24,30 @@ const SignUpPage = () => {
       })
   }, [])
 
-  /*
 
-  async function savePrivateKeyToRust(privateKey:string) {
-    invoke('save_private_key_to_file', { privateKey, username })
-      .then(() => console.log('Private key saved successfully'))
-      .catch((err) => console.error('Error saving private key:', err));
-  }
-*/
-  async function savePrivateKeyToRust(privateKey:string) {
-    if (typeof window !== 'undefined') {
-      // Dynamic import inside the client-side check
-      const tauriApi = await import('@tauri-apps/api');
-      tauriApi.invoke('save_private_key_to_file', { privateKey, username })
-        .then(() => console.log('Private key saved successfully'))
-        .catch((err) => console.error('Error saving private key:', err));
+  //JWT token management
+  async function savePrivateKeyToRust(private_key: string, username:string) {
+    // Dynamic import 
+    const { BaseDirectory } = await import('@tauri-apps/api/path');
+    const { exists, createDir, writeTextFile } = await import('@tauri-apps/api/fs');
+  
+    try {
+      const doesExist = await exists(`User_keys/${username}_privKey.pem`, { dir: BaseDirectory.AppData });
+  
+      if (!doesExist) {
+        await createDir('User_keys', { dir: BaseDirectory.AppData, recursive: true });
+      }
+  
+      await writeTextFile(`User_keys/${username}_privKey.pem`, private_key, { dir: BaseDirectory.AppData });
+  
+    } catch (err) {
+      console.error('Error saving private key:', err);
     }
   }
+
+  
+
+
 
   const generateRSAkeys = (): Promise<{public_key: string, private_key: string}> => {
 
@@ -91,7 +98,7 @@ const SignUpPage = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-      await savePrivateKeyToRust(pemPrivate);
+      await savePrivateKeyToRust(pemPrivate, username);
       router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {

@@ -8,6 +8,7 @@ import { mediaURL, baseURL } from './backendURL'
 import { invoke } from '@tauri-apps/api/tauri';
 import { useRouter } from 'next/router'
 import { websocketService } from '@/utils/websocketservice';
+import { readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
 
 
 
@@ -352,10 +353,20 @@ const Messaging: React.FC<{
         throw new Error('Error sending data to Rust');
     }
   }
-
-  async function sendMessagetoRustDecryption(message: string) {
+  async function retirevePrivKey(username:string) {
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message, username: UserProfile.username});
+      const contents = await readTextFile(`User_keys/${username}_privKey.pem`, { dir: BaseDirectory.AppData }) as string;
+  
+      return contents
+  
+    } catch (err) {
+      console.error('Error retrieving jwt:', err);
+    }
+  }
+  async function sendMessagetoRustDecryption(message: string) {
+    const Priv_key = UserProfile && await retirevePrivKey(UserProfile?.username)
+    try {
+      const result = await invoke('pull_message_to_decrypt', { message: message, username: UserProfile.username, privateKey: Priv_key});
       return result
       
     } catch (error) {

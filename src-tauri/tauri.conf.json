@@ -12,17 +12,12 @@
   },
   "tauri": {
     "allowlist": {
+      "path": {
+        "all": true
+      },
       "fs": {
-        "all": true, 
-        "readFile": true,
-        "writeFile": true,
-        "readDir": true,
-        "copyFile": true,
-        "createDir": true,
-        "removeDir": true,
-        "removeFile": true,
-        "renameFile": true,
-        "exists": true
+        "all": true,
+        "scope": ["**", "**/*", "/**/*"]
       },
       "window": {
         "all": false,
@@ -76,7 +71,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.goose-app.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -103,10 +98,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 550,
         "resizable": true,
         "title": "goose-app",
-        "width": 800
+        "width": 400
       }
     ]
   }
