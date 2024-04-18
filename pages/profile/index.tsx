@@ -421,6 +421,7 @@ const MyProfilePage: React.FC<{}> = () => {
     const Priv_key =
       UserProfile && (await retirevePrivKey(UserProfile?.username));
     try {
+<<<<<<< HEAD
       const result = (await invoke("pull_message_to_decrypt", {
         message: message.message,
         privateKey: Priv_key,
@@ -436,6 +437,13 @@ const MyProfilePage: React.FC<{}> = () => {
         decryptWebsocket,
       ]);
 
+=======
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: Priv_key }) as string;
+      const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
+      
+      setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
+      
+>>>>>>> 7856876 (windows integration from ios side)
       swal.fire({
         title: `Message: @${message.reciever_profile.username}`,
         color: "#cfe8fc",

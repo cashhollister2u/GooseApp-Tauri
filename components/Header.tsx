@@ -81,6 +81,7 @@ const Header: React.FC<{
       {!isLoading ? (
         <div className="flex rounded-lg items-center justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800">
           <div className="w-full flex items-center">
+<<<<<<< HEAD
             <div>
               <img
                 className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-zinc-200"
@@ -101,6 +102,19 @@ const Header: React.FC<{
               </div>
               <div className="h-16 w-48 border-2 text-white border-zinc-600 w-full px-2 py-1 text-xs rounded-lg">
                 {bio}
+=======
+             <div>
+                <img
+                  className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-zinc-200"
+                  src={`${profilepicPrev}` || `${profile_picture}` || '/profile_pic_def/gooseCom.png'}
+                  alt="profile"
+                />
+            </div>  
+                  <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold flex flex-col gap-3 ml-8">
+                  <div className="h-6 w-48 text-xl  rounded-lg">{full_name}</div>
+                  <div className="h-6 w-48 text-md border-2 border-zinc-600 w-full px-2 h-8 rounded-lg">@{username}</div>
+                  <div className="h-16 w-48 border-2 border-zinc-600 w-full px-2 py-1 text-xs rounded-lg">{bio}</div>
+>>>>>>> 7856876 (windows integration from ios side)
               </div>
             </div>
           </div>
