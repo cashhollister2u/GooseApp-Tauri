@@ -197,67 +197,81 @@ const S_Header: React.FC<S_HeaderProps> = ({
     <div>
       <div>
         {!isLoading ? (
-           <div className="flex rounded-lg w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800">
-           <span className="absolute px-96 py-2 inline-flex rounded-md shadow-xl">
-             <button
-               type="button"
-               className={`w-20 relative inline-flex border-r-3 border-zinc-400 justify-center items-center gap-x-1.5 rounded-l-md bg-zinc-300 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${
-                 !isFollowing ? "" : "hidden"
-               }`}
-               onClick={() => FollowUser(searchedprofile?.id)}
-             >
-               Follow
-             </button>
-             <button
-               type="button"
-               className={`w-20 relative inline-flex items-center gap-x-1.5 rounded-l-md bg-zinc-600 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-zinc-500 hover:ring-zinc-300 hover:bg-zinc-300 hover:border-r-3 hover:border-zinc-400 focus:z-10 ${
-                 isFollowing ? "" : "hidden"
-               }`}
-               onClick={() => unFollowUser(searchedprofile?.id)}
-             >
-               Unfollow
-             </button>
-             <button
-               type="button"
-               className="relative  w-20 inline-flex items-center rounded-r-md bg-zinc-300 px-7 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-               onClick={() => {
-                 onclick();
-               }}
-             >
-               <EnvelopeIcon
-                 className="h-5 w-5 ml-1 text-black"
-                 aria-hidden="true"
-               />
-             </button>
-           </span>
-           <div className="w-full flex items-center">
-             <div>
-               {profile_picture && (
-                 <img
-                   className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-zinc-200"
-                   src={`${profile_picture}`}
-                   alt="profile"
-                 />
-               )}
-             </div>
-             <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
-               <div className="h-6 w-48 text-xl text-white rounded-lg">
-                 {full_name}
-               </div>
-               <div className="h-6 w-48 text-md border-2 text-white border-zinc-600 w-full px-2 h-8 rounded-lg">
-                 @{username}
-               </div>
-               <div className="h-16 w-48 border-2 border-zinc-600 text-white w-full px-2 py-1 text-xs rounded-lg">
-                 {bio}
-               </div>
-             </div>
-           </div>
-           <div
-             className={`h-8 mt-3 mr-3${
-               MYusername !== username ? "" : "hidden"
-             }`}
-           ></div>
-         </div>
+          <img
+            className="h-[40vh] w-full object-fill"
+            src={`${background_image}`}
+            alt="background"
+          />
+        ) : (
+          <Card className="w-full bg-zinc-800 h-96 rounded-md p-3">
+            <Skeleton className="rounded-lg bg-zinc-400">
+              <div className="h-96 "></div>
+            </Skeleton>
+          </Card>
+        )}
+      </div>
+      {!isLoading ? (
+        <div className="flex rounded-lg w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800">
+          <span className="absolute px-96 py-2 inline-flex rounded-md shadow-xl">
+            <button
+              type="button"
+              className={`w-20 relative inline-flex border-r-3 border-zinc-400 justify-center items-center gap-x-1.5 rounded-l-md bg-zinc-300 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${
+                !isFollowing ? "" : "hidden"
+              }`}
+              onClick={() => FollowUser(searchedprofile?.id)}
+            >
+              Follow
+            </button>
+            <button
+              type="button"
+              className={`w-20 relative inline-flex items-center gap-x-1.5 rounded-l-md bg-zinc-600 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-zinc-500 hover:ring-zinc-300 hover:bg-zinc-300 hover:border-r-3 hover:border-zinc-400 focus:z-10 ${
+                isFollowing ? "" : "hidden"
+              }`}
+              onClick={() => unFollowUser(searchedprofile?.id)}
+            >
+              Unfollow
+            </button>
+            <button
+              type="button"
+              className="relative  w-20 inline-flex items-center rounded-r-md bg-zinc-300 px-7 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+              onClick={() => {
+                onclick();
+              }}
+            >
+              <EnvelopeIcon
+                className="h-5 w-5 ml-1 text-black"
+                aria-hidden="true"
+              />
+            </button>
+          </span>
+          <div className="w-full flex items-center">
+            <div>
+              {profile_picture && (
+                <img
+                  className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-zinc-200"
+                  src={`${profile_picture}`}
+                  alt="profile"
+                />
+              )}
+            </div>
+            <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
+              <div className="h-6 w-48 text-xl text-white rounded-lg">
+                {full_name}
+              </div>
+              <div className="h-6 w-48 text-md border-2 text-white border-zinc-600 w-full px-2 h-8 rounded-lg">
+                @{username}
+              </div>
+              <div className="h-16 w-48 border-2 border-zinc-600 text-white w-full px-2 py-1 text-xs rounded-lg">
+                {bio}
+              </div>
+            </div>
+          </div>
+          <div
+            className={`h-8 mt-3 mr-3${
+              MYusername !== username ? "" : "hidden"
+            }`}
+          ></div>
+        </div>
       ) : (
         <Card
           className="flex justify-center w-max-full mt-2 mr-2 ml-2 h-44 bg-zinc-800"
