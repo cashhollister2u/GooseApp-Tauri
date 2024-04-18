@@ -1,232 +1,238 @@
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-import { useState, useEffect, useMemo } from 'react'
-import useAxios from '../../utils/useAxios'
-import { fetchUserURL } from '../backendURL'
-import stocklist from '../data/stockValuesList.json'
-import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
-import {
-  PlusCircleIcon,
-  MinusCircleIcon,
-} from '@heroicons/react/20/solid'
+import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect, useMemo } from "react";
+import useAxios from "../../utils/useAxios";
+import { fetchUserURL } from "../backendURL";
+import stocklist from "../data/stockValuesList.json";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/20/solid";
 
+const swal = require("sweetalert2");
 
-const swal = require('sweetalert2')
+type CompanyArray = string[];
 
-
-type CompanyArray = string[]
-
-type StockType = CompanyArray[]
+type StockType = CompanyArray[];
 
 export interface UserProfile {
-  full_name: string
-  background_image: string
-  profile_picture: string
-  bio: string
-  username: string
-  values5: string[]
-  follow_list: string[]
+  full_name: string;
+  background_image: string;
+  profile_picture: string;
+  bio: string;
+  username: string;
+  values5: string[];
+  follow_list: string[];
 }
 
 interface BackgroundImageState {
-  background_image: string | null
-  backgroundimageFile: File | null
+  background_image: string | null;
+  backgroundimageFile: File | null;
 }
 
 interface ProfilePictureState {
-  profile_picture: string | null
-  profilepictureFile: File | null
+  profile_picture: string | null;
+  profilepictureFile: File | null;
 }
 
-const EditForm: React.FC<{ UserProfile: UserProfile, onCancelEdit: () => 
-void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (profile_Pic:string) => void, updateProfilePage: () => void }> = 
-({ UserProfile, onCancelEdit, updateProfilePage, onbackgroundPrev, onprofilepicPrev }) => {
-  const [query, setQuery] = useState<string>('')
-  const [listSuggestion, setlistSuggestion] = useState<string[]>([])
-  const [Stock, setStock] = useState<StockType>([])
-  const [full_name, setfull_name] = useState<string>('')
-  const [values5, setvalues5] = useState<string[]>([])
-  const [EditedValues5, setEditedValues5] = useState<string[]>([])
-  const [bio, setbio] = useState<string>('')
+const EditForm: React.FC<{
+  UserProfile: UserProfile;
+  onCancelEdit: () => void;
+  onbackgroundPrev: (background_image: string) => void;
+  onprofilepicPrev: (profile_Pic: string) => void;
+  updateProfilePage: () => void;
+}> = ({
+  UserProfile,
+  onCancelEdit,
+  updateProfilePage,
+  onbackgroundPrev,
+  onprofilepicPrev,
+}) => {
+  const [query, setQuery] = useState<string>("");
+  const [listSuggestion, setlistSuggestion] = useState<string[]>([]);
+  const [Stock, setStock] = useState<StockType>([]);
+  const [full_name, setfull_name] = useState<string>("");
+  const [values5, setvalues5] = useState<string[]>([]);
+  const [EditedValues5, setEditedValues5] = useState<string[]>([]);
+  const [bio, setbio] = useState<string>("");
 
+  const StockSuggestions = useMemo(
+    () =>
+      listSuggestion.map((item) => ({
+        label: item,
+        value: item,
+      })),
+    [listSuggestion]
+  ).slice(0, 5);
 
-  const StockSuggestions = useMemo(() => listSuggestion.map(item => ({
-    label: item,
-    value: item,
-  })), [listSuggestion]).slice(0,5);
- 
   const [background_image, setbackground_image] =
     useState<BackgroundImageState>({
       background_image: null,
       backgroundimageFile: null,
-    })
+    });
   const [profile_picture, setprofile_picture] = useState<ProfilePictureState>({
     profile_picture: null,
     profilepictureFile: null,
-  })
-  const gooseApp = useAxios()
+  });
+  const gooseApp = useAxios();
 
   useEffect(() => {
     const fetchUserData = () => {
       if (UserProfile) {
-        setvalues5(UserProfile.values5)
-        setEditedValues5(UserProfile.values5)
-        setStock(stocklist)
+        setvalues5(UserProfile.values5);
+        setEditedValues5(UserProfile.values5);
+        setStock(stocklist);
       }
-    }
+    };
 
-    fetchUserData()
-  }, [UserProfile])
+    fetchUserData();
+  }, [UserProfile]);
 
   useEffect(() => {
-    const companySuggestions = () => {
-      const suggestions: string[] = []
-      Stock.forEach((company) => {
-        const joinedSuggestions = company.join('')
-        if (joinedSuggestions.toLowerCase().includes(query.toLowerCase())) {
-          suggestions.push(joinedSuggestions)
-        }
-      })
+    const companySuggestions = (Isinputlen: boolean) => {
+      if (Isinputlen) {
+        const suggestions: string[] = [];
+        Stock.forEach((company) => {
+          const joinedSuggestions = company.join("");
+          if (joinedSuggestions.toLowerCase().includes(query.toLowerCase())) {
+            suggestions.push(joinedSuggestions);
+          }
+        });
 
-      setlistSuggestion(suggestions.slice(0,5))
-      
+        setlistSuggestion(suggestions.slice(0, 5));
+      } else {
+        setlistSuggestion([]);
+      }
+    };
+    if (query?.length > 2) {
+      companySuggestions(true);
     }
-    if (query?.length > 0) {
-      companySuggestions()
-    }
-  }, [query])
+  }, [query]);
 
   const handleBackgroundImageChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = e.target.files ? e.target.files[0] : null
+    const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      const formData = new FormData()
-      
-      onbackgroundPrev(URL.createObjectURL(file))
+      const formData = new FormData();
 
-      formData.append('background_image', file)
-      
+      onbackgroundPrev(URL.createObjectURL(file));
+
+      formData.append("background_image", file);
+
       setbackground_image({
         ...background_image,
         background_image: URL.createObjectURL(file),
         backgroundimageFile: file,
-      })
+      });
     }
-  }
+  };
 
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = e.target.files ? e.target.files[0] : null
+    const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      const formData = new FormData()
+      const formData = new FormData();
 
-      onprofilepicPrev(URL.createObjectURL(file))
-      
-      formData.append('profile_picture', file)
+      onprofilepicPrev(URL.createObjectURL(file));
+
+      formData.append("profile_picture", file);
 
       setprofile_picture({
         ...profile_picture,
         profile_picture: URL.createObjectURL(file),
         profilepictureFile: file,
-      })
+      });
     }
-  }
+  };
 
   const SubtractCompany = async (index: number) => {
-    const updatedValues = [...EditedValues5]
-    updatedValues.splice(index, 1)
+    const updatedValues = [...EditedValues5];
+    updatedValues.splice(index, 1);
 
     if (updatedValues) {
-      setEditedValues5(updatedValues)
-      setvalues5(updatedValues)
+      setEditedValues5(updatedValues);
+      setvalues5(updatedValues);
     }
-  }
+  };
 
   const addCompany = async () => {
-    const updatedValues = [...values5]
-    updatedValues.push('')
-    setQuery('')
+    const updatedValues = [...values5];
+    updatedValues.push("");
+    setQuery("");
 
     if (updatedValues) {
-      setvalues5(updatedValues)
+      setvalues5(updatedValues);
     }
-  }
+  };
 
   const handleSaveChanges = async () => {
     try {
-      const formData = new FormData()
+      const formData = new FormData();
 
       // Append 'full_name' if it exists
       if (full_name) {
-        formData.append('full_name', full_name)
+        formData.append("full_name", full_name);
       }
 
       // Append 'bio' if it exists
       if (bio) {
-        formData.append('bio', bio)
+        formData.append("bio", bio);
       }
       if (EditedValues5) {
-        formData.append('values5', JSON.stringify(EditedValues5))
+        formData.append("values5", JSON.stringify(EditedValues5));
       }
 
       if (background_image && background_image.backgroundimageFile) {
         formData.append(
-          'background_image',
+          "background_image",
           background_image.backgroundimageFile
-        )
+        );
       }
 
       if (profile_picture && profile_picture.profilepictureFile) {
-        formData.append('profile_picture', profile_picture.profilepictureFile)
+        formData.append("profile_picture", profile_picture.profilepictureFile);
       }
 
       const response = await gooseApp.patch(fetchUserURL, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Important for file uploads
+          "Content-Type": "multipart/form-data", // Important for file uploads
         },
-      })
+      });
       if (response.status === 200) {
         updateProfilePage();
-        
       } else {
-        console.error('Received non-200 response:', response.status);
+        console.error("Received non-200 response:", response.status);
       }
-  
 
       swal.fire({
         title: `Profile Updated`,
-        color: '#cfe8fc',
-        background: '#58A564',
-        icon: 'success',
+        color: "#cfe8fc",
+        background: "#58A564",
+        icon: "success",
         toast: true,
         timer: 3000,
-        position: 'top-right',
+        position: "top-right",
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      onCancelEdit()
+      onCancelEdit();
     } catch (error) {
-      console.error('Error updating user')
+      console.error("Error updating user");
     }
-  }
-
-  
+  };
 
   const handlevalues5Focus = (index: number) => {
-    const clearvalues5 = [...EditedValues5]
-    clearvalues5[index] = ''
-    setEditedValues5(clearvalues5)
-    setlistSuggestion([])
-    setQuery('')
-  }
+    const clearvalues5 = [...EditedValues5];
+    clearvalues5[index] = "";
+    setEditedValues5(clearvalues5);
+    setlistSuggestion([]);
+    setQuery("");
+  };
 
   const handleSelectValuesChange = (index: number, IndividualStock: string) => {
-    const updatedValues = [...EditedValues5]
-    updatedValues[index] = IndividualStock
-    setEditedValues5(updatedValues)
-    
-  }
+    const updatedValues = [...EditedValues5];
+    updatedValues[index] = IndividualStock;
+    setEditedValues5(updatedValues);
+  };
 
   return (
     <div>
@@ -345,7 +351,7 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
                   id="full_name"
                   className="block w-full px-2 rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
                   onChange={(e) => {
-                    setfull_name(e.target.value)
+                    setfull_name(e.target.value);
                   }}
                 />
 
@@ -363,9 +369,9 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
                       placeholder={UserProfile?.bio}
                       rows={3}
                       className="block px-2 w-full rounded-md border-0 bg-white/5 py-1.5 text-zinc-200 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                      defaultValue={''}
+                      defaultValue={""}
                       onChange={(e) => {
-                        setbio(e.target.value)
+                        setbio(e.target.value);
                       }}
                     />
                   </div>
@@ -383,47 +389,48 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
             Pinned Stocks
           </h2>
           <p className="mt-1 text-sm leading-6 text-gray-400">
-          This information will be displayed publicly so be careful what you
+            This information will be displayed publicly so be careful what you
             share.
           </p>
           <div className="col-span-full mt-10">
-            
             {values5.map((value, index) => (
               <div key={index} className="flex items-center space-x-2 mt-4">
                 <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
                   {index + 1}.
                 </span>
                 <div className="w-full">
-                <Autocomplete
-                id="AutoComplete"
-                label="Company"
-              
-                defaultItems={StockSuggestions}
-                placeholder={EditedValues5[index]||''}
-                className="w-full mt-2 text-zinc-200"
-                onSelectionChange={(selectedValue:any) => handleSelectValuesChange(index, selectedValue)}
-                onInputChange={(value) => {
-                  setQuery(value);
-                }}
-                onKeyDown={(event: any) => {
-                  event.continuePropagation()
-                  if (event.key === 'Backspace') {
-                    if(EditedValues5[index] !== '') {
-                      setQuery(EditedValues5[index])
-                      handleSelectValuesChange(index, '')
-                  }}
-                }}
-                onFocus={() => handlevalues5Focus(index)}
-              >
-                {(animal) => (
-                  <AutocompleteItem 
-                  key={animal.value}
-                  className='text-black'
+                  <Autocomplete
+                    id="AutoComplete"
+                    label="Company"
+                    defaultItems={StockSuggestions}
+                    placeholder={EditedValues5[index] || ""}
+                    className="w-full mt-2 text-zinc-200"
+                    onSelectionChange={(selectedValue: any) =>
+                      handleSelectValuesChange(index, selectedValue)
+                    }
+                    onInputChange={(value) => {
+                      setQuery(value);
+                    }}
+                    onKeyDown={(event: any) => {
+                      event.stopPropagation();
+                      if (event.key === "Backspace") {
+                        if (EditedValues5[index] !== "") {
+                          setQuery(EditedValues5[index]);
+                          handleSelectValuesChange(index, "");
+                        }
+                      }
+                    }}
+                    onFocus={() => handlevalues5Focus(index)}
                   >
-                    {animal.label}
-                  </AutocompleteItem>
-                )}
-                </Autocomplete>
+                    {(animal) => (
+                      <AutocompleteItem
+                        key={animal.value}
+                        className="text-black"
+                      >
+                        {animal.label}
+                      </AutocompleteItem>
+                    )}
+                  </Autocomplete>
                 </div>
                 <button
                   type="button"
@@ -437,27 +444,30 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
                 </button>
               </div>
             ))}
-            <div className='flex w-full'>
-            <button
-              type="button"
-              className={`${values5.length >= 25 ? 'hidden' : "flex mt-4 ml-12 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"}`}
-              onClick={addCompany}
-            >
-              Add a company
-              <PlusCircleIcon
-                className="ml-1 h-6 w-6 text-gray-400"
-                aria-hidden="true"
-              />
-            </button>
-            <label
-              htmlFor="street-address"
-              className=" mt-4 absolute right-24 text-sm font-medium text-gray-400 "
-            >
-              (max: 25)
-            </label>
+            <div className="flex w-full">
+              <button
+                type="button"
+                className={`${
+                  values5.length >= 25
+                    ? "hidden"
+                    : "flex mt-4 ml-12 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
+                }`}
+                onClick={addCompany}
+              >
+                Add a company
+                <PlusCircleIcon
+                  className="ml-1 h-6 w-6 text-gray-400"
+                  aria-hidden="true"
+                />
+              </button>
+              <label
+                htmlFor="street-address"
+                className=" mt-4 absolute right-24 text-sm font-medium text-gray-400 "
+              >
+                (max: 25)
+              </label>
             </div>
           </div>
-          
         </div>
       </div>
 
@@ -472,14 +482,14 @@ void, onbackgroundPrev: (background_image:string) => void, onprofilepicPrev: (pr
         <button
           className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-zinc-200 shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
           onClick={() => {
-            handleSaveChanges()
+            handleSaveChanges();
           }}
         >
           Save
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditForm
+export default EditForm;
