@@ -35,19 +35,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
 
   useEffect(() => {
-    async function retireveJWTfromRust() {
+    async function retireveJWT() {
       try {
         const contents = await readTextFile('JWTtoken/jwt.json', { dir: BaseDirectory.AppData }) as string;
         const jsonData = JSON.parse(contents);
         setAuthTokens(jsonData);
         setUser(jwtDecode<User>(jsonData || ''))
-        
+        console.log('auth context grabbed jwt')
       } catch (err) {
         console.error('Error retrieving jwt:', err);
       }
     }
     
-    retireveJWTfromRust()
+    retireveJWT()
 
   }, [router.asPath])
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router';
 import { registerURL } from '../components/backendURL'
-import { invoke } from '@tauri-apps/api';
+import { savePrivateKey } from '../components/filemanagement';
 import swal from 'sweetalert2';
 import forge from 'node-forge';
 
@@ -23,31 +23,6 @@ const SignUpPage = () => {
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 600));
       })
   }, [])
-
-
-  //JWT token management
-  async function savePrivateKeyToRust(private_key: string, username:string) {
-    // Dynamic import 
-    const { BaseDirectory } = await import('@tauri-apps/api/path');
-    const { exists, createDir, writeTextFile } = await import('@tauri-apps/api/fs');
-  
-    try {
-      const doesExist = await exists(`User_keys/${username}_privKey.pem`, { dir: BaseDirectory.AppData });
-  
-      if (!doesExist) {
-        await createDir('User_keys', { dir: BaseDirectory.AppData, recursive: true });
-      }
-  
-      await writeTextFile(`User_keys/${username}_privKey.pem`, private_key, { dir: BaseDirectory.AppData });
-  
-    } catch (err) {
-      console.error('Error saving private key:', err);
-    }
-  }
-
-  
-
-
 
   const generateRSAkeys = (): Promise<{public_key: string, private_key: string}> => {
 
@@ -98,7 +73,7 @@ const SignUpPage = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       })
-      await savePrivateKeyToRust(pemPrivate, username);
+      await savePrivateKey(pemPrivate, username);
       router.push('/login')
     } catch (error) {
       if (username.toLowerCase() === 'default') {

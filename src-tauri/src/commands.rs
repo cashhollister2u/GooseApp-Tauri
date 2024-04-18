@@ -1,10 +1,7 @@
 // commands.rs
 use serde::{Deserialize, Serialize};
-use tauri::Result as TauriResult;
-use tauri::api::path::{BaseDirectory, resolve_path};
 use std::fs::File;
 use std::io::Write;
-use std::io::Read;
 use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use rsa::{pkcs8::{DecodePublicKey}, pkcs1::{DecodeRsaPrivateKey}};
 use rand::rngs::OsRng;
@@ -119,7 +116,7 @@ pub fn pull_message_to_encrypt(message: String, public_key: String) -> Result<St
 }
 
 #[tauri::command]
-pub fn pull_message_to_decrypt(message: String, username:String, private_key:String) -> Result<String, String> {
+pub fn pull_message_to_decrypt(message: String, private_key:String) -> Result<String, String> {
     
 
     let key = match RsaPrivateKey::from_pkcs1_pem(&private_key) {

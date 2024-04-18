@@ -5,7 +5,7 @@ import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
 import { AuthContextType } from '../context/AuthContext'
 import { baseURL } from '@/components/backendURL'
-import { exists, createDir, writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { saveJWT } from '../components/filemanagement';
 
 interface AuthTokens {
   access: string
@@ -21,30 +21,6 @@ const useAxios = () => {
   const context = useContext(AuthContext) as AuthContextType
   const { authTokens, setUser, setAuthTokens } = context ?? {}
   
-
-  async function saveJWTToRust(token: string) {
-
-    const doesExist = await exists('JWTtoken/jwt.json', { dir: BaseDirectory.AppData });
-    if (!doesExist) {
-      await createDir('JWTtoken', { dir: BaseDirectory.AppData, recursive: true });
-      try {
-        // Write a text file to the `$APPDATA/app.conf` path
-        await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
-        console.log('saved jwt')
-      } catch (err) {
-        console.error('Error saving jwt:', err);
-      }
-    }
-    else {
-      try {
-        // Write a text file to the `$APPDATA/app.conf` path
-        await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
-        console.log('saved jwt')
-      } catch (err) {
-        console.error('Error saving jwt:', err);
-      }
-    }
-  }
 
   const axiosInstance = axios.create({
     baseURL,
@@ -65,7 +41,7 @@ const useAxios = () => {
 
     const newToken: AuthTokens = response.data
 
-    await saveJWTToRust(JSON.stringify(newToken))
+    await saveJWT(JSON.stringify(newToken))
 
     setAuthTokens(newToken)
     setUser(jwtDecode(newToken.access))

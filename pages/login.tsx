@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { fetchTokenURL } from '../components/backendURL'
-import { readTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { saveJWT, retireveJWT } from '../components/filemanagement';
 
 const swal = require('sweetalert2')
 
@@ -17,40 +17,6 @@ const LoginPage = () => {
   const [isrouterCalled, setisrouterCalled] = useState<boolean>(false)
   const router = useRouter();
 
- 
-
-
-  //JWT token management
-  async function saveJWT(token: string) {
-    // Dynamic import 
-    const { BaseDirectory } = await import('@tauri-apps/api/path');
-    const { exists, createDir, writeTextFile } = await import('@tauri-apps/api/fs');
-  
-    try {
-      const doesExist = await exists('JWTtoken/jwt.json', { dir: BaseDirectory.AppData });
-  
-      if (!doesExist) {
-        await createDir('JWTtoken', { dir: BaseDirectory.AppData, recursive: true });
-      }
-  
-      await writeTextFile('JWTtoken/jwt.json', token, { dir: BaseDirectory.AppData });
-  
-    } catch (err) {
-      console.error('Error saving jwt:', err);
-    }
-  }
-
-  async function retireveJWT() {
-    try {
-      const contents = await readTextFile('JWTtoken/jwt.json', { dir: BaseDirectory.AppData }) as string;
-      const jsonData = JSON.parse(contents);
-      setJwt_token(jsonData)
-      return jsonData
-    } catch (err) {
-      console.error('Error retrieving jwt:', err);
-    }
-  }
-  
 
   //windowsize
   useEffect(() => {
@@ -58,13 +24,17 @@ const LoginPage = () => {
       import("@tauri-apps/api").then((tauri) => {
         tauri.window.appWindow.setSize(new tauri.window.LogicalSize(400, 550));
       })
-    
+      
   }, [])
  
 
  //checks of user is logged in from previous session
   useEffect(() => {
-    retireveJWT()
+    const callJwt = async () =>{
+      const saved_user = await retireveJWT()
+      setJwt_token(saved_user)
+    }
+    callJwt()
     if (jwt_token && !isrouterCalled) {
       setisrouterCalled(true)
       router.push('/profile'); 

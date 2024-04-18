@@ -387,7 +387,7 @@ async function retirevePrivKey(username:string) {
   async function sendMessagetoRustDecryption(message: any) {
     const Priv_key = UserProfile && await retirevePrivKey(UserProfile?.username)
     try {
-      const result = await invoke('pull_message_to_decrypt', { message: message.message, username: UserProfile?.username, private_key: Priv_key }) as string;
+      const result = await invoke('pull_message_to_decrypt', { message: message.message, private_key: Priv_key }) as string;
       const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
       
       setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
@@ -528,7 +528,7 @@ async function retirevePrivKey(username:string) {
     setRefreshProfilePage(current => !current)
   }
   
-  async function deleteJWTRust(token: string) {
+  async function deleteJWT(token: string) {
     await saveJWT('')
   }
 
@@ -542,7 +542,7 @@ async function retirevePrivKey(username:string) {
 
   const handleLogout = () => {
     localStorage.removeItem('ally-supports-cache')
-    deleteJWTRust('')
+    deleteJWT('')
     websocketService.disconnect();
     setUserProfile(undefined);
     router.push('/login');
