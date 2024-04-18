@@ -416,52 +416,44 @@ const MyProfilePage: React.FC<{}> = () => {
       console.error("Error sending data to Rust:", error);
     }
   }
-  //websocket individual messages
-  async function sendMessagetoRustDecryption(message: any) {
-    const Priv_key =
-      UserProfile && (await retirevePrivKey(UserProfile?.username));
-    try {
-<<<<<<< HEAD
-      const result = (await invoke("pull_message_to_decrypt", {
-        message: message.message,
-        privateKey: Priv_key,
-      })) as string;
-      const decryptWebsocket = {
-        ...message,
-        decrypted_message: result,
-        isWebsocket: true,
-      };
+ //websocket individual messages
+ async function sendMessagetoRustDecryption(message: any) {
+  const Priv_key =
+    UserProfile && (await retirevePrivKey(UserProfile?.username));
+  try {
+    const result = (await invoke("pull_message_to_decrypt", {
+      message: message.message,
+      privateKey: Priv_key,
+    })) as string;
+    const decryptWebsocket = {
+      ...message,
+      decrypted_message: result,
+      isWebsocket: true,
+    };
 
-      setDecryptedMessages((currentMessages: Message[]) => [
-        ...currentMessages,
-        decryptWebsocket,
-      ]);
+    setDecryptedMessages((currentMessages: Message[]) => [
+      ...currentMessages,
+      decryptWebsocket,
+    ]);
 
-=======
-      const result = await invoke('pull_message_to_decrypt', { message: message.message, privateKey: Priv_key }) as string;
-      const decryptWebsocket = { ...message, decrypted_message: result, isWebsocket: true }
-      
-      setDecryptedMessages((currentMessages: Message[]) => [...currentMessages, decryptWebsocket])
-      
->>>>>>> 7856876 (windows integration from ios side)
-      swal.fire({
-        title: `Message: @${message.reciever_profile.username}`,
-        color: "#cfe8fc",
-        background: "#3864BC",
-        text: result.length > 59 ? `${result.substring(0, 60)}...` : result,
-        icon: "warning",
-        iconColor: "#cfe8fc",
-        toast: true,
-        timer: 6000,
-        position: "top-right",
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-      return result;
-    } catch (error) {
-      console.error("Error sending Websocket data to Rust:", error);
-    }
+    swal.fire({
+      title: `Message: @${message.reciever_profile.username}`,
+      color: "#cfe8fc",
+      background: "#3864BC",
+      text: result.length > 59 ? `${result.substring(0, 60)}...` : result,
+      icon: "warning",
+      iconColor: "#cfe8fc",
+      toast: true,
+      timer: 6000,
+      position: "top-right",
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+    return result;
+  } catch (error) {
+    console.error("Error sending Websocket data to Rust:", error);
   }
+}
 
   const fetchMessages = async (
     reciever_profile: any,
