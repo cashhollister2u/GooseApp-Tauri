@@ -398,7 +398,8 @@ const EditForm: React.FC<{
           <div className="col-span-full mt-10">
             {values5.map(
               (value, index) =>
-                EditedValues5[index] !== undefined && (
+                EditedValues5[index] !== undefined &&
+                values5[index] !== undefined && (
                   <div key={index} className="flex items-center space-x-2 mt-4">
                     <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
                       {index + 1}.

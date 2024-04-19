@@ -32,15 +32,15 @@ const TopStocksList: React.FC<{ imported_rankedList: string[] }> = ({
             <div className="text-right text-white font-bold mr-4">
               <span>{stock[1]}</span>
               <span
-                className={`inline-block text-xl ${
+                className={`inline-block font-bold text-xl ml-3 ${
                   stock[2] === "positive"
-                    ? "-rotate-90 text-green-600 ml-1"
+                    ? "rotate-180 text-green-600 ml-1"
                     : stock[2] === "neutral"
                     ? "hidden"
-                    : "rotate-90 text-red-600 ml-1"
+                    : " text-red-600 ml-1"
                 }`}
               >
-                &#10145;
+                ▼
               </span>
               <span
                 className={`${
