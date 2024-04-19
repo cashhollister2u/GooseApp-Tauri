@@ -686,6 +686,7 @@ const MyProfilePage: React.FC<{}> = () => {
                                           setSidebarOpen(false);
                                       }
                                       router.push(item.href);
+                                      setSidebarOpen(false);
                                     }}
                                     className={classNames(
                                       item.current
@@ -780,7 +781,7 @@ const MyProfilePage: React.FC<{}> = () => {
                             </button>
                             <button
                               className="group  w-full flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-zinc-800 hover:text-white"
-                              onClick={() => handleEditButton()}
+                              onClick={() => {handleEditButton(), setSidebarOpen(false)}}
                             >
                               <ChatBubbleLeftRightIcon
                                 className="h-6 w-6 text-zinc-600 shrink-0"
