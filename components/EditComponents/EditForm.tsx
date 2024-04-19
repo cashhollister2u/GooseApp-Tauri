@@ -157,10 +157,13 @@ const EditForm: React.FC<{
   const addCompany = async () => {
     const updatedValues = [...values5];
     updatedValues.push("");
+    const updatededitValues = [...EditedValues5];
+    updatededitValues.push("");
     setQuery("");
 
     if (updatedValues) {
       setvalues5(updatedValues);
+      setEditedValues5(updatededitValues);
     }
   };
 
@@ -393,57 +396,62 @@ const EditForm: React.FC<{
             share.
           </p>
           <div className="col-span-full mt-10">
-            {values5.map((value, index) => (
-              <div key={index} className="flex items-center space-x-2 mt-4">
-                <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
-                  {index + 1}.
-                </span>
-                <div className="w-full">
-                  <Autocomplete
-                    id="AutoComplete"
-                    label="Company"
-                    defaultItems={StockSuggestions}
-                    placeholder={EditedValues5[index] || ""}
-                    className="w-full mt-2 text-zinc-200"
-                    onSelectionChange={(selectedValue: any) =>
-                      handleSelectValuesChange(index, selectedValue)
-                    }
-                    onInputChange={(value) => {
-                      setQuery(value);
-                    }}
-                    onKeyDown={(event: any) => {
-                      event.stopPropagation();
-                      if (event.key === "Backspace") {
-                        if (EditedValues5[index] !== "") {
-                          setQuery(EditedValues5[index]);
-                          handleSelectValuesChange(index, "");
+            {values5.map(
+              (value, index) =>
+                EditedValues5[index] !== undefined && (
+                  <div key={index} className="flex items-center space-x-2 mt-4">
+                    <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
+                      {index + 1}.
+                    </span>
+                    <div className="w-4/5 ">
+                      <Autocomplete
+                        id="AutoComplete"
+                        label="Company"
+                        defaultItems={StockSuggestions || ""}
+                        placeholder={EditedValues5[index] || ""}
+                        className="w-full mt-2 text-zinc-200"
+                        onSelectionChange={(selectedValue: any) =>
+                          handleSelectValuesChange(index, selectedValue)
                         }
-                      }
-                    }}
-                    onFocus={() => handlevalues5Focus(index)}
-                  >
-                    {(animal) => (
-                      <AutocompleteItem
-                        key={animal.value}
-                        className="text-black"
+                        onInputChange={(value) => {
+                          setQuery(value);
+                        }}
+                        onKeyDown={(event: any) => {
+                          event.continuePropagation();
+                          if (event.key === "Backspace") {
+                            if (EditedValues5[index] !== "") {
+                              setQuery(EditedValues5[index]);
+                              handleSelectValuesChange(index, "");
+                            }
+                          }
+                        }}
+                        onFocus={() => handlevalues5Focus(index)}
                       >
-                        {animal.label}
-                      </AutocompleteItem>
-                    )}
-                  </Autocomplete>
-                </div>
-                <button
-                  type="button"
-                  className="flex mt-2 ml-4 rounded pr-2 px-1 py-1 items-center justify-center text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
-                  onClick={() => SubtractCompany(index)}
-                >
-                  <MinusCircleIcon
-                    className="ml-1 h-6 w-6 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-            ))}
+                        {(animal) => (
+                          <AutocompleteItem
+                            key={animal.value}
+                            className="text-black"
+                          >
+                            {animal.label || ""}
+                          </AutocompleteItem>
+                        )}
+                      </Autocomplete>
+                    </div>
+                    <button
+                      type="button"
+                      className={`flex mt-2 ml-4 rounded pr-2 px-1 py-1 items-center justify-center text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20 ${
+                        index === values5.length - 1 ? "" : "hidden"
+                      }`}
+                      onClick={() => SubtractCompany(index)}
+                    >
+                      <MinusCircleIcon
+                        className="ml-1 h-6 w-6 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+                )
+            )}
             <div className="flex w-full">
               <button
                 type="button"
@@ -462,7 +470,7 @@ const EditForm: React.FC<{
               </button>
               <label
                 htmlFor="street-address"
-                className=" mt-4 absolute right-24 text-sm font-medium text-gray-400 "
+                className=" mt-4 absolute right-1/4 text-sm font-medium text-gray-400 "
               >
                 (max: 25)
               </label>
