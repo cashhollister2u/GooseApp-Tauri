@@ -128,10 +128,23 @@ const MyProfilePage: React.FC<{}> = () => {
   const [authTokens, setAuthTokens] = useState<any>();
   const [ranked_list, setranked_list] = useState<string[]>([]);
   const wsBaseUrl = "wss://www.gooseadmin.com";
+  const navigation = [
+    {
+      name: "My Profile",
+      href: "/profile",
+      icon: HomeIcon,
+      current: false,
+    },
+    {
+      name: "Following",
+      icon: UsersIcon,
+      current: false,
+      children: followingList,
+    },
+  ];
 
   async function retireveJWT() {
     try {
-      // Read the text file in the `$APPDATA/app.conf` path
       const contents = (await readTextFile("JWTtoken/jwt.json", {
         dir: BaseDirectory.AppData,
       })) as string;
@@ -147,7 +160,6 @@ const MyProfilePage: React.FC<{}> = () => {
   useEffect(() => {
     async function retireveJWT() {
       try {
-        // Read the text file in the `$APPDATA/app.conf` path
         const contents = (await readTextFile("JWTtoken/jwt.json", {
           dir: BaseDirectory.AppData,
         })) as string;
@@ -189,7 +201,6 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   //window size init
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     import("@tauri-apps/api").then((tauri) => {
@@ -212,21 +223,6 @@ const MyProfilePage: React.FC<{}> = () => {
     setisWebsocketMessage((current) => !current);
   }
   websocketService.setMessageHandler(handleMessage);
-
-  const navigation = [
-    {
-      name: "My Profile",
-      href: "/profile",
-      icon: HomeIcon,
-      current: false,
-    },
-    {
-      name: "Following",
-      icon: UsersIcon,
-      current: false,
-      children: followingList,
-    },
-  ];
 
   useEffect(() => {
     const checkSize = () => {
@@ -416,6 +412,7 @@ const MyProfilePage: React.FC<{}> = () => {
       console.error("Error sending data to Rust:", error);
     }
   }
+  
  //websocket individual messages
  async function sendMessagetoRustDecryption(message: any) {
   const Priv_key =
