@@ -189,7 +189,6 @@ const MyProfilePage: React.FC<{}> = () => {
   }
 
   //window size init
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     import("@tauri-apps/api").then((tauri) => {
@@ -414,6 +413,11 @@ const MyProfilePage: React.FC<{}> = () => {
       }
     } catch (error) {
       console.error("Error sending data to Rust:", error);
+      swal.fire({
+        title: "Message Decryption Failed",
+        text: 'Messaging is only accessable on the "Home" device at this time.',
+        icon: "question"
+      });
     }
   }
  //websocket individual messages
@@ -1089,9 +1093,15 @@ const MyProfilePage: React.FC<{}> = () => {
                 />
                 <div className="mt-2">
                   <ListTabs
-                    isLoading={isLoading}
-                    activeTab={activeTab}
-                    onTabSelect={handleTabChange}
+                     isSearchActive={isSearchActive}
+                     UserProfile={UserProfile as UserProfile}
+                     searchedprofile={SearchedProfile}
+                     followListUpd={followingList}
+                     updateFollowList={updateFollowList}
+                     onclick={sendMessageFromSearch}
+                     isLoading={isLoading}
+                     activeTab={activeTab}
+                     onTabSelect={handleTabChange}
                   />
                 </div>
                 <div className="flex">
@@ -1135,7 +1145,6 @@ const MyProfilePage: React.FC<{}> = () => {
                 {/* search active*/}
                 <S_Header
                   isLoading={isLoading}
-                  onclick={sendMessageFromSearch}
                   updateFollowList={updateFollowList}
                   followListUpd={followingList}
                   searchedprofile={SearchedProfile}
@@ -1143,6 +1152,12 @@ const MyProfilePage: React.FC<{}> = () => {
                 />{" "}
                 <div className="mt-2">
                   <ListTabs
+                    isSearchActive={isSearchActive}
+                    UserProfile={UserProfile as UserProfile}
+                    searchedprofile={SearchedProfile}
+                    followListUpd={followingList}
+                    updateFollowList={updateFollowList}
+                    onclick={sendMessageFromSearch}
                     isLoading={isLoading}
                     activeTab={activeTab}
                     onTabSelect={handleTabChange}
