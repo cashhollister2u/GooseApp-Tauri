@@ -29,7 +29,12 @@ const Header: React.FC<{
   useEffect(() => {
     const fetchUserData = async () => {
       if (UserProfile) {
-        setfull_name(UserProfile.full_name);
+        if (UserProfile.full_name.length >=30) {
+          const abv_fullname = UserProfile.full_name.slice(0,29) + "..."
+          setfull_name(abv_fullname)
+        } else {
+          setfull_name(UserProfile.full_name);
+        }
         setbio(UserProfile.bio);
         setusername(UserProfile.username);
 
@@ -83,7 +88,7 @@ const Header: React.FC<{
           <div className="w-full flex items-center">
             <div>
               <img
-                className="ml-4 mr-10 h-36 w-36 rounded-full ring-4 ring-zinc-200"
+                className="ml-4 mr-32 h-36 w-36 rounded-full ring-4 ring-zinc-200"
                 src={
                   `${profilepicPrev}` ||
                   `${profile_picture}` ||
@@ -93,10 +98,10 @@ const Header: React.FC<{
               />
             </div>
             <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold flex flex-col gap-3 ml-8">
-              <div className="h-6 w-48 text-xl text-white  rounded-lg">
+              <div className="h-6 w-72 text-xl text-white  rounded-lg">
                 {full_name}
               </div>
-              <div className="h-6 w-48 text-md border-2 text-white border-zinc-600 w-full px-2 h-8 rounded-lg">
+              <div className="h-10 w-48 text-md py-1 border-2 text-white border-zinc-600 w-full px-2 rounded-lg">
                 @{username}
               </div>
               <div className="h-16 w-48 border-2 text-white border-zinc-600 w-full px-2 py-1 text-xs rounded-lg">

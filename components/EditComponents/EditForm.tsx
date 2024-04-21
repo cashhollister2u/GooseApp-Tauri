@@ -5,6 +5,8 @@ import { fetchUserURL } from "../backendURL";
 import stocklist from "../data/stockValuesList.json";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { PlusCircleIcon, MinusCircleIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { Combobox } from '@headlessui/react'
 
 const swal = require("sweetalert2");
 
@@ -32,6 +34,15 @@ interface ProfilePictureState {
   profilepictureFile: File | null;
 }
 
+interface StockSuggestions {
+  id: number;
+  name: string
+}
+
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(' ')
+}
+
 const EditForm: React.FC<{
   UserProfile: UserProfile;
   onCancelEdit: () => void;
@@ -51,16 +62,28 @@ const EditForm: React.FC<{
   const [full_name, setfull_name] = useState<string>("");
   const [values5, setvalues5] = useState<string[]>([]);
   const [EditedValues5, setEditedValues5] = useState<string[]>([]);
+  const [UploadValues5, setUploadValues5] = useState<string[]>(['','','','','','','','','','','','','','','','','','','','','','','','',''])
   const [bio, setbio] = useState<string>("");
+  const [numberOfinputBoxes, setnumberOfinputBoxes] = useState<number>(0)
+  const max_num_boxes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
+  const [selectedPerson, setSelectedPerson] = useState(null)
+
 
   const StockSuggestions = useMemo(
     () =>
-      listSuggestion.map((item) => ({
-        label: item,
-        value: item,
+      listSuggestion.map((item, index) => ({
+        id: index,
+        name: item,
       })),
     [listSuggestion]
   ).slice(0, 5);
+
+  const filteredStocks =
+    query === ''
+      ? StockSuggestions
+      : StockSuggestions.filter((stock_suggget) => {
+          return stock_suggget.name.toLowerCase().includes(query.toLowerCase())
+        })
 
   const [background_image, setbackground_image] =
     useState<BackgroundImageState>({
@@ -77,6 +100,14 @@ const EditForm: React.FC<{
     const fetchUserData = () => {
       if (UserProfile) {
         setvalues5(UserProfile.values5);
+        let total_inputs = 0
+        UserProfile.values5.forEach((value) => {
+          if (value.length > 1) {
+            total_inputs += 1
+          }
+          setnumberOfinputBoxes(total_inputs)
+        })
+        setUploadValues5(UserProfile.values5)
         setEditedValues5(UserProfile.values5);
         setStock(stocklist);
       }
@@ -101,7 +132,7 @@ const EditForm: React.FC<{
         setlistSuggestion([]);
       }
     };
-    if (query?.length > 2) {
+    if (query?.length > 0) {
       companySuggestions(true);
     }
   }, [query]);
@@ -148,13 +179,20 @@ const EditForm: React.FC<{
     const updatedValues = [...EditedValues5];
     updatedValues.splice(index, 1);
 
+    const to_uploadvalues = [...UploadValues5];
+    to_uploadvalues.splice(index, 1);
+
+    setnumberOfinputBoxes(numberOfinputBoxes - 1)
+
     if (updatedValues) {
       setEditedValues5(updatedValues);
       setvalues5(updatedValues);
+      setUploadValues5(to_uploadvalues)
     }
   };
-
+  
   const addCompany = async () => {
+    setnumberOfinputBoxes(numberOfinputBoxes+1)
     const updatedValues = [...values5];
     updatedValues.push("");
     const updatededitValues = [...EditedValues5];
@@ -180,8 +218,8 @@ const EditForm: React.FC<{
       if (bio) {
         formData.append("bio", bio);
       }
-      if (EditedValues5) {
-        formData.append("values5", JSON.stringify(EditedValues5));
+      if (UploadValues5.some(value => value !== "")) {
+        formData.append("values5", JSON.stringify(UploadValues5));
       }
 
       if (background_image && background_image.backgroundimageFile) {
@@ -223,20 +261,16 @@ const EditForm: React.FC<{
     }
   };
 
-  const handlevalues5Focus = (index: number) => {
-    const clearvalues5 = [...EditedValues5];
-    clearvalues5[index] = "";
-    setEditedValues5(clearvalues5);
-    setlistSuggestion([]);
-    setQuery("");
-  };
-
-  const handleSelectValuesChange = (index: number, IndividualStock: string) => {
+  const handleSelectValuesChange = (index: number, IndividualStock: any) => {
+    console.log(IndividualStock, "ind stock")
     const updatedValues = [...EditedValues5];
+    const to_uploadvalues = [...UploadValues5];
+    to_uploadvalues[index] = IndividualStock.name;
     updatedValues[index] = IndividualStock;
     setEditedValues5(updatedValues);
+    setUploadValues5(to_uploadvalues);
   };
-
+console.log(values5.length, EditedValues5.length, numberOfinputBoxes)
   return (
     <div>
       <div className="space-y-12 ml-4 mr-4">
@@ -396,52 +430,77 @@ const EditForm: React.FC<{
             share.
           </p>
           <div className="col-span-full mt-10">
-            {values5.map(
+            {max_num_boxes.map(
               (value, index) =>
-                EditedValues5[index] !== undefined &&
-                values5[index] !== undefined && (
-                  <div key={index} className="flex items-center space-x-2 mt-4">
-                    <span className="text-m font-medium mr-2 leading-6 text-zinc-200  ">
+                  <div key={index} className={`flex items-center space-x-2  ${
+                    index >= numberOfinputBoxes ? 'hidden' : ''
+                  }`}>
+                    <span className="text-m mt-4 font-medium mr-2 leading-6 text-zinc-200  ">
                       {index + 1}.
                     </span>
                     <div className="w-4/5 ">
-                      <Autocomplete
-                        id="AutoComplete"
-                        label="Company"
-                        defaultItems={StockSuggestions || ""}
-                        placeholder={EditedValues5[index] || ""}
-                        className="w-full mt-2 text-zinc-200"
-                        onSelectionChange={(selectedValue: any) =>
-                          handleSelectValuesChange(index, selectedValue)
-                        }
-                        onInputChange={(value) => {
-                          setQuery(value);
-                        }}
-                        onKeyDown={(event: any) => {
-                          event.continuePropagation();
-                          if (event.key === "Backspace") {
-                            if (EditedValues5[index] !== "") {
-                              setQuery(EditedValues5[index]);
-                              handleSelectValuesChange(index, "");
-                            }
-                          }
-                        }}
-                        onFocus={() => handlevalues5Focus(index)}
-                      >
-                        {(animal) => (
-                          <AutocompleteItem
-                            key={animal.value}
-                            className="text-black"
-                          >
-                            {animal.label || ""}
-                          </AutocompleteItem>
-                        )}
-                      </Autocomplete>
+                    <Combobox as="div" value={EditedValues5[index]} onChange={(selectedValue: any) => handleSelectValuesChange(index, selectedValue)} >
+                        <Combobox.Label className="block text-sm font-medium leading-6 text-gray-900">Assigned to</Combobox.Label>
+                        <div className="relative ">
+                          <Combobox.Input
+                            className="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            onChange={(event) => setQuery(event.target.value)}
+                            displayValue={(person:any) => person?.name}
+                            placeholder={EditedValues5[index] || ""}
+                            onKeyDown={(event: any) => {
+                      
+                              if (event.key === "Backspace") {
+                                if (EditedValues5[index] !== "") {
+                                  setQuery(EditedValues5[index]);
+                                  handleSelectValuesChange(index, "");
+                                }
+                              }
+                            }}
+                          />
+                          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                          </Combobox.Button>
+
+                          {filteredStocks.length > 0 && (
+                            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                              {filteredStocks.map((stock_suggget) => (
+                                <Combobox.Option
+                                  key={stock_suggget.id}
+                                  value={stock_suggget}
+                                  className={({ active }) =>
+                                    classNames(
+                                      'relative cursor-default select-none py-2 pl-8 pr-4',
+                                      active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                                    )
+                                  }
+                                >
+                                  {({ active, selected }) => (
+                                    <>
+                                      <span className={classNames('block truncate', selected && 'font-semibold')}>{stock_suggget.name}</span>
+
+                                      {selected && (
+                                        <span
+                                          className={classNames(
+                                            'absolute inset-y-0 left-0 flex items-center pl-1.5',
+                                            active ? 'text-white' : 'text-indigo-600'
+                                          )}
+                                        >
+                                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                </Combobox.Option>
+                              ))}
+                            </Combobox.Options>
+                          )}
+                        </div>
+                      </Combobox>
                     </div>
                     <button
                       type="button"
-                      className={`flex mt-2 ml-4 rounded pr-2 px-1 py-1 items-center justify-center text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20 ${
-                        index === values5.length - 1 ? "" : "hidden"
+                      className={`flex mt-6 ml-4 rounded pr-2 px-1 py-1 items-center justify-center text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20 ${
+                        index === numberOfinputBoxes -1 ? "" : "hidden"
                       }`}
                       onClick={() => SubtractCompany(index)}
                     >
@@ -451,13 +510,12 @@ const EditForm: React.FC<{
                       />
                     </button>
                   </div>
-                )
-            )}
+                )}
             <div className="flex w-full">
               <button
                 type="button"
                 className={`${
-                  values5.length >= 25
+                  numberOfinputBoxes >= 25
                     ? "hidden"
                     : "flex mt-4 ml-12 rounded pl-2 pr-2 px-1 py-1 text-sm bg-gray-800/70 text-gray-400 shadow-sm hover:bg-white/20"
                 }`}
