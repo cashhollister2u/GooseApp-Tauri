@@ -58,7 +58,7 @@ const S_PinnedStocksList: React.FC<S_PinnedStocksListProps> = ({
           
       ))
     ) : (
-      values5.map(
+      values5?.map(
         (project, projectindex) =>
           project !== '' && (
             <li

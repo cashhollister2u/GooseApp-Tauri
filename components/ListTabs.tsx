@@ -188,7 +188,6 @@ interface ListTabsProps extends FollowListCountType {
       showAlert("Error unfollowing user", "error");
     }
   };
-  console.log(username, MYusername)
     return (
       <div>
         {isLoading ? (
@@ -220,7 +219,7 @@ interface ListTabsProps extends FollowListCountType {
                 ))}
                 
                 <span className={`flex justify-end w-full inline-flex rounded-md shadow-xl ${
-                    isSearchActive ? "" : "hidden"
+                    isSearchActive && MYusername !== username ? "" : "hidden"
                     }`}>
                       <button
                         type="button"

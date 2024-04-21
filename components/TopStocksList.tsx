@@ -9,7 +9,6 @@ const TopStocksList: React.FC<{ imported_rankedList: string[] }> = ({
     const fetchedLeaderBoard = () => {
       setranked_list(imported_rankedList);
     };
-    console.log(ranked_list);
     fetchedLeaderBoard();
   }, [imported_rankedList]);
 

@@ -301,7 +301,6 @@ const MyProfilePage: React.FC<{}> = () => {
           const response = await gooseApp.get(leaderBoardURL);
           const data = response.data;
           if (data.ranked_list) {
-            console.log("look here", response);
             setranked_list(data.ranked_list);
           } else {
             console.log("The response does not contain a ranked_list.");
@@ -335,18 +334,33 @@ const MyProfilePage: React.FC<{}> = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const search = params.get("search");
-
     if (search) {
       if (search === UserProfile?.username) {
         setSearchActive(false);
-      } else {
-        setSearchActive(true);
-      }
+      } 
       const handleSearchChange = async () => {
         try {
           const response = await gooseApp.get(`${searchUserURL}${search}/`);
+          const profile_check = response.data.profile
           const fetchedUserProfile: Profile = response.data;
-          setSearchedprofile(fetchedUserProfile);
+
+          if (profile_check.username) {
+            setSearchedprofile(fetchedUserProfile);
+            setSearchActive(true);
+          } else {
+            swal.fire({
+              title: "User does not exist",
+              text: "Please try agian",
+              color: "#cfe8fc",
+              background: "#BC3838",
+              icon: "error",
+              toast: true,
+              timer: 2000,
+              position: "top-right",
+              timerProgressBar: true,
+              showConfirmButton: false,
+            });
+          }
         } catch (error) {
           console.error("Error fetching user profile:");
           router.push("/profile");
@@ -684,8 +698,9 @@ const MyProfilePage: React.FC<{}> = () => {
                                   <button
                                     onClick={() => {
                                       if (item.name === "My Profile") {
-                                        updateIsMessaging(),
+                                          updateIsMessaging(),
                                           setSidebarOpen(false);
+                                        
                                       }
                                       router.push(item.href);
                                       setSidebarOpen(false);

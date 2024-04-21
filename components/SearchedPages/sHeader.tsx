@@ -117,7 +117,7 @@ const S_Header: React.FC<S_HeaderProps> = ({
                 />
               )}
             </div>
-            <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold text-xl flex flex-col gap-3 ml-8">
+            <div className="w-full border-l-2 py-2 border-zinc-600 p-5 font-bold flex flex-col gap-3 ml-8">
               <div className="h-6 w-72 text-xl text-white rounded-lg">
                 {full_name}
               </div>

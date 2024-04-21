@@ -41,7 +41,7 @@ const PinnedStocksList: React.FC<{ UserProfile?: UserProfile, isLoading:boolean 
             
         ))
       ) : (
-        values5.map(
+        values5?.map(
           (project, projectindex) =>
             project !== '' && (
               <li
